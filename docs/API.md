@@ -442,6 +442,10 @@ win.set_size(800, 600)
 
 Gets the current width/height of the window.
 
+### `win.get_screen_frame() (int, int, int, int)`
+
+Returns a tuple representing the window's screen geometry: `(x, y, width, height)`.
+
 ```v
 w := win.get_width()
 h := win.get_height()
@@ -1208,6 +1212,26 @@ Starts a CSS-like multi-column grid layout container with specified column count
 win.begin_grid('grid_1', 2, 10)
 win.add_button('b1', 'Box 1')
 win.add_button('b2', 'Box 2')
+
+### `win.split_view(name string, vertical bool, pane1_fn fn (), pane2_fn fn ()) &SimpleWindow`
+
+Creates a draggable, resizable split view (NSSplitView) container consisting of two panes. If `vertical` is true, the panes are placed side-by-side (left/right). Otherwise, they are stacked top/bottom.
+
+```v
+win.split_view('my_split', true, fn [mut win] () {
+    win.add_label('pane1', 'Left Pane')
+}, fn [mut win] () {
+    win.add_label('pane2', 'Right Pane')
+})
+```
+
+### `win.set_split_position(name string, divider_index int, position f64) &SimpleWindow`
+
+Programmatically adjusts the location of the splitter handle in pixels.
+
+### `win.set_split_divider_style(name string, style string) &SimpleWindow`
+
+Sets the visual style of the splitter line (`'thin'`, `'thick'`, `'pane_splitter'`).
 win.end_grid()
 ```
 
@@ -1542,6 +1566,12 @@ Adds a scrollable multi-line rich text area (`NSTextView` enclosed in `NSScrollV
   - `value`: Initial multi-line text content.
 - **Getters & Setters**: `win.get_text(name)`, `win.set_text(name, text)`
 - **Events**: `.on_change(name, cb)`, `.on_focus(name, cb)`, `.on_blur(name, cb)`
+- **Advanced Operations**:
+  - `win.textarea_insert_text(name string, text string) &SimpleWindow`: Inserts text at current cursor position.
+  - `win.textarea_get_selected_text(name string) string`: Retrieves highlighted text.
+  - `win.textarea_set_selected_range(name string, start int, length int) &SimpleWindow`: Selects a specific range of text.
+  - `win.textarea_scroll_to_end(name string) &SimpleWindow`: Scrolls to the bottom of the content.
+  - `win.textarea_clear(name string) &SimpleWindow`: Clears the text area entirely.
 
 ```v
 win.add_textarea('user_bio', 'Mathematician and writer, known for her work on Charles Babbage\'s early mechanical general-purpose computer.')
@@ -3472,6 +3502,30 @@ Launches the native macOS file save panel, returning the target path (or empty i
 target_path := win.save_file_picker()
 ```
 
+### `win.save_file_picker_with_name(default_filename string, allowed_extensions string) string`
+
+Launches the native macOS file save panel pre-populated with a default filename and optional extension constraints.
+
+```v
+target_path := win.save_file_picker_with_name('Untitled.png', 'png,jpg')
+```
+
+### `win.select_multiple_files(extensions string) []string`
+
+Launches the native macOS file picker allowing multiple file selection. Returns an array of chosen paths.
+
+```v
+paths := win.select_multiple_files('png,jpg')
+```
+
+### `win.show_color_picker(initial_hex string) string`
+
+Launches the native macOS system color picker palette. Returns the selected color as a hex string (e.g., `'#FF0000'`), or empty if dismissed.
+
+```v
+color := win.show_color_picker('#00FF00')
+```
+
 ### `win.show_share_sheet(items []string, anchor_control string) &SimpleWindow` / `win.share(item string) &SimpleWindow`
 
 Displays the native macOS System Share Sheet / Popover (`NSSharingServicePicker`) containing system sharing actions (AirDrop, Messages, Mail, Notes, Reminders, Copy Link, etc.) anchored to a control or window.
@@ -3698,6 +3752,52 @@ win.show_system_notification('Notification Title', 'Message content body')
 - `win.sleep_display() &SimpleWindow`: Immediately puts attached displays to sleep (`pmset displaysleepnow`).
 - `win.sleep_computer() &SimpleWindow`: Puts the Mac to sleep.
 - `win.lock_screen() &SimpleWindow`: Locks the current user session.
+
+### macOS Native Speech (Text-to-Speech)
+- `win.speak_native(text string, voice string) &SimpleWindow`: Speaks text using macOS default synthesizer.
+- `win.stop_speech() &SimpleWindow`: Stops active speech.
+- `win.is_speaking() bool`: Returns true if speech is playing.
+- `simplegui.speak_native(text string)`: Package level wrapper for default voice speech.
+- `simplegui.get_speech_voices() []SpeechVoice`: Returns available system voices.
+
+### macOS Multimedia & Audio
+- `win.play_sound_file(file_path string) bool`: Plays an audio file via NSSound asynchronously.
+- `win.stop_sound_file() &SimpleWindow`: Stops the audio playing.
+- `win.is_sound_file_playing() bool`: Returns true if audio is actively playing.
+
+### macOS Haptic Feedback
+- `win.haptic_feedback(pattern string) &SimpleWindow`: Triggers Force Touch trackpad feedback ('generic', 'alignment', 'level_change').
+
+### macOS App & Workspace Automation
+- `win.recycle_to_trash(file_path string) bool`: Moves a file to the macOS Trash using NSFileManager.
+- `simplegui.get_running_apps() []MacAppInfo`: Returns a list of running macOS applications.
+- `simplegui.activate_app(bundle_id_or_name string) bool`: Activates a running app.
+- `simplegui.terminate_app(pid int) bool`: Terminates a running app gracefully.
+- `simplegui.hide_other_apps()`: Hides all applications except the frontmost.
+- `simplegui.unhide_all_apps()`: Unhides all applications.
+- `simplegui.get_frontmost_app() string`: Gets the name of the currently focused app.
+- `simplegui.open_with_app(file_path string, app_name string) bool`: Opens a file with a specific app.
+
+### macOS Clipboard & Files
+- `simplegui.copy_image_to_clipboard(path string) bool`: Copies an image file to the macOS clipboard.
+- `simplegui.get_clipboard_image(dest_png_path string) bool`: Saves clipboard image to disk.
+- `simplegui.copy_files_to_clipboard(paths []string) bool`: Copies files to clipboard for Finder pasting.
+- `simplegui.get_clipboard_files() []string`: Retrieves paths of files in clipboard.
+- `simplegui.clear_clipboard()`: Clears clipboard contents.
+
+### macOS Battery & Power Management
+- `simplegui.get_battery_percentage() f64`: Gets exact battery capacity.
+- `simplegui.is_battery_charging() bool`: Returns true if plugged in and charging.
+- `simplegui.is_on_battery_power() bool`: Returns true if not connected to AC.
+- `simplegui.get_battery_time_remaining_minutes() int`: Returns estimated remaining time on battery.
+
+### macOS User Defaults (Preferences)
+- `simplegui.defaults_set_string(key string, val string)`: Saves a string to UserDefaults.
+- `simplegui.defaults_get_string(key string) string`: Retrieves a string.
+- `simplegui.defaults_set_bool(key string, val bool)`: Saves a boolean.
+- `simplegui.defaults_get_bool(key string) bool`: Retrieves a boolean.
+- `simplegui.defaults_set_int(key string, val int)`: Saves an integer.
+- `simplegui.defaults_get_int(key string) int`: Retrieves an integer.
 - `win.start_screen_saver() &SimpleWindow`: Starts the macOS screen saver engine.
 - `win.log_out_user() &SimpleWindow`: Logs out the current user.
 - `win.restart_computer() &SimpleWindow`: Restarts the Mac.
@@ -5721,7 +5821,6 @@ win.commit_changes()
 
 ## 17. Ergonomic Helpers
 
-A set of high-level shortcuts designed to make everyday tasks one-liners. See `demos/easy_api_demo.v`, `demos/todo_list_demo.v`, `demos/table_manager_demo.v`, `demos/save_restore_demo.v`, and `demos/ergonomics_helpers_demo.v` for working examples.
 
 ### Dialog & File Panel Shortcuts
 

@@ -1156,12 +1156,7 @@ v run .
 | Demo                                                                 | Description                                                                                                                                                                    |
 | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [all_controls_demo.v](demos/all_controls_demo.v)                     | Comprehensive 20-section showcase of every `win.add_*` control in [docs/API.md](docs/API.md) — text, buttons, sliders, pickers, charts, grids, badges, stat cards, code editor, timeline, and more |
-| [new_controls_demo.v](demos/new_controls_demo.v)                     | Segmented menus, popup selections, and search fields                                                                                                                           |
 | [cursor_demo.v](demos/cursor_demo.v)                                 | Window-wide and per-control cursor icon/size customization, mouse warping, and live mouse tracking                                                                             |
-| [new_controls_showcase.v](demos/new_controls_showcase.v)             | Showcase of the newest control additions                                                                                                                                       |
-| [more_controls_demo.v](demos/more_controls_demo.v)                   | Interactive showcase of Stat Cards, Banners, Section Headers, Vertical Sliders & Chip Groups                                                                                   |
-| [modern_widgets_demo.v](demos/modern_widgets_demo.v)                 | Level indicators, star ratings, and editable combo boxes                                                                                                                       |
-| [rich_widgets_demo.v](demos/rich_widgets_demo.v)                     | Advanced rich macOS controls suite                                                                                                                                             |
 | [developer_controls_demo.v](demos/developer_controls_demo.v)         | Breadcrumbs, shortcut recorders, charts, gauges, property grids, and log consoles                                                                                              |
 | [editable_grid_showcase_demo.v](demos/editable_grid_showcase_demo.v) | Editable grid workflow: selection, filtering, sorting, and programmatic cell access                                                                                            |
 | [spy_plus_plus_demo.v](demos/spy_plus_plus_demo.v)                   | Production Spy++-style inspector: target table + control tree, strict selector mode, value watch mode, health checks, action history, and JSON snapshot export                 |
@@ -1171,8 +1166,6 @@ v run .
 | [menu_demo.v](demos/menu_demo.v)                                     | Standard macOS application menus and text editing shortcuts                                                                                                                    |
 | [colors_demo.v](demos/colors_demo.v)                                 | Live custom colors styling sandbox for typography and backgrounds                                                                                                              |
 | [animation_demo.v](demos/animation_demo.v)                           | Animated control and window effects                                                                                                                                            |
-| [api_control_showcase_demo.v](demos/api_control_showcase_demo.v)     | End-to-end tour of the control APIs                                                                                                                                            |
-| [api_coverage_demo.v](demos/api_coverage_demo.v)                     | Broad coverage exercise of the wrapper API surface                                                                                                                             |
 | [lorem_and_html_demo.v](demos/lorem_and_html_demo.v)                 | Placeholder text generation and HTML rendering                                                                                                                                 |
 
 ### Complete example apps
@@ -1202,12 +1195,6 @@ v run .
 
 | Demo                                                         | Description                                                                        |
 | ------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| [dx_features_demo.v](demos/dx_features_demo.v)               | Reflection form building, chaining, nameless controls, action rows, and debug mode |
-| [dx_showcase.v](demos/dx_showcase.v)                         | High-level horizontal rows, layout nesting, and fluent styling modifiers           |
-| [high_level_demo.v](demos/high_level_demo.v)                 | Beginner-friendly helper API for forms and actions                                 |
-| [ergonomic_demo.v](demos/ergonomic_demo.v)                   | Lightweight ergonomic helpers for window configuration and forms                   |
-| [ergonomics_helpers_demo.v](demos/ergonomics_helpers_demo.v) | Grouped tour of every ergonomics helper family                                     |
-| [easy_api_demo.v](demos/easy_api_demo.v)                     | Dialog shortcuts, batch operations, labeled rows, timer sugar, and validation      |
 | [list_table_toolkit_demo.v](demos/list_table_toolkit_demo.v) | Live search filtering, sorting, reordering, CSV export/import, and validators      |
 | [features_demo.v](demos/features_demo.v)                     | Compile-time struct binding and automatic multi-column tables                      |
 | [configuration_demo.v](demos/configuration_demo.v)           | Fluent configuration using `WindowConfig`                                          |
@@ -1215,7 +1202,6 @@ v run .
 | [save_restore_demo.v](demos/save_restore_demo.v)             | One-call JSON settings persistence with unsaved-changes prompts                    |
 | [delphi_inspired_demo.v](demos/delphi_inspired_demo.v)       | Classic Delphi RAD tool look and event bindings                                    |
 | [events_demo.v](demos/events_demo.v)                         | Hover, focus, blur, and window resize event listeners                              |
-| [window_controller_demo.v](demos/window_controller_demo.v)   | Programmatic window resize, move, center, and opacity control                      |
 | [always_on_top_demo.v](demos/always_on_top_demo.v)           | Window z-axis float levels and the always-on-top API                               |
 
 ### Networking & security
@@ -1239,10 +1225,8 @@ v run .
 | [zstd_demo.v](demos/zstd_demo.v)                                             | Zstandard compression and decompression                                                                        |
 | [encoding_and_system_info_demo.v](demos/encoding_and_system_info_demo.v)     | Hex/Base64 encoder-decoder with environment details viewer                                                     |
 | [sys_demo.v](demos/sys_demo.v)                                               | Neutralino-inspired system call extensions, OS diagnostics, hardware specs, network tools, and shell utilities |
-| [sys_new_commands_demo.v](demos/sys_new_commands_demo.v)                     | Production reliability helpers: retries, timeout metadata, atomic writes, file tails, and wait-for checks      |
 | [macos_power_controls_demo.v](demos/macos_power_controls_demo.v)             | Global macOS theme/power/session controls with keep-awake guard status and safe confirmations                  |
 | [system_calls_demo.v](demos/system_calls_demo.v)                             | Shell process invocation, stdout routing, and folder monitoring                                                |
-| [system_and_stdlib_features_demo.v](demos/system_and_stdlib_features_demo.v) | Exhaustive showcase of V core system operations                                                                |
 | [benchmark_demo.v](demos/benchmark_demo.v)                                   | Wrapper operation latency benchmarks                                                                           |
 
 ### Run the Stack Style demo
@@ -1352,7 +1336,6 @@ This demo opens Calculator automatically if needed, inspects its AXUIElement con
 ### Run the Ergonomic Helpers demo
 
 ```bash
-v run demos/ergonomic_demo.v
 ```
 
 ### Run the Delphi & C# Inspired RAD Showcase demo
@@ -1364,13 +1347,11 @@ v run demos/delphi_inspired_demo.v
 ### Run the developer experience (DX) showcase demo
 
 ```bash
-v run demos/dx_features_demo.v
 ```
 
 ### Run the High-Level Helpers demo
 
 ```bash
-v run demos/high_level_demo.v
 ```
 
 ### Run the Native Menu Bar & Text Shortcuts demo
@@ -1406,7 +1387,6 @@ v run demos/dirty_form_demo.v
 ### Run the Developer Experience DX Showcase
 
 ```bash
-v run demos/dx_showcase.v
 ```
 
 ### Run the QoL Bulk Binding Features demo
@@ -1436,7 +1416,6 @@ v run demos/web_studio_demo.v
 ### Run the Native Switch & Custom Controls Showcase
 
 ```bash
-v run demos/new_controls_demo.v
 ```
 
 ### Run the Sticky Floating Yellow Pad Overlay widget
@@ -1448,7 +1427,6 @@ v run demos/overlay_widget_demo.v
 ### Run the Interactive Window controller demo
 
 ```bash
-v run demos/window_controller_demo.v
 ```
 
 ### Run the 2D Grid Beginner Painter demo
@@ -1574,7 +1552,6 @@ v run demos/system_calls_demo.v
 ### Run the System & Stdlib Features demo
 
 ```bash
-v run demos/system_and_stdlib_features_demo.v
 ```
 
 ### Run the Clipboard Manager demo
@@ -1614,25 +1591,17 @@ v test .
 - [demos/list_image_demo.v](demos/list_image_demo.v) — interactive list selector previewing mockup screenshots in real time
 - [demos/events_demo.v](demos/events_demo.v) — advanced event listener triggers for hover, focus, lose focus (blur), and window resizes
 - [demos/all_controls_demo.v](demos/all_controls_demo.v) — single-window demo that exercises many controls in one place
-- [demos/high_level_demo.v](demos/high_level_demo.v) — showcases the new beginner-friendly helper API for forms and actions
 - [demos/menu_demo.v](demos/menu_demo.v) — demo of standard macOS application menus and text editing shortcuts
-- [demos/dx_features_demo.v](demos/dx_features_demo.v) — showcases the developer experience (DX) ergonomics improvements (reflection form building, chaining, nameless controls, action rows, and debug mode)
 - [demos/advanced_features_demo.v](demos/advanced_features_demo.v) — showcases advanced typography and macOS APIs
 - [demos/beginner_demo.v](demos/beginner_demo.v) — beginner-friendly signup form and profile builder
 - [demos/configuration_demo.v](demos/configuration_demo.v) — fluent configurations using WindowConfig
 - [demos/dirty_form_demo.v](demos/dirty_form_demo.v) — illustrates live form dirty-tracking state and control validation callbacks
-- [demos/dx_showcase.v](demos/dx_showcase.v) — demonstrates high-level horizontal rows, layout nesting, and fluent styling modifiers
 - [demos/features_demo.v](demos/features_demo.v) — showcases compiling-time struct binding and automatic multi-column tables
 - [demos/grid_data_editor.v](demos/grid_data_editor.v) — a fully-functional reactive database inventory-catalog CRUD grid editing dashboard
 - [demos/markdown_editor.v](demos/markdown_editor.v) — a complete live Markdown Studio layout using full WebKit render updates
-- [demos/new_controls_demo.v](demos/new_controls_demo.v) — exercises advanced segmented menus, popup selections, and search fields
 - [demos/overlay_widget_demo.v](demos/overlay_widget_demo.v) — sticky window overlay yellow notepad memo widget with custom styling
-- [demos/window_controller_demo.v](demos/window_controller_demo.v) — lets you programmatically resize, move, center, track dimensions, and fade opacity of the main Window at runtime
 - [demos/always_on_top_demo.v](demos/always_on_top_demo.v) — a utility app indicating how window z-axis float levels behaves
-- [demos/ergonomic_demo.v](demos/ergonomic_demo.v) — showcases lightweight ergonomic helpers for window configuration and forms
-- [demos/ergonomics_helpers_demo.v](demos/ergonomics_helpers_demo.v) — a grouped tour of every ergonomics.v helper family: dialog shortcuts, batch operations, global reset/clear helpers, value accessors, token tag fields, list & table row management/mapping/filtering, spinner & progress QoL, timer sugar, validation rules (email, number, URL, IP, phone, range), and JSON settings persistence
 - [demos/list_table_toolkit_demo.v](demos/list_table_toolkit_demo.v) — focused showcase of the list/table toolkit add-ons: live search filtering (bind_search_to_list), case-insensitive list sorting and Move Up/Down reordering, numeric-aware table column sorting, table row reordering, table column mapping & row filtering, one-call CSV export/import, ready-made validators (email/number/min-length/IP/phone/range), and batch clear_fields / clear_all_fields
-- [demos/easy_api_demo.v](demos/easy_api_demo.v) — showcases the ergonomic helper APIs: dialog shortcuts, batch control operations, global cleanup, token tag helpers, increment/progress helpers, labeled rows, timer sugar, and validation rules
 - [demos/todo_list_demo.v](demos/todo_list_demo.v) — a todo list app built on the list box item-management helpers (add/remove/clear items, Cmd/Shift multi-selection, double-click to complete, bulk remove of selected rows)
 - [demos/table_manager_demo.v](demos/table_manager_demo.v) — an inventory manager built on the table row-management helpers (add/insert/update/remove rows, cell editing, find_table_row, Cmd/Shift multi-selection, double-click to increment, bulk remove of selected rows)
 - [demos/save_restore_demo.v](demos/save_restore_demo.v) — one-call JSON settings persistence with save_values_to_file/load_values_from_file and unsaved-changes prompts
@@ -1671,7 +1640,6 @@ v test .
 - [demos/zstd_demo.v](demos/zstd_demo.v) — Zstandard compression/decompression operations
 - [demos/encoding_and_system_info_demo.v](demos/encoding_and_system_info_demo.v) — text encoder/decoder (Hex, Base64) with native environment details viewer
 - [demos/system_calls_demo.v](demos/system_calls_demo.v) — native shell processes invocation, stdout routing, and folder monitoring
-- [demos/system_and_stdlib_features_demo.v](demos/system_and_stdlib_features_demo.v) — exhaustive showcases of V core systems operations
 - [demos/clipboard_demo.v](demos/clipboard_demo.v) — monitors clipboard entries and displays history log
 - [demos/benchmark_demo.v](demos/benchmark_demo.v) — measures wrapper operation latency benchmarks
 
@@ -1849,7 +1817,6 @@ Screenshots are auto-generated using `v run scripts/capture_demos.vsh`.
   ![List/Table Toolkit Operations](screenshots/list_table_toolkit_demo.png)
 - **Settings Save/Restore Workflow**: `v run demos/save_restore_demo.v`
   ![Settings Save/Restore Workflow](screenshots/save_restore_demo.png)
-- **API Coverage Dashboard**: `v run demos/api_coverage_demo.v`
   ![API Coverage Dashboard](screenshots/api_coverage_demo.png)
 
 ### Layout & Component Showcases
@@ -1864,11 +1831,8 @@ Screenshots are auto-generated using `v run scripts/capture_demos.vsh`.
   ![All Controls Demo — 20 sections, every win.add_* control](screenshots/all_controls_demo.png)
 - **Hierarchical Tree View**: `v run demos/tree_view_demo.v`
   ![Tree View Demo](screenshots/tree_view_demo.png)
-- **Interactive Rich Level Indicators & ComboBox**: `v run demos/modern_widgets_demo.v`
   ![Rich Widgets Demo](screenshots/modern_widgets_demo.png)
-- **Advanced macOS Rich Controls Showcase**: `v run demos/rich_widgets_demo.v`
   ![Advanced Controls Suite](screenshots/rich_widgets_demo.png)
-- **Native Switch & Custom Controls**: `v run demos/new_controls_demo.v`
   ![Native Switch & Custom Controls](screenshots/new_controls_demo.png)
 
 ### Built-in Interactive Utilities
@@ -1892,21 +1856,17 @@ Screenshots are auto-generated using `v run scripts/capture_demos.vsh`.
 
 - **Delphi & RAD Inspired Showcase**: `v run demos/delphi_inspired_demo.v`
   ![Delphi Demo](screenshots/delphi_inspired_demo.png)
-- **Ergonomic Reflection Form Building**: `v run demos/ergonomic_demo.v`
   ![Ergonomic Demo](screenshots/ergonomic_demo.png)
 - **Sticky Yellow Overlay Notepad**: `v run demos/overlay_widget_demo.v`
   ![Overlay Widget Demo](screenshots/overlay_widget_demo.png)
 - **Always On Top Window**: `v run demos/always_on_top_demo.v`
   ![Always On Top Demo](screenshots/always_on_top_demo.png)
-- **Developer DX Showcase**: `v run demos/dx_showcase.v`
   ![DX Showcase Demo](screenshots/dx_showcase.png)
-- **Developer DX Features**: `v run demos/dx_features_demo.v`
   ![Developer DX Features](screenshots/dx_features_demo.png)
 - **Fluent Window Configurations**: `v run demos/configuration_demo.v`
   ![Window Config Demo](screenshots/configuration_demo.png)
 - **Dirty Form Change Tracking**: `v run demos/dirty_form_demo.v`
   ![Dirty Form Demo](screenshots/dirty_form_demo.png)
-- **Interactive Window Controller**: `v run demos/window_controller_demo.v`
   ![Window Controller](screenshots/window_controller_demo.png)
 - **State Controller Pattern**: `v run demos/state_controller_pattern.v`
   ![State Controller Pattern](screenshots/state_controller_pattern.png)
@@ -1917,7 +1877,6 @@ Screenshots are auto-generated using `v run scripts/capture_demos.vsh`.
 
 ### System & Standard Library Integrations
 
-- **System and Standard Library Features**: `v run demos/system_and_stdlib_features_demo.v`
   ![System and Standard Library Features](screenshots/system_and_stdlib_features_demo.png)
 - **System Calls Info Viewer**: `v run demos/system_calls_demo.v`
   ![System Calls Info Viewer](screenshots/system_calls_demo.png)
@@ -1964,12 +1923,10 @@ Screenshots are auto-generated using `v run scripts/capture_demos.vsh`.
   ![Vertical Stack Starter](screenshots/vertical_stack_starter.png)
 - **Grid Column Starter**: `v run demos/grid_column_starter.v`
   ![Grid Column Starter](screenshots/grid_column_starter.png)
-- **High-Level Form Builder**: `v run demos/high_level_demo.v`
   ![High-Level Form Builder](screenshots/high_level_demo.png)
 
 ### Modern Super Controls & simple_gg Ideals Suite
 
-- **Modern Super Controls & simple_gg Ideals Showcase**: `v run demos/simple_gg_ideals_showcase_demo.v`
   - **Donut / Radial Progress Gauges**: `win.add_donut_chart` / `win.donut` with live dynamic percentage updates (`win.set_donut_percentage`).
   - **macOS Code Studio**: `win.add_code_studio` / `win.code_box` featuring macOS traffic light buttons, line numbers, and live code updating.
   - **Review Scorecards**: `win.add_score_card` / `win.score_card` with 5-tier review distributions and ratings.

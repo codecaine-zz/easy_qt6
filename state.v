@@ -39,7 +39,7 @@ pub mut:
 }
 
 pub struct WindowParams {
-	title                        string
+	title                        &char
 	width                        int
 	height                       int
 	win_ptr                      voidptr
@@ -111,6 +111,7 @@ mut:
 	titlebar_appears_transparent bool
 	full_size_content_view       bool
 	background_blur              bool
+	sharing_type                 string = 'read_write'
 	list_items                   map[string][]string
 	tree_nodes                   map[string][]TreeNode
 	table_rows                   map[string][][]string

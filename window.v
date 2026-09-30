@@ -14,6 +14,10 @@ module simplegui
 
 #flag -framework ApplicationServices
 
+#flag -framework IOKit
+
+#flag -framework AudioToolbox
+
 #flag @VMODROOT/window.m
 
 fn C.window_app_init(&WindowParams) &WindowInfo
@@ -1132,6 +1136,85 @@ fn C.window_get_content_max_size(&WindowInfo, &int, &int)
 
 fn C.window_get_tab_count(&WindowInfo) int
 
+fn C.window_set_split_position(&WindowInfo, &u8, int, f64)
+fn C.window_set_split_divider_style(&WindowInfo, &u8, &u8)
+fn C.window_set_slider_tick_marks(&WindowInfo, &u8, int, int)
+fn C.window_set_progress_indeterminate(&WindowInfo, &u8, int)
+fn C.window_start_progress_animation(&WindowInfo, &u8)
+fn C.window_stop_progress_animation(&WindowInfo, &u8)
+fn C.window_select_tab(&WindowInfo, &u8, int)
+fn C.window_select_tab_by_title(&WindowInfo, &u8, &u8)
+fn C.window_get_tab_index(&WindowInfo, &u8) int
+fn C.window_set_search_recent_searches_key(&WindowInfo, &u8, &u8)
+fn C.window_clear_search_history(&WindowInfo, &u8)
+fn C.window_set_path_control_path(&WindowInfo, &u8, &u8)
+fn C.window_get_path_control_path(&WindowInfo, &u8) &char
+fn C.window_set_path_control_style(&WindowInfo, &u8, &u8)
+fn C.window_set_token_field_tokens(&WindowInfo, &u8, &&u8, int)
+fn C.window_get_token_field_tokens(&WindowInfo, &u8) &char
+fn C.window_textarea_insert_text(&WindowInfo, &u8, &u8)
+fn C.window_textarea_get_selected_text(&WindowInfo, &u8) &char
+fn C.window_textarea_set_selected_range(&WindowInfo, &u8, int, int)
+fn C.window_textarea_scroll_to_end(&WindowInfo, &u8)
+fn C.window_textarea_clear(&WindowInfo, &u8)
+fn C.window_scroll_to_top(&WindowInfo, &u8)
+fn C.window_scroll_to_bottom(&WindowInfo, &u8)
+fn C.window_show_color_picker(&WindowInfo, &u8) &char
+fn C.window_select_multiple_files(&WindowInfo, &u8) &char
+fn C.window_save_file_picker_with_name(&WindowInfo, &u8, &u8) &char
+fn C.window_speech_speak(&u8, &u8)
+fn C.window_speech_stop()
+fn C.window_speech_is_speaking() int
+fn C.window_speech_get_voices() &char
+fn C.window_speech_get_default_voice() &char
+fn C.window_perform_haptic_feedback(&u8)
+fn C.window_clipboard_copy_image(&u8) int
+fn C.window_clipboard_get_image(&u8) int
+fn C.window_clipboard_copy_files(&&u8, int) int
+fn C.window_clipboard_get_files() &char
+fn C.window_clipboard_clear()
+fn C.window_clipboard_get_change_count() int
+fn C.window_recycle_to_trash(&u8) int
+fn C.window_get_running_apps() &char
+fn C.window_activate_app(&u8) int
+fn C.window_terminate_app(int) int
+fn C.window_hide_other_apps()
+fn C.window_unhide_all_apps()
+fn C.window_get_frontmost_app() &char
+fn C.window_open_with_app(&u8, &u8) int
+fn C.window_get_default_app_for_extension(&u8) &char
+fn C.window_play_sound_file(&u8) int
+fn C.window_stop_sound_file()
+fn C.window_is_sound_file_playing() int
+fn C.window_prevent_sleep(&u8) u32
+fn C.window_allow_sleep(u32)
+fn C.window_get_battery_percentage() f64
+fn C.window_is_battery_charging() int
+fn C.window_is_on_battery_power() int
+fn C.window_get_battery_time_remaining() int
+fn C.window_defaults_set_string(&u8, &u8)
+fn C.window_defaults_get_string(&u8) &char
+fn C.window_defaults_set_bool(&u8, int)
+fn C.window_defaults_get_bool(&u8) int
+fn C.window_defaults_set_int(&u8, int)
+fn C.window_defaults_get_int(&u8) int
+fn C.window_defaults_remove(&u8)
+fn C.window_defaults_has(&u8) int
+fn C.window_get_macos_version_str() &char
+fn C.window_get_macos_version_numbers(&int, &int, &int)
+fn C.window_get_computer_name() &char
+fn C.window_get_user_full_name() &char
+fn C.window_is_apple_silicon() int
+fn C.window_get_system_uptime() f64
+fn C.window_is_low_power_mode() int
+fn C.window_get_screens_info() &char
+fn C.window_move_to_screen(&WindowInfo, int)
+fn C.window_get_dock_badge() &char
+fn C.window_cancel_dock_bounce()
+fn C.window_set_activation_policy(&u8)
+fn C.window_get_activation_policy() &char
+fn C.window_get_app_bundle_path() &char
+
 // new_simple_window creates and initializes a new native SimpleWindow instance with the specified title, width, and height.
 pub fn new_simple_window(title string, width int, height int) &SimpleWindow {
 	mut win := &SimpleWindow{
@@ -1173,7 +1256,7 @@ pub fn new_simple_window(title string, width int, height int) &SimpleWindow {
 fn (win &SimpleWindow) ensure_window() {
 	if win.window_info == unsafe { nil } {
 		params := WindowParams{
-			title:                        win.title
+			title:                        win.title.str
 			width:                        win.width
 			height:                       win.height
 			win_ptr:                      win
@@ -2175,8 +2258,8 @@ pub fn (win &SimpleWindow) set_max_size(width int, height int) &SimpleWindow {
 // get_min_size retrieves the minimum allowed window dimensions (w, h).
 pub fn (win &SimpleWindow) get_min_size() (int, int) {
 	if win.window_info != unsafe { nil } {
-		w := 0
-		h := 0
+		mut w := 0
+		mut h := 0
 		C.window_get_min_size(win.window_info, &w, &h)
 		if w > 0 && h > 0 {
 			return w, h
@@ -2188,8 +2271,8 @@ pub fn (win &SimpleWindow) get_min_size() (int, int) {
 // get_max_size retrieves the maximum allowed window dimensions (w, h).
 pub fn (win &SimpleWindow) get_max_size() (int, int) {
 	if win.window_info != unsafe { nil } {
-		w := 0
-		h := 0
+		mut w := 0
+		mut h := 0
 		C.window_get_max_size(win.window_info, &w, &h)
 		if w > 0 && h > 0 {
 			return w, h
@@ -2558,7 +2641,12 @@ pub fn (win &SimpleWindow) get_title_visible() bool {
 	return win.title_visible
 }
 
-// is_title_visible checks if the window or control is title visible.
+// is_title_visible checks if the window title is visible.
+pub fn (win &SimpleWindow) is_title_visible() bool {
+	return win.get_title_visible()
+}
+
+// get_titlebar_visible retrieves whether the titlebar is visible.
 pub fn (win &SimpleWindow) get_titlebar_visible() bool {
 	if win.window_info != unsafe { nil } {
 		return C.window_get_titlebar_visible(win.window_info) == 1
@@ -2751,10 +2839,10 @@ pub fn (win &SimpleWindow) set_bounds(x int, y int, width int, height int) &Simp
 // get_bounds retrieves the window x, y position and width, height bounds as a tuple (x, y, w, h).
 pub fn (win &SimpleWindow) get_bounds() (int, int, int, int) {
 	if win.window_info != unsafe { nil } {
-		x := 0
-		y := 0
-		w := 0
-		h := 0
+		mut x := 0
+		mut y := 0
+		mut w := 0
+		mut h := 0
 		C.window_get_bounds(win.window_info, &x, &y, &w, &h)
 		if w > 0 && h > 0 {
 			return x, y, w, h
@@ -4524,6 +4612,10 @@ pub fn (win &SimpleWindow) select_previous_tab() &SimpleWindow {
 
 // set_sharing_type configures window screen capture sharing access ("none", "read_only", "read_write").
 pub fn (win &SimpleWindow) set_sharing_type(sharing string) &SimpleWindow {
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.sharing_type = sharing
+	}
 	if win.window_info != unsafe { nil } {
 		C.window_set_sharing_type(win.window_info, sharing.str)
 	}
@@ -4540,7 +4632,7 @@ pub fn (win &SimpleWindow) get_content_protection() bool {
 	if win.window_info != unsafe { nil } {
 		return C.window_get_sharing_type(win.window_info) == 1
 	}
-	return false
+	return win.sharing_type == 'none'
 }
 
 // unminimize restores a minimized window back from the Dock.
@@ -4625,15 +4717,7 @@ pub fn (win &SimpleWindow) get_window_appearance() string {
 	return 'auto'
 }
 
-// is_system_dark_mode returns true if the macOS system is currently in dark mode.
-pub fn (win &SimpleWindow) get_screen_frame() (int, int, int, int) {
-	if win.window_info != unsafe { nil } {
-		mut x, mut y, mut w, mut h := 0, 0, 0, 0
-		C.window_get_screen_frame(win.window_info, &x, &y, &w, &h)
-		return x, y, w, h
-	}
-	return 0, 0, 0, 0
-}
+// ── Screen Info ──────────────────────────────────────────────────────────────
 
 // get_screen_full_frame returns the full physical frame of the screen containing this window.
 // Returns (x, y, width, height).
@@ -4736,6 +4820,14 @@ pub fn (win &SimpleWindow) pop_cursor() &SimpleWindow {
 
 // set_control_cursor assigns a cursor icon shown while hovering a specific control.
 // Pass '' or 'default' as cursor_name to remove the assignment.
+pub fn (win &SimpleWindow) set_control_cursor(name string, cursor_name string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_control_cursor_by_name(win.window_info, name.str, cursor_name.str)
+	}
+	return win
+}
+
+// get_mouse_location returns the current mouse location in global screen coordinates.
 pub fn (win &SimpleWindow) get_mouse_location() (int, int) {
 	if win.window_info != unsafe { nil } {
 		mut x, mut y := 0, 0

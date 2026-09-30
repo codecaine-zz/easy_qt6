@@ -487,11 +487,38 @@ pub fn (win &SimpleWindow) begin_split_view(name string, vertical bool) &SimpleW
 	return win
 }
 
+
 // end_split_view ends the current split view layout container.
 pub fn (win &SimpleWindow) end_split_view() &SimpleWindow {
 	if win.window_info != unsafe { nil } {
 		C.window_end_split_view(win.window_info)
 	}
+	return win
+}
+
+// set_split_position sets the position of a split view divider.
+pub fn (win &SimpleWindow) set_split_position(name string, divider_index int, position f64) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_split_position(win.window_info, name.str, divider_index, position)
+	}
+	return win
+}
+
+// set_split_divider_style sets the divider style ("thin", "thick", "pane_splitter").
+pub fn (win &SimpleWindow) set_split_divider_style(name string, style string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_split_divider_style(win.window_info, name.str, style.str)
+	}
+	return win
+}
+
+// split_view creates a two-pane split container with closures for pane1 and pane2.
+pub fn (win &SimpleWindow) split_view(name string, vertical bool, pane1_fn fn (), pane2_fn fn ()) &SimpleWindow {
+	win.begin_split_view(name, vertical)
+	pane1_fn()
+	win.split_view_next_pane()
+	pane2_fn()
+	win.end_split_view()
 	return win
 }
 

@@ -39,9 +39,12 @@ pub mut:
 
 // with_event adds an event handler callback function to the ControlSpec.
 pub fn (c ControlSpec) with_event(event string, handler string) ControlSpec {
-	mut res := c
-	res.event_handlers[event] = handler
-	return res
+	mut handlers := c.event_handlers.clone()
+	handlers[event] = handler
+	return ControlSpec{
+		...c
+		event_handlers: handlers
+	}
 }
 
 // FormSpec represents the window form layout containing all design controls.

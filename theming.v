@@ -427,3 +427,11 @@ pub fn (win &SimpleWindow) is_system_dark_mode() bool {
 
 // get_screen_frame returns the usable (visible) frame of the screen containing this window,
 // excluding the Dock and menu bar. Returns (x, y, width, height).
+pub fn (win &SimpleWindow) get_screen_frame() (int, int, int, int) {
+	if win.window_info != unsafe { nil } {
+		mut x, mut y, mut w, mut h := 0, 0, 0, 0
+		C.window_get_screen_frame(win.window_info, &x, &y, &w, &h)
+		return x, y, w, h
+	}
+	return 0, 0, 0, 0
+}

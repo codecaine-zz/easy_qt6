@@ -3,40 +3,14 @@
 #import <QuartzCore/QuartzCore.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <objc/runtime.h>
+#import <IOKit/pwr_mgt/IOPMLib.h>
+#import <IOKit/ps/IOPowerSources.h>
+#import <IOKit/ps/IOPSKeys.h>
 #import <string.h>
 #import <stdlib.h>
 #import <dlfcn.h>
 #import "window.h"
 
-typedef struct string {
-  char *str;
-  int len;
-  int is_lit;
-} string;
-
-typedef struct main__WindowParams {
-  string title;
-  int width;
-  int height;
-  void *win_ptr;
-  int padding;
-  int spacing;
-  int always_on_top;
-  int responsive_layout;
-  int resizable;
-  int minimizable;
-  int maximizable;
-  int closable;
-  int has_shadow;
-  int movable_by_window_background;
-  int titlebar_visible;
-  int title_visible;
-} main__WindowParams;
-
-typedef struct main__WindowInfo {
-  void *app;
-  void *app_delegate;
-} main__WindowInfo;
 
 static NSString *nsstring(const char *s) {
   if (!s) {
@@ -2349,7 +2323,7 @@ static void applyStyleToView(NSView *view, NSColor *backgroundColor, NSColor *fo
                                              styleMask:style
                                                backing:NSBackingStoreBuffered
                                                  defer:NO];
-  const char *title = self.params.title.str ? self.params.title.str : "";
+  const char *title = self.params.title ? self.params.title : "";
   [self.window setTitle:nsstring(title)];
   BOOL titlebarVisible = self.params.titlebar_visible != 0;
   BOOL titleVisible = self.params.title_visible != 0;
@@ -5012,8 +4986,8 @@ static void applyStyleToView(NSView *view, NSColor *backgroundColor, NSColor *fo
   [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
   
   NSString *appName = nil;
-  if (self.params.title.str && strlen(self.params.title.str) > 0) {
-    appName = nsstring(self.params.title.str);
+  if (self.params.title && strlen(self.params.title) > 0) {
+    appName = nsstring(self.params.title);
   } else {
     appName = [[NSProcessInfo processInfo] processName];
   }
@@ -18468,44 +18442,25 @@ int window_capture_screenshot(main__WindowInfo *info, const char *file_path) {
   NSString *path = nsstring(file_path);
 
   void (^runBlock)(void) = ^{
-    if (!delegate.window) {
-      return;
-    }
-
-    [delegate.window displayIfNeeded];
-
-    if (delegate.window.sharingType == NSWindowSharingNone) {
-      // Content protection is active: WindowServer prevents screen capture.
-      return;
-    }
-
-    NSView *contentView = [delegate.window contentView];
-    if (contentView) {
-      NSRect bounds = [contentView bounds];
-      NSBitmapImageRep *bitmapRep = [contentView bitmapImageRepForCachingDisplayInRect:bounds];
-      if (bitmapRep) {
-        [contentView cacheDisplayInRect:bounds toBitmapImageRep:bitmapRep];
-        NSData *pngData = [bitmapRep representationUsingType:NSBitmapImageFileTypePNG properties:@{}];
-        if (pngData) {
-          wrote = [pngData writeToFile:path atomically:YES];
-        }
+    @try {
+      if (!delegate.window || ![delegate.window isVisible]) {
+        return;
       }
-    }
 
-    if (!wrote) {
-      SG_CGWindowListCreateImageFunc pCGWindowListCreateImage = (SG_CGWindowListCreateImageFunc)dlsym(RTLD_DEFAULT, "CGWindowListCreateImage");
-      if (pCGWindowListCreateImage) {
-        CGWindowID windowID = (CGWindowID)[delegate.window windowNumber];
-        CGImageRef imageRef = pCGWindowListCreateImage(
-            CGRectNull,
-            1, // kCGWindowListOptionIncludingWindow
-            windowID,
-            0  // kCGWindowImageDefault
-        );
-        if (imageRef) {
-          NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithCGImage:imageRef];
-          CGImageRelease(imageRef);
+      [delegate.window displayIfNeeded];
+
+      if (delegate.window.sharingType == NSWindowSharingNone) {
+        // Content protection is active: WindowServer prevents screen capture.
+        return;
+      }
+
+      NSView *contentView = [delegate.window contentView];
+      if (contentView) {
+        NSRect bounds = [contentView bounds];
+        if (bounds.size.width > 0 && bounds.size.height > 0) {
+          NSBitmapImageRep *bitmapRep = [contentView bitmapImageRepForCachingDisplayInRect:bounds];
           if (bitmapRep) {
+            [contentView cacheDisplayInRect:bounds toBitmapImageRep:bitmapRep];
             NSData *pngData = [bitmapRep representationUsingType:NSBitmapImageFileTypePNG properties:@{}];
             if (pngData) {
               wrote = [pngData writeToFile:path atomically:YES];
@@ -18513,6 +18468,33 @@ int window_capture_screenshot(main__WindowInfo *info, const char *file_path) {
           }
         }
       }
+
+      if (!wrote) {
+        SG_CGWindowListCreateImageFunc pCGWindowListCreateImage = (SG_CGWindowListCreateImageFunc)dlsym(RTLD_DEFAULT, "CGWindowListCreateImage");
+        if (pCGWindowListCreateImage) {
+          CGWindowID windowID = (CGWindowID)[delegate.window windowNumber];
+          if (windowID > 0) {
+            CGImageRef imageRef = pCGWindowListCreateImage(
+                CGRectNull,
+                1, // kCGWindowListOptionIncludingWindow
+                windowID,
+                0  // kCGWindowImageDefault
+            );
+            if (imageRef) {
+              NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithCGImage:imageRef];
+              CGImageRelease(imageRef);
+              if (bitmapRep) {
+                NSData *pngData = [bitmapRep representationUsingType:NSBitmapImageFileTypePNG properties:@{}];
+                if (pngData) {
+                  wrote = [pngData writeToFile:path atomically:YES];
+                }
+              }
+            }
+          }
+        }
+      }
+    } @catch (NSException *e) {
+      // Fallback if window capture fails
     }
   };
 
@@ -21854,6 +21836,1102 @@ const char *window_get_nav_rail_selected(main__WindowInfo *info, const char *nam
 
 void window_set_nav_rail_selected(main__WindowInfo *info, const char *name, const char *item_id) {
 }
+
+// Additional Split View Control APIs
+void window_set_split_position(main__WindowInfo *info, const char *name, int divider_index, double position) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSSplitView class]]) {
+      NSSplitView *sv = (NSSplitView *)v;
+      [sv setPosition:(CGFloat)position ofDividerAtIndex:divider_index];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_set_split_divider_style(main__WindowInfo *info, const char *name, const char *style) {
+  if (!info || !info->app_delegate || !name || !style) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  NSString *st = [nsstring(style) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSSplitView class]]) {
+      NSSplitView *sv = (NSSplitView *)v;
+      if ([st isEqualToString:@"thick"]) {
+        [sv setDividerStyle:NSSplitViewDividerStyleThick];
+      } else if ([st isEqualToString:@"pane_splitter"] || [st isEqualToString:@"panesplitter"]) {
+        [sv setDividerStyle:NSSplitViewDividerStylePaneSplitter];
+      } else {
+        [sv setDividerStyle:NSSplitViewDividerStyleThin];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+// Slider Tick Marks & Snapping
+void window_set_slider_tick_marks(main__WindowInfo *info, const char *name, int count, int stops_only) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSSlider class]]) {
+      NSSlider *slider = (NSSlider *)v;
+      [slider setNumberOfTickMarks:count];
+      [slider setAllowsTickMarkValuesOnly:(stops_only != 0)];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+// Progress Indicator Animation & Indeterminate
+void window_set_progress_indeterminate(main__WindowInfo *info, const char *name, int indeterminate) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSProgressIndicator class]]) {
+      NSProgressIndicator *pi = (NSProgressIndicator *)v;
+      [pi setIndeterminate:(indeterminate != 0)];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_start_progress_animation(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSProgressIndicator class]]) {
+      [(NSProgressIndicator *)v startAnimation:nil];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_stop_progress_animation(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSProgressIndicator class]]) {
+      [(NSProgressIndicator *)v stopAnimation:nil];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+// Tab Navigation APIs
+void window_select_tab(main__WindowInfo *info, const char *name, int index) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSTabView class]]) {
+      NSTabView *tv = (NSTabView *)v;
+      if (index >= 0 && index < [tv numberOfTabViewItems]) {
+        [tv selectTabViewItemAtIndex:index];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_select_tab_by_title(main__WindowInfo *info, const char *name, const char *title) {
+  if (!info || !info->app_delegate || !name || !title) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  NSString *titleStr = nsstring(title);
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSTabView class]]) {
+      NSTabView *tv = (NSTabView *)v;
+      for (NSTabViewItem *item in [tv tabViewItems]) {
+        if ([[item label] isEqualToString:titleStr]) {
+          [tv selectTabViewItem:item];
+          break;
+        }
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+int window_get_tab_index(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return -1;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  __block int idx = -1;
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSTabView class]]) {
+      NSTabView *tv = (NSTabView *)v;
+      NSTabViewItem *selected = [tv selectedTabViewItem];
+      if (selected) {
+        idx = (int)[tv indexOfTabViewItem:selected];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return idx;
+}
+
+// Search Field Control
+void window_set_search_recent_searches_key(main__WindowInfo *info, const char *name, const char *key) {
+  if (!info || !info->app_delegate || !name || !key) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  NSString *keyStr = nsstring(key);
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSSearchField class]]) {
+      NSSearchField *sf = (NSSearchField *)v;
+      [sf setRecentsAutosaveName:keyStr];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_clear_search_history(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSSearchField class]]) {
+      NSSearchField *sf = (NSSearchField *)v;
+      [sf setRecentSearches:@[]];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+// Path Control Operations
+void window_set_path_control_path(main__WindowInfo *info, const char *name, const char *path) {
+  if (!info || !info->app_delegate || !name || !path) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  NSString *pathStr = nsstring(path);
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSPathControl class]]) {
+      NSPathControl *pc = (NSPathControl *)v;
+      [pc setURL:[NSURL fileURLWithPath:pathStr]];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+char *window_get_path_control_path(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return strdup("");
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  __block NSString *res = @"";
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSPathControl class]]) {
+      NSPathControl *pc = (NSPathControl *)v;
+      if ([pc URL]) {
+        res = [[pc URL] path] ?: @"";
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([res UTF8String]);
+}
+
+void window_set_path_control_style(main__WindowInfo *info, const char *name, const char *style) {
+  if (!info || !info->app_delegate || !name || !style) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  NSString *st = [nsstring(style) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSPathControl class]]) {
+      NSPathControl *pc = (NSPathControl *)v;
+      if ([st isEqualToString:@"pop_up"] || [st isEqualToString:@"popup"]) {
+        [pc setPathStyle:NSPathStylePopUp];
+      } else if ([st isEqualToString:@"navigation"]) {
+        [pc setPathStyle:NSPathStyleNavigationBar];
+      } else {
+        [pc setPathStyle:NSPathStyleStandard];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+// Token Field Operations
+void window_set_token_field_tokens(main__WindowInfo *info, const char *name, const char **tokens, int count) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  NSMutableArray *arr = [NSMutableArray arrayWithCapacity:count];
+  for (int i = 0; i < count; i++) {
+    if (tokens[i]) [arr addObject:nsstring(tokens[i])];
+  }
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSTokenField class]]) {
+      [(NSTokenField *)v setObjectValue:arr];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+char *window_get_token_field_tokens(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return strdup("[]");
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  __block NSString *json = @"[]";
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    if ([v isKindOfClass:[NSTokenField class]]) {
+      NSArray *tokens = [(NSTokenField *)v objectValue];
+      if ([tokens isKindOfClass:[NSArray class]]) {
+        NSData *data = [NSJSONSerialization dataWithJSONObject:tokens options:0 error:nil];
+        if (data) {
+          json = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        }
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([json UTF8String]);
+}
+
+// Text Area Operations
+void window_textarea_insert_text(main__WindowInfo *info, const char *name, const char *text) {
+  if (!info || !info->app_delegate || !name || !text) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  NSString *ins = nsstring(text);
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    NSTextView *tv = nil;
+    if ([v isKindOfClass:[NSScrollView class]]) {
+      NSView *doc = [(NSScrollView *)v documentView];
+      if ([doc isKindOfClass:[NSTextView class]]) tv = (NSTextView *)doc;
+    } else if ([v isKindOfClass:[NSTextView class]]) {
+      tv = (NSTextView *)v;
+    }
+    if (tv) {
+      [tv insertText:ins replacementRange:[tv selectedRange]];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+char *window_textarea_get_selected_text(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return strdup("");
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  __block NSString *res = @"";
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    NSTextView *tv = nil;
+    if ([v isKindOfClass:[NSScrollView class]]) {
+      NSView *doc = [(NSScrollView *)v documentView];
+      if ([doc isKindOfClass:[NSTextView class]]) tv = (NSTextView *)doc;
+    } else if ([v isKindOfClass:[NSTextView class]]) {
+      tv = (NSTextView *)v;
+    }
+    if (tv) {
+      NSRange range = [tv selectedRange];
+      if (range.length > 0 && [[tv string] length] >= (range.location + range.length)) {
+        res = [[tv string] substringWithRange:range];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([res UTF8String]);
+}
+
+void window_textarea_set_selected_range(main__WindowInfo *info, const char *name, int start, int length) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    NSTextView *tv = nil;
+    if ([v isKindOfClass:[NSScrollView class]]) {
+      NSView *doc = [(NSScrollView *)v documentView];
+      if ([doc isKindOfClass:[NSTextView class]]) tv = (NSTextView *)doc;
+    } else if ([v isKindOfClass:[NSTextView class]]) {
+      tv = (NSTextView *)v;
+    }
+    if (tv && start >= 0) {
+      NSUInteger total = [[tv string] length];
+      NSUInteger loc = (NSUInteger)start > total ? total : (NSUInteger)start;
+      NSUInteger len = (loc + (NSUInteger)length > total) ? (total - loc) : (NSUInteger)length;
+      [tv setSelectedRange:NSMakeRange(loc, len)];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_textarea_scroll_to_end(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    NSTextView *tv = nil;
+    if ([v isKindOfClass:[NSScrollView class]]) {
+      NSView *doc = [(NSScrollView *)v documentView];
+      if ([doc isKindOfClass:[NSTextView class]]) tv = (NSTextView *)doc;
+    } else if ([v isKindOfClass:[NSTextView class]]) {
+      tv = (NSTextView *)v;
+    }
+    if (tv) {
+      [tv scrollRangeToVisible:NSMakeRange([[tv string] length], 0)];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_textarea_clear(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    NSTextView *tv = nil;
+    if ([v isKindOfClass:[NSScrollView class]]) {
+      NSView *doc = [(NSScrollView *)v documentView];
+      if ([doc isKindOfClass:[NSTextView class]]) tv = (NSTextView *)doc;
+    } else if ([v isKindOfClass:[NSTextView class]]) {
+      tv = (NSTextView *)v;
+    }
+    if (tv) {
+      [tv setString:@""];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+// Scroll View Programmatic Scroll
+void window_scroll_to_top(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    NSScrollView *sv = nil;
+    if ([v isKindOfClass:[NSScrollView class]]) {
+      sv = (NSScrollView *)v;
+    } else if ([v respondsToSelector:@selector(enclosingScrollView)]) {
+      sv = [v enclosingScrollView];
+    }
+    if (sv && [sv contentView]) {
+      NSPoint topPt = NSMakePoint(0, 0);
+      [[sv contentView] scrollToPoint:topPt];
+      [sv reflectScrolledClipView:[sv contentView]];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_scroll_to_bottom(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate || !name) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *nameStr = [nsstring(name) lowercaseString];
+  void (^runBlock)(void) = ^{
+    NSView *v = delegate.controlsByName[nameStr];
+    NSScrollView *sv = nil;
+    if ([v isKindOfClass:[NSScrollView class]]) {
+      sv = (NSScrollView *)v;
+    } else if ([v respondsToSelector:@selector(enclosingScrollView)]) {
+      sv = [v enclosingScrollView];
+    }
+    if (sv && [sv documentView]) {
+      NSRect docBounds = [[sv documentView] bounds];
+      NSPoint bottomPt = NSMakePoint(0, docBounds.size.height - [sv contentView].bounds.size.height);
+      if (bottomPt.y < 0) bottomPt.y = 0;
+      [[sv contentView] scrollToPoint:bottomPt];
+      [sv reflectScrolledClipView:[sv contentView]];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+// Native System Dialogs & Panels
+char *window_show_color_picker(main__WindowInfo *info, const char *initial_hex) {
+  __block NSString *picked = @"";
+  void (^runBlock)(void) = ^{
+    NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+    if (initial_hex && strlen(initial_hex) > 0) {
+      [panel setColor:colorFromString(initial_hex)];
+    }
+    [panel orderFront:nil];
+    NSColor *c = [[panel color] colorUsingColorSpace:[NSColorSpace sRGBColorSpace]];
+    if (c) {
+      picked = [NSString stringWithFormat:@"#%02X%02X%02X",
+                (int)(c.redComponent * 255.0),
+                (int)(c.greenComponent * 255.0),
+                (int)(c.blueComponent * 255.0)];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([picked UTF8String]);
+}
+
+char *window_select_multiple_files(main__WindowInfo *info, const char *extensions) {
+  __block NSString *json = @"[]";
+  void (^runBlock)(void) = ^{
+    NSOpenPanel *panel = [NSOpenPanel openPanel];
+    [panel setCanChooseFiles:YES];
+    [panel setCanChooseDirectories:NO];
+    [panel setAllowsMultipleSelection:YES];
+    if (extensions && strlen(extensions) > 0) {
+      NSArray *extList = [nsstring(extensions) componentsSeparatedByString:@","];
+      NSMutableArray *trimmed = [NSMutableArray array];
+      for (NSString *e in extList) {
+        NSString *t = [e stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (t.length > 0) [trimmed addObject:t];
+      }
+      [panel setAllowedFileTypes:trimmed];
+    }
+    if ([panel runModal] == NSModalResponseOK) {
+      NSMutableArray *paths = [NSMutableArray array];
+      for (NSURL *url in [panel URLs]) {
+        [paths addObject:[url path]];
+      }
+      NSData *data = [NSJSONSerialization dataWithJSONObject:paths options:0 error:nil];
+      if (data) {
+        json = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([json UTF8String]);
+}
+
+char *window_save_file_picker_with_name(main__WindowInfo *info, const char *default_filename, const char *allowed_extensions) {
+  __block NSString *chosen = @"";
+  void (^runBlock)(void) = ^{
+    NSSavePanel *panel = [NSSavePanel savePanel];
+    if (default_filename && strlen(default_filename) > 0) {
+      [panel setNameFieldStringValue:nsstring(default_filename)];
+    }
+    if (allowed_extensions && strlen(allowed_extensions) > 0) {
+      NSArray *extList = [nsstring(allowed_extensions) componentsSeparatedByString:@","];
+      NSMutableArray *trimmed = [NSMutableArray array];
+      for (NSString *e in extList) {
+        NSString *t = [e stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (t.length > 0) [trimmed addObject:t];
+      }
+      [panel setAllowedFileTypes:trimmed];
+    }
+    if ([panel runModal] == NSModalResponseOK) {
+      if ([panel URL]) {
+        chosen = [[panel URL] path] ?: @"";
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([chosen UTF8String]);
+}
+
+// Text-to-Speech (NSSpeechSynthesizer)
+static NSSpeechSynthesizer *sharedSpeechSynth = nil;
+
+void window_speech_speak(const char *text, const char *voice_name) {
+  if (!text || strlen(text) == 0) return;
+  NSString *textStr = nsstring(text);
+  NSString *vName = (voice_name && strlen(voice_name) > 0) ? nsstring(voice_name) : nil;
+  void (^runBlock)(void) = ^{
+    if (!sharedSpeechSynth) {
+      sharedSpeechSynth = [[NSSpeechSynthesizer alloc] init];
+    }
+    if (vName) {
+      for (NSSpeechSynthesizerVoiceName v in [NSSpeechSynthesizer availableVoices]) {
+        NSDictionary *attrs = [NSSpeechSynthesizer attributesForVoice:v];
+        NSString *name = attrs[NSVoiceName];
+        if ([name caseInsensitiveCompare:vName] == NSOrderedSame || [v containsString:vName]) {
+          [sharedSpeechSynth setVoice:v];
+          break;
+        }
+      }
+    }
+    [sharedSpeechSynth stopSpeaking];
+    [sharedSpeechSynth startSpeakingString:textStr];
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_speech_stop(void) {
+  void (^runBlock)(void) = ^{
+    if (sharedSpeechSynth) {
+      [sharedSpeechSynth stopSpeaking];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+int window_speech_is_speaking(void) {
+  __block BOOL speaking = NO;
+  void (^runBlock)(void) = ^{
+    if (sharedSpeechSynth) {
+      speaking = [sharedSpeechSynth isSpeaking];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return speaking ? 1 : 0;
+}
+
+char *window_speech_get_voices(void) {
+  __block NSString *json = @"[]";
+  void (^runBlock)(void) = ^{
+    NSMutableArray *voices = [NSMutableArray array];
+    for (NSSpeechSynthesizerVoiceName v in [NSSpeechSynthesizer availableVoices]) {
+      NSDictionary *attrs = [NSSpeechSynthesizer attributesForVoice:v];
+      NSString *name = attrs[NSVoiceName] ?: @"";
+      NSString *lang = attrs[NSVoiceLocaleIdentifier] ?: @"";
+      [voices addObject:@{ @"id": (NSString *)v, @"name": name, @"lang": lang }];
+    }
+    NSData *data = [NSJSONSerialization dataWithJSONObject:voices options:0 error:nil];
+    if (data) {
+      json = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([json UTF8String]);
+}
+
+char *window_speech_get_default_voice(void) {
+  NSSpeechSynthesizerVoiceName v = [NSSpeechSynthesizer defaultVoice];
+  NSDictionary *attrs = [NSSpeechSynthesizer attributesForVoice:v];
+  NSString *name = attrs[NSVoiceName] ?: (NSString *)v;
+  return strdup([name UTF8String]);
+}
+
+// Mac Trackpad Haptic Feedback (NSHapticFeedbackManager)
+void window_perform_haptic_feedback(const char *pattern) {
+  NSString *pat = (pattern && strlen(pattern) > 0) ? [nsstring(pattern) lowercaseString] : @"generic";
+  void (^runBlock)(void) = ^{
+    NSHapticFeedbackManager *mgr = [NSHapticFeedbackManager defaultPerformer];
+    NSHapticFeedbackPattern p = NSHapticFeedbackPatternGeneric;
+    if ([pat isEqualToString:@"alignment"]) {
+      p = NSHapticFeedbackPatternAlignment;
+    } else if ([pat isEqualToString:@"level_change"] || [pat isEqualToString:@"levelchange"]) {
+      p = NSHapticFeedbackPatternLevelChange;
+    }
+    [mgr performFeedbackPattern:p performanceTime:NSHapticFeedbackPerformanceTimeDefault];
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+// Advanced Pasteboard / Clipboard APIs (NSPasteboard)
+int window_clipboard_copy_image(const char *image_path) {
+  if (!image_path || strlen(image_path) == 0) return 0;
+  NSString *path = nsstring(image_path);
+  __block BOOL ok = NO;
+  void (^runBlock)(void) = ^{
+    NSImage *img = [[NSImage alloc] initWithContentsOfFile:path];
+    if (img) {
+      NSPasteboard *pb = [NSPasteboard generalPasteboard];
+      [pb clearContents];
+      ok = [pb writeObjects:@[img]];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return ok ? 1 : 0;
+}
+
+int window_clipboard_get_image(const char *dest_png_path) {
+  if (!dest_png_path || strlen(dest_png_path) == 0) return 0;
+  NSString *dest = nsstring(dest_png_path);
+  __block BOOL ok = NO;
+  void (^runBlock)(void) = ^{
+    NSPasteboard *pb = [NSPasteboard generalPasteboard];
+    NSArray *classes = @[[NSImage class]];
+    if ([pb canReadObjectForClasses:classes options:nil]) {
+      NSArray *images = [pb readObjectsForClasses:classes options:nil];
+      if (images.count > 0) {
+        NSImage *img = images[0];
+        NSData *tiffData = [img TIFFRepresentation];
+        if (tiffData) {
+          NSBitmapImageRep *rep = [NSBitmapImageRep imageRepWithData:tiffData];
+          NSData *png = [rep representationUsingType:NSBitmapImageFileTypePNG properties:@{}];
+          if (png) {
+            ok = [png writeToFile:dest atomically:YES];
+          }
+        }
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return ok ? 1 : 0;
+}
+
+int window_clipboard_copy_files(const char **file_paths, int count) {
+  if (!file_paths || count <= 0) return 0;
+  NSMutableArray *urls = [NSMutableArray arrayWithCapacity:count];
+  for (int i = 0; i < count; i++) {
+    if (file_paths[i]) {
+      [urls addObject:[NSURL fileURLWithPath:nsstring(file_paths[i])]];
+    }
+  }
+  __block BOOL ok = NO;
+  void (^runBlock)(void) = ^{
+    NSPasteboard *pb = [NSPasteboard generalPasteboard];
+    [pb clearContents];
+    ok = [pb writeObjects:urls];
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return ok ? 1 : 0;
+}
+
+char *window_clipboard_get_files(void) {
+  __block NSString *json = @"[]";
+  void (^runBlock)(void) = ^{
+    NSPasteboard *pb = [NSPasteboard generalPasteboard];
+    NSArray *classes = @[[NSURL class]];
+    NSDictionary *opts = @{ NSPasteboardURLReadingFileURLsOnlyKey: @YES };
+    if ([pb canReadObjectForClasses:classes options:opts]) {
+      NSArray *urls = [pb readObjectsForClasses:classes options:opts];
+      NSMutableArray *paths = [NSMutableArray array];
+      for (NSURL *u in urls) {
+        if ([u path]) [paths addObject:[u path]];
+      }
+      NSData *data = [NSJSONSerialization dataWithJSONObject:paths options:0 error:nil];
+      if (data) {
+        json = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([json UTF8String]);
+}
+
+void window_clipboard_clear(void) {
+  void (^runBlock)(void) = ^{
+    [[NSPasteboard generalPasteboard] clearContents];
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+int window_clipboard_get_change_count(void) {
+  return (int)[[NSPasteboard generalPasteboard] changeCount];
+}
+
+// macOS Workspace & Application Operations (NSWorkspace)
+int window_recycle_to_trash(const char *file_path) {
+  if (!file_path || strlen(file_path) == 0) return 0;
+  NSString *path = nsstring(file_path);
+  __block BOOL ok = NO;
+  void (^runBlock)(void) = ^{
+    NSURL *url = [NSURL fileURLWithPath:path];
+    if (@available(macOS 10.8, *)) {
+      NSError *err = nil;
+      ok = [[NSFileManager defaultManager] trashItemAtURL:url resultingItemURL:nil error:&err];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return ok ? 1 : 0;
+}
+
+char *window_get_running_apps(void) {
+  @autoreleasepool {
+    NSMutableArray *arr = [NSMutableArray array];
+    for (NSRunningApplication *app in [[NSWorkspace sharedWorkspace] runningApplications]) {
+      [arr addObject:@{
+        @"pid": @(app.processIdentifier),
+        @"name": app.localizedName ?: @"",
+        @"bundle_id": app.bundleIdentifier ?: @"",
+        @"is_active": @(app.isActive),
+        @"is_hidden": @(app.isHidden)
+      }];
+    }
+    NSData *data = [NSJSONSerialization dataWithJSONObject:arr options:0 error:nil];
+    if (!data) return strdup("[]");
+    return strdup([[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] UTF8String]);
+  }
+}
+
+int window_activate_app(const char *bundle_id_or_name) {
+  if (!bundle_id_or_name || strlen(bundle_id_or_name) == 0) return 0;
+  NSString *query = nsstring(bundle_id_or_name);
+  __block BOOL activated = NO;
+  void (^runBlock)(void) = ^{
+    for (NSRunningApplication *app in [[NSWorkspace sharedWorkspace] runningApplications]) {
+      if ([app.bundleIdentifier caseInsensitiveCompare:query] == NSOrderedSame ||
+          [app.localizedName caseInsensitiveCompare:query] == NSOrderedSame) {
+        activated = [app activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+        break;
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return activated ? 1 : 0;
+}
+
+int window_terminate_app(int pid) {
+  if (pid <= 0) return 0;
+  __block BOOL terminated = NO;
+  void (^runBlock)(void) = ^{
+    NSRunningApplication *app = [NSRunningApplication runningApplicationWithProcessIdentifier:pid];
+    if (app) {
+      terminated = [app terminate];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return terminated ? 1 : 0;
+}
+
+void window_hide_other_apps(void) {
+  void (^runBlock)(void) = ^{
+    [[NSWorkspace sharedWorkspace] hideOtherApplications];
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+void window_unhide_all_apps(void) {
+  void (^runBlock)(void) = ^{
+    [[NSWorkspace sharedWorkspace] unhideAllApplications];
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+char *window_get_frontmost_app(void) {
+  NSRunningApplication *front = [[NSWorkspace sharedWorkspace] frontmostApplication];
+  NSString *name = front ? (front.localizedName ?: front.bundleIdentifier ?: @"") : @"";
+  return strdup([name UTF8String]);
+}
+
+int window_open_with_app(const char *file_path, const char *app_name) {
+  if (!file_path || !app_name) return 0;
+  NSString *fPath = nsstring(file_path);
+  NSString *aName = nsstring(app_name);
+  __block BOOL ok = NO;
+  void (^runBlock)(void) = ^{
+    ok = [[NSWorkspace sharedWorkspace] openFile:fPath withApplication:aName];
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return ok ? 1 : 0;
+}
+
+char *window_get_default_app_for_extension(const char *ext) {
+  if (!ext || strlen(ext) == 0) return strdup("");
+  NSString *e = nsstring(ext);
+  if ([e hasPrefix:@"."]) e = [e substringFromIndex:1];
+  __block NSString *appPath = @"";
+  void (^runBlock)(void) = ^{
+    NSURL *dummy = [NSURL fileURLWithPath:[NSString stringWithFormat:@"dummy.%@", e]];
+    NSURL *appURL = [[NSWorkspace sharedWorkspace] URLForApplicationToOpenURL:dummy];
+    if (appURL) {
+      appPath = [appURL path] ?: @"";
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([appPath UTF8String]);
+}
+
+// Sound & Audio Playback (NSSound)
+static NSSound *sharedSoundPlayer = nil;
+
+int window_play_sound_file(const char *file_path) {
+  if (!file_path || strlen(file_path) == 0) return 0;
+  NSString *path = nsstring(file_path);
+  __block BOOL ok = NO;
+  void (^runBlock)(void) = ^{
+    if (sharedSoundPlayer) {
+      [sharedSoundPlayer stop];
+      sharedSoundPlayer = nil;
+    }
+    sharedSoundPlayer = [[NSSound alloc] initWithContentsOfFile:path byReference:YES];
+    if (sharedSoundPlayer) {
+      ok = [sharedSoundPlayer play];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return ok ? 1 : 0;
+}
+
+void window_stop_sound_file(void) {
+  void (^runBlock)(void) = ^{
+    if (sharedSoundPlayer) {
+      [sharedSoundPlayer stop];
+      sharedSoundPlayer = nil;
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+int window_is_sound_file_playing(void) {
+  __block BOOL playing = NO;
+  void (^runBlock)(void) = ^{
+    if (sharedSoundPlayer) {
+      playing = [sharedSoundPlayer isPlaying];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return playing ? 1 : 0;
+}
+
+// Power & Sleep Management (IOPMAssertion / IOKit)
+unsigned int window_prevent_sleep(const char *reason) {
+  CFStringRef r = CFStringCreateWithCString(kCFAllocatorDefault, reason ? reason : "SimpleGUI Activity", kCFStringEncodingUTF8);
+  IOPMAssertionID assertionID = 0;
+  IOReturn res = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep, kIOPMAssertionLevelOn, r, &assertionID);
+  if (r) CFRelease(r);
+  return (res == kIOReturnSuccess) ? assertionID : 0;
+}
+
+void window_allow_sleep(unsigned int assertion_id) {
+  if (assertion_id != 0) {
+    IOPMAssertionRelease((IOPMAssertionID)assertion_id);
+  }
+}
+
+double window_get_battery_percentage(void) {
+  CFTypeRef info = IOPSCopyPowerSourcesInfo();
+  if (!info) return 100.0;
+  CFArrayRef list = IOPSCopyPowerSourcesList(info);
+  if (!list) {
+    CFRelease(info);
+    return 100.0;
+  }
+  double pct = 100.0;
+  if (CFArrayGetCount(list) > 0) {
+    CFDictionaryRef desc = IOPSGetPowerSourceDescription(info, CFArrayGetValueAtIndex(list, 0));
+    if (desc) {
+      CFNumberRef current = (CFNumberRef)CFDictionaryGetValue(desc, CFSTR(kIOPSCurrentCapacityKey));
+      CFNumberRef max = (CFNumberRef)CFDictionaryGetValue(desc, CFSTR(kIOPSMaxCapacityKey));
+      if (current && max) {
+        int curVal = 0, maxVal = 100;
+        CFNumberGetValue(current, kCFNumberIntType, &curVal);
+        CFNumberGetValue(max, kCFNumberIntType, &maxVal);
+        if (maxVal > 0) {
+          pct = ((double)curVal / (double)maxVal) * 100.0;
+        }
+      }
+    }
+  }
+  CFRelease(list);
+  CFRelease(info);
+  return pct;
+}
+
+int window_is_battery_charging(void) {
+  CFTypeRef info = IOPSCopyPowerSourcesInfo();
+  if (!info) return 0;
+  CFArrayRef list = IOPSCopyPowerSourcesList(info);
+  if (!list) {
+    CFRelease(info);
+    return 0;
+  }
+  int charging = 0;
+  if (CFArrayGetCount(list) > 0) {
+    CFDictionaryRef desc = IOPSGetPowerSourceDescription(info, CFArrayGetValueAtIndex(list, 0));
+    if (desc) {
+      CFBooleanRef isCharging = (CFBooleanRef)CFDictionaryGetValue(desc, CFSTR(kIOPSIsChargingKey));
+      if (isCharging && CFBooleanGetValue(isCharging)) {
+        charging = 1;
+      }
+    }
+  }
+  CFRelease(list);
+  CFRelease(info);
+  return charging;
+}
+
+int window_is_on_battery_power(void) {
+  CFTypeRef info = IOPSCopyPowerSourcesInfo();
+  if (!info) return 0;
+  CFStringRef source = IOPSGetProvidingPowerSourceType(info);
+  int onBattery = (source && CFStringCompare(source, CFSTR(kIOPMBatteryPowerKey), 0) == kCFCompareEqualTo) ? 1 : 0;
+  CFRelease(info);
+  return onBattery;
+}
+
+int window_get_battery_time_remaining(void) {
+  CFTimeInterval remaining = IOPSGetTimeRemainingEstimate();
+  if (remaining < 0) return -1;
+  return (int)(remaining / 60.0);
+}
+
+// User Defaults / Preferences (NSUserDefaults)
+void window_defaults_set_string(const char *key, const char *val) {
+  if (!key) return;
+  NSString *k = nsstring(key);
+  NSString *v = val ? nsstring(val) : @"";
+  [[NSUserDefaults standardUserDefaults] setObject:v forKey:k];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+char *window_defaults_get_string(const char *key) {
+  if (!key) return strdup("");
+  NSString *k = nsstring(key);
+  NSString *v = [[NSUserDefaults standardUserDefaults] stringForKey:k];
+  return strdup(v ? [v UTF8String] : "");
+}
+
+void window_defaults_set_bool(const char *key, int val) {
+  if (!key) return;
+  [[NSUserDefaults standardUserDefaults] setBool:(val != 0) forKey:nsstring(key)];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+int window_defaults_get_bool(const char *key) {
+  if (!key) return 0;
+  return [[NSUserDefaults standardUserDefaults] boolForKey:nsstring(key)] ? 1 : 0;
+}
+
+void window_defaults_set_int(const char *key, int val) {
+  if (!key) return;
+  [[NSUserDefaults standardUserDefaults] setInteger:val forKey:nsstring(key)];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+int window_defaults_get_int(const char *key) {
+  if (!key) return 0;
+  return (int)[[NSUserDefaults standardUserDefaults] integerForKey:nsstring(key)];
+}
+
+void window_defaults_remove(const char *key) {
+  if (!key) return;
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:nsstring(key)];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+int window_defaults_has(const char *key) {
+  if (!key) return 0;
+  return ([[NSUserDefaults standardUserDefaults] objectForKey:nsstring(key)] != nil) ? 1 : 0;
+}
+
+// macOS System Information
+char *window_get_macos_version_str(void) {
+  NSOperatingSystemVersion v = [[NSProcessInfo processInfo] operatingSystemVersion];
+  NSString *str = [NSString stringWithFormat:@"macOS %ld.%ld.%ld", (long)v.majorVersion, (long)v.minorVersion, (long)v.patchVersion];
+  return strdup([str UTF8String]);
+}
+
+void window_get_macos_version_numbers(int *out_major, int *out_minor, int *out_patch) {
+  NSOperatingSystemVersion v = [[NSProcessInfo processInfo] operatingSystemVersion];
+  if (out_major) *out_major = (int)v.majorVersion;
+  if (out_minor) *out_minor = (int)v.minorVersion;
+  if (out_patch) *out_patch = (int)v.patchVersion;
+}
+
+char *window_get_computer_name(void) {
+  NSString *name = [[NSHost currentHost] localizedName] ?: @"";
+  return strdup([name UTF8String]);
+}
+
+char *window_get_user_full_name(void) {
+  NSString *name = NSFullUserName();
+  return strdup(name ? [name UTF8String] : "");
+}
+
+int window_is_apple_silicon(void) {
+#if defined(__arm64__) || defined(__aarch64__)
+  return 1;
+#else
+  return 0;
+#endif
+}
+
+double window_get_system_uptime(void) {
+  return [[NSProcessInfo processInfo] systemUptime];
+}
+
+int window_is_low_power_mode(void) {
+  if (@available(macOS 12.0, *)) {
+    return [[NSProcessInfo processInfo] isLowPowerModeEnabled] ? 1 : 0;
+  }
+  return 0;
+}
+
+// Multi-Screen / Display (NSScreen)
+char *window_get_screens_info(void) {
+  NSMutableArray *arr = [NSMutableArray array];
+  int idx = 0;
+  for (NSScreen *s in [NSScreen screens]) {
+    NSRect frame = [s frame];
+    NSRect visible = [s visibleFrame];
+    CGFloat scale = [s backingScaleFactor];
+    BOOL isMain = (s == [NSScreen mainScreen]);
+    [arr addObject:@{
+      @"index": @(idx++),
+      @"x": @((int)frame.origin.x),
+      @"y": @((int)frame.origin.y),
+      @"width": @((int)frame.size.width),
+      @"height": @((int)frame.size.height),
+      @"visible_width": @((int)visible.size.width),
+      @"visible_height": @((int)visible.size.height),
+      @"scale": @((double)scale),
+      @"is_main": @(isMain)
+    }];
+  }
+  NSData *data = [NSJSONSerialization dataWithJSONObject:arr options:0 error:nil];
+  if (!data) return strdup("[]");
+  return strdup([[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] UTF8String]);
+}
+
+void window_move_to_screen(main__WindowInfo *info, int screen_index) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  void (^runBlock)(void) = ^{
+    NSArray *screens = [NSScreen screens];
+    if (screen_index >= 0 && screen_index < screens.count && delegate.window) {
+      NSScreen *s = screens[screen_index];
+      NSRect sFrame = [s visibleFrame];
+      NSRect wFrame = [delegate.window frame];
+      CGFloat newX = sFrame.origin.x + (sFrame.size.width - wFrame.size.width) / 2.0;
+      CGFloat newY = sFrame.origin.y + (sFrame.size.height - wFrame.size.height) / 2.0;
+      [delegate.window setFrameOrigin:NSMakePoint(newX, newY)];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+// Dock & App Activation Policy
+char *window_get_dock_badge(void) {
+  NSString *b = [[NSApp dockTile] badgeLabel] ?: @"";
+  return strdup([b UTF8String]);
+}
+
+void window_cancel_dock_bounce(void) {
+}
+
+void window_set_activation_policy(const char *policy) {
+  NSString *pol = (policy && strlen(policy) > 0) ? [nsstring(policy) lowercaseString] : @"regular";
+  void (^runBlock)(void) = ^{
+    NSApplicationActivationPolicy p = NSApplicationActivationPolicyRegular;
+    if ([pol isEqualToString:@"accessory"]) {
+      p = NSApplicationActivationPolicyAccessory;
+    } else if ([pol isEqualToString:@"prohibited"]) {
+      p = NSApplicationActivationPolicyProhibited;
+    }
+    [NSApp setActivationPolicy:p];
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+}
+
+char *window_get_activation_policy(void) {
+  NSApplicationActivationPolicy p = [NSApp activationPolicy];
+  if (p == NSApplicationActivationPolicyAccessory) return strdup("accessory");
+  if (p == NSApplicationActivationPolicyProhibited) return strdup("prohibited");
+  return strdup("regular");
+}
+
+char *window_get_app_bundle_path(void) {
+  NSString *path = [[NSBundle mainBundle] bundlePath] ?: @"";
+  return strdup([path UTF8String]);
+}
+
 
 
 

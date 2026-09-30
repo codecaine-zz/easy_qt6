@@ -490,7 +490,8 @@ fn test_sys_apis() {
 	assert win.is_preventing_sleep() in [true, false]
 
 	// Compile-time/runtime API availability checks without invoking disruptive system actions.
-	if false {
+	dummy_check := win.get_title() == '__never_true__'
+	if dummy_check {
 		win.set_system_dark_mode(true)
 		win.set_system_dark_mode(false)
 		win.set_system_theme('dark') or {}

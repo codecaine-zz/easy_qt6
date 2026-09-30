@@ -108,4 +108,72 @@ pub fn (win &SimpleWindow) alert_banner(title string, message string, style stri
 	return win.add_alert_banner('', title, message, style)
 }
 
-// set_alert_banner_value updates alert banner content and makes it visible.
+// show_color_picker opens the native macOS color panel and returns the selected HEX color string (e.g. "#FF5733").
+pub fn (win &SimpleWindow) show_color_picker(initial_hex string) string {
+	res := C.window_show_color_picker(win.window_info, initial_hex.str)
+	return unsafe { tos3(res) }
+}
+
+// select_multiple_files opens a native file dialog allowing selection of multiple files.
+pub fn (win &SimpleWindow) select_multiple_files(extensions string) []string {
+	res := C.window_select_multiple_files(win.window_info, extensions.str)
+	raw := unsafe { tos3(res) }
+	if raw.len == 0 || raw == '[]' {
+		return []string{}
+	}
+	mut list := []string{}
+	cleaned := raw.trim('[]').trim_space()
+	if cleaned.len == 0 {
+		return []string{}
+	}
+	parts := cleaned.split(',')
+	for p in parts {
+		trimmed := p.trim_space().trim('"')
+		if trimmed.len > 0 {
+			list << trimmed
+		}
+	}
+	return list
+}
+
+// save_file_picker_with_name opens a native save dialog with a pre-filled default filename and allowed extensions.
+pub fn (win &SimpleWindow) save_file_picker_with_name(default_filename string, allowed_extensions string) string {
+	res := C.window_save_file_picker_with_name(win.window_info, default_filename.str, allowed_extensions.str)
+	return unsafe { tos3(res) }
+}
+
+// Package-level standalone dialog helpers:
+
+// show_color_picker opens the modal color picker dialog without an active window instance.
+pub fn show_color_picker(initial_hex string) string {
+	res := C.window_show_color_picker(unsafe { nil }, initial_hex.str)
+	return unsafe { tos3(res) }
+}
+
+// select_multiple_files opens a native file picker dialog allowing multi-selection.
+pub fn select_multiple_files(extensions string) []string {
+	res := C.window_select_multiple_files(unsafe { nil }, extensions.str)
+	raw := unsafe { tos3(res) }
+	if raw.len == 0 || raw == '[]' {
+		return []string{}
+	}
+	mut list := []string{}
+	cleaned := raw.trim('[]').trim_space()
+	if cleaned.len == 0 {
+		return []string{}
+	}
+	parts := cleaned.split(',')
+	for p in parts {
+		trimmed := p.trim_space().trim('"')
+		if trimmed.len > 0 {
+			list << trimmed
+		}
+	}
+	return list
+}
+
+// save_file_picker_with_name opens a save file dialog with default name and extensions.
+pub fn save_file_picker_with_name(default_filename string, allowed_extensions string) string {
+	res := C.window_save_file_picker_with_name(unsafe { nil }, default_filename.str, allowed_extensions.str)
+	return unsafe { tos3(res) }
+}

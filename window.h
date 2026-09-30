@@ -1,9 +1,30 @@
 #ifndef WINDOW_H
 #define WINDOW_H
+#include <stdint.h>
 
-typedef struct string string;
-typedef struct main__WindowParams main__WindowParams;
-typedef struct main__WindowInfo main__WindowInfo;
+typedef struct main__WindowParams {
+  const char *title;
+  int64_t width;
+  int64_t height;
+  void *win_ptr;
+  int64_t padding;
+  int64_t spacing;
+  int64_t always_on_top;
+  int64_t responsive_layout;
+  int64_t resizable;
+  int64_t minimizable;
+  int64_t maximizable;
+  int64_t closable;
+  int64_t has_shadow;
+  int64_t movable_by_window_background;
+  int64_t titlebar_visible;
+  int64_t title_visible;
+} main__WindowParams;
+
+typedef struct main__WindowInfo {
+  void *app;
+  void *app_delegate;
+} main__WindowInfo;
 
 main__WindowInfo *window_app_init(void *params);
 void window_app_run(main__WindowInfo *info);
@@ -726,5 +747,123 @@ int window_get_movable(main__WindowInfo *info);
 
 // Tab Count
 int window_get_tab_count(main__WindowInfo *info);
+
+// Additional Split View Control APIs
+void window_set_split_position(main__WindowInfo *info, const char *name, int divider_index, double position);
+void window_set_split_divider_style(main__WindowInfo *info, const char *name, const char *style);
+
+// Slider Tick Marks & Snapping
+void window_set_slider_tick_marks(main__WindowInfo *info, const char *name, int count, int stops_only);
+
+// Progress Indicator Animation & Indeterminate
+void window_set_progress_indeterminate(main__WindowInfo *info, const char *name, int indeterminate);
+void window_start_progress_animation(main__WindowInfo *info, const char *name);
+void window_stop_progress_animation(main__WindowInfo *info, const char *name);
+
+// Tab Navigation APIs
+void window_select_tab(main__WindowInfo *info, const char *name, int index);
+void window_select_tab_by_title(main__WindowInfo *info, const char *name, const char *title);
+int window_get_tab_index(main__WindowInfo *info, const char *name);
+
+// Search Field Control
+void window_set_search_recent_searches_key(main__WindowInfo *info, const char *name, const char *key);
+void window_clear_search_history(main__WindowInfo *info, const char *name);
+
+// Path Control Operations
+void window_set_path_control_path(main__WindowInfo *info, const char *name, const char *path);
+char *window_get_path_control_path(main__WindowInfo *info, const char *name);
+void window_set_path_control_style(main__WindowInfo *info, const char *name, const char *style);
+
+// Token Field Operations
+void window_set_token_field_tokens(main__WindowInfo *info, const char *name, const char **tokens, int count);
+char *window_get_token_field_tokens(main__WindowInfo *info, const char *name);
+
+// Text Area Operations
+void window_textarea_insert_text(main__WindowInfo *info, const char *name, const char *text);
+char *window_textarea_get_selected_text(main__WindowInfo *info, const char *name);
+void window_textarea_set_selected_range(main__WindowInfo *info, const char *name, int start, int length);
+void window_textarea_scroll_to_end(main__WindowInfo *info, const char *name);
+void window_textarea_clear(main__WindowInfo *info, const char *name);
+
+// Scroll View Programmatic Scroll
+void window_scroll_to_top(main__WindowInfo *info, const char *name);
+void window_scroll_to_bottom(main__WindowInfo *info, const char *name);
+
+// Native System Dialogs & Panels
+char *window_show_color_picker(main__WindowInfo *info, const char *initial_hex);
+char *window_select_multiple_files(main__WindowInfo *info, const char *extensions);
+char *window_save_file_picker_with_name(main__WindowInfo *info, const char *default_filename, const char *allowed_extensions);
+
+// Text-to-Speech (NSSpeechSynthesizer)
+void window_speech_speak(const char *text, const char *voice_name);
+void window_speech_stop(void);
+int window_speech_is_speaking(void);
+char *window_speech_get_voices(void);
+char *window_speech_get_default_voice(void);
+
+// Mac Trackpad Haptic Feedback (NSHapticFeedbackManager)
+void window_perform_haptic_feedback(const char *pattern);
+
+// Advanced Pasteboard / Clipboard APIs (NSPasteboard)
+int window_clipboard_copy_image(const char *image_path);
+int window_clipboard_get_image(const char *dest_png_path);
+int window_clipboard_copy_files(const char **file_paths, int count);
+char *window_clipboard_get_files(void);
+void window_clipboard_clear(void);
+int window_clipboard_get_change_count(void);
+
+// macOS Workspace & Application Operations (NSWorkspace)
+int window_recycle_to_trash(const char *file_path);
+char *window_get_running_apps(void);
+int window_activate_app(const char *bundle_id_or_name);
+int window_terminate_app(int pid);
+void window_hide_other_apps(void);
+void window_unhide_all_apps(void);
+char *window_get_frontmost_app(void);
+int window_open_with_app(const char *file_path, const char *app_name);
+char *window_get_default_app_for_extension(const char *ext);
+
+// Sound & Audio Playback (NSSound)
+int window_play_sound_file(const char *file_path);
+void window_stop_sound_file(void);
+int window_is_sound_file_playing(void);
+
+// Power & Sleep Management (IOPMAssertion / IOKit)
+unsigned int window_prevent_sleep(const char *reason);
+void window_allow_sleep(unsigned int assertion_id);
+double window_get_battery_percentage(void);
+int window_is_battery_charging(void);
+int window_is_on_battery_power(void);
+int window_get_battery_time_remaining(void);
+
+// User Defaults / Preferences (NSUserDefaults)
+void window_defaults_set_string(const char *key, const char *val);
+char *window_defaults_get_string(const char *key);
+void window_defaults_set_bool(const char *key, int val);
+int window_defaults_get_bool(const char *key);
+void window_defaults_set_int(const char *key, int val);
+int window_defaults_get_int(const char *key);
+void window_defaults_remove(const char *key);
+int window_defaults_has(const char *key);
+
+// macOS System Information
+char *window_get_macos_version_str(void);
+void window_get_macos_version_numbers(int *out_major, int *out_minor, int *out_patch);
+char *window_get_computer_name(void);
+char *window_get_user_full_name(void);
+int window_is_apple_silicon(void);
+double window_get_system_uptime(void);
+int window_is_low_power_mode(void);
+
+// Multi-Screen / Display (NSScreen)
+char *window_get_screens_info(void);
+void window_move_to_screen(main__WindowInfo *info, int screen_index);
+
+// Dock & App Activation Policy
+char *window_get_dock_badge(void);
+void window_cancel_dock_bounce(void);
+void window_set_activation_policy(const char *policy);
+char *window_get_activation_policy(void);
+char *window_get_app_bundle_path(void);
 
 #endif

@@ -1785,10 +1785,6 @@ pub fn (win &SimpleWindow) zoom() &SimpleWindow {
 	return win.maximize()
 }
 
-// is_minimized checks if the window or control is minimized.
-pub fn (win &SimpleWindow) is_title_visible() bool {
-	return win.get_title_visible()
-}
 
 // get_titlebar_visible retrieves the titlebar visible of the window or target control.
 pub fn (win &SimpleWindow) set_control_width(name string, width int) &SimpleWindow {
@@ -4789,13 +4785,7 @@ pub fn (win &SimpleWindow) status_dock(status_text string, dot_color string, cou
 	return win.add_status_dock('', status_text, dot_color, count_text)
 }
 
-// set_status_dock_info updates status text, indicator dot color, and count text in status dock.
-pub fn (win &SimpleWindow) set_control_cursor(name string, cursor_name string) &SimpleWindow {
-	if win.window_info != unsafe { nil } {
-		C.window_set_control_cursor_by_name(win.window_info, name.str, cursor_name.str)
-	}
-	return win
-}
+
 
 // show_share_sheet displays the native macOS system share sheet / popover (NSSharingServicePicker)
 // anchored to the specified control or window.
@@ -5682,6 +5672,197 @@ pub fn (win &SimpleWindow) add_nav_rail(name string, items []SidebarItem) &Simpl
 			is_acts << if it.is_active { 1 } else { 0 }
 		}
 		C.window_add_nav_rail_control(win.window_info, real_name.str, c_ids.data, c_titles.data, c_icons.data, c_badges.data, is_acts.data, items.len)
+	}
+	return win
+}
+
+// set_slider_tick_marks configures tick marks on a slider and optionally snaps values to tick positions.
+pub fn (win &SimpleWindow) set_slider_tick_marks(name string, count int, stops_only bool) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_slider_tick_marks(win.window_info, name.str, count, if stops_only { 1 } else { 0 })
+	}
+	return win
+}
+
+// set_progress_indeterminate sets whether the progress bar is indeterminate (barber pole / spinning).
+pub fn (win &SimpleWindow) set_progress_indeterminate(name string, indeterminate bool) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_progress_indeterminate(win.window_info, name.str, if indeterminate { 1 } else { 0 })
+	}
+	return win
+}
+
+// start_progress_animation starts progress bar animation for indeterminate progress.
+pub fn (win &SimpleWindow) start_progress_animation(name string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_start_progress_animation(win.window_info, name.str)
+	}
+	return win
+}
+
+// stop_progress_animation stops progress bar animation.
+pub fn (win &SimpleWindow) stop_progress_animation(name string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_stop_progress_animation(win.window_info, name.str)
+	}
+	return win
+}
+
+// select_tab switches the active tab of an NSTabView by 0-based index.
+pub fn (win &SimpleWindow) select_tab(name string, index int) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_select_tab(win.window_info, name.str, index)
+	}
+	return win
+}
+
+// select_tab_by_title switches the active tab of an NSTabView by its label text.
+pub fn (win &SimpleWindow) select_tab_by_title(name string, title string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_select_tab_by_title(win.window_info, name.str, title.str)
+	}
+	return win
+}
+
+// get_tab_index returns the 0-based index of the currently active tab in an NSTabView.
+pub fn (win &SimpleWindow) get_tab_index(name string) int {
+	if win.window_info != unsafe { nil } {
+		return C.window_get_tab_index(win.window_info, name.str)
+	}
+	return -1
+}
+
+// set_search_recent_searches_key enables persistent search history under autosave key.
+pub fn (win &SimpleWindow) set_search_recent_searches_key(name string, key string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_search_recent_searches_key(win.window_info, name.str, key.str)
+	}
+	return win
+}
+
+// clear_search_history clears recent searches on an NSSearchField.
+pub fn (win &SimpleWindow) clear_search_history(name string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_clear_search_history(win.window_info, name.str)
+	}
+	return win
+}
+
+// set_path_control_path updates the displayed file system path of an NSPathControl.
+pub fn (win &SimpleWindow) set_path_control_path(name string, path string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_path_control_path(win.window_info, name.str, path.str)
+	}
+	return win
+}
+
+// get_path_control_path retrieves the current file system path from an NSPathControl.
+pub fn (win &SimpleWindow) get_path_control_path(name string) string {
+	if win.window_info != unsafe { nil } {
+		res := C.window_get_path_control_path(win.window_info, name.str)
+		return unsafe { tos3(res) }
+	}
+	return ''
+}
+
+// set_path_control_style updates the visual style of an NSPathControl ("standard", "pop_up", "navigation").
+pub fn (win &SimpleWindow) set_path_control_style(name string, style string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_path_control_style(win.window_info, name.str, style.str)
+	}
+	return win
+}
+
+// set_token_field_tokens updates the tags of an NSTokenField with an array of strings.
+pub fn (win &SimpleWindow) set_token_field_tokens(name string, tokens []string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		mut c_toks := []&u8{cap: tokens.len}
+		for t in tokens {
+			c_toks << t.str
+		}
+		C.window_set_token_field_tokens(win.window_info, name.str, c_toks.data, tokens.len)
+	}
+	return win
+}
+
+// get_token_field_tokens returns the current token list from an NSTokenField.
+pub fn (win &SimpleWindow) get_token_field_tokens(name string) []string {
+	if win.window_info != unsafe { nil } {
+		res := C.window_get_token_field_tokens(win.window_info, name.str)
+		raw := unsafe { tos3(res) }
+		if raw.len == 0 || raw == '[]' {
+			return []string{}
+		}
+		mut list := []string{}
+		cleaned := raw.trim('[]').trim_space()
+		if cleaned.len == 0 {
+			return []string{}
+		}
+		parts := cleaned.split(',')
+		for p in parts {
+			trimmed := p.trim_space().trim('"')
+			if trimmed.len > 0 {
+				list << trimmed
+			}
+		}
+		return list
+	}
+	return []string{}
+}
+
+// textarea_insert_text inserts text at the current cursor position in a textarea.
+pub fn (win &SimpleWindow) textarea_insert_text(name string, text string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_textarea_insert_text(win.window_info, name.str, text.str)
+	}
+	return win
+}
+
+// textarea_get_selected_text returns the currently selected substring in a textarea.
+pub fn (win &SimpleWindow) textarea_get_selected_text(name string) string {
+	if win.window_info != unsafe { nil } {
+		res := C.window_textarea_get_selected_text(win.window_info, name.str)
+		return unsafe { tos3(res) }
+	}
+	return ''
+}
+
+// textarea_set_selected_range selects a character range in a textarea.
+pub fn (win &SimpleWindow) textarea_set_selected_range(name string, start int, length int) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_textarea_set_selected_range(win.window_info, name.str, start, length)
+	}
+	return win
+}
+
+// textarea_scroll_to_end scrolls the textarea to the bottom of the document.
+pub fn (win &SimpleWindow) textarea_scroll_to_end(name string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_textarea_scroll_to_end(win.window_info, name.str)
+	}
+	return win
+}
+
+// textarea_clear clears all text in the specified textarea.
+pub fn (win &SimpleWindow) textarea_clear(name string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_textarea_clear(win.window_info, name.str)
+	}
+	return win
+}
+
+// scroll_to_top scrolls a scrollable view or container to the top.
+pub fn (win &SimpleWindow) scroll_to_top(name string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_scroll_to_top(win.window_info, name.str)
+	}
+	return win
+}
+
+// scroll_to_bottom scrolls a scrollable view or container to the bottom.
+pub fn (win &SimpleWindow) scroll_to_bottom(name string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_scroll_to_bottom(win.window_info, name.str)
 	}
 	return win
 }
