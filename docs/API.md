@@ -6771,6 +6771,22 @@ SimpleGUI automatically saves and restores form inputs, slider positions, checkb
 | `win.get_control_ptr(name string)` | `!&ControlEntry` | Retrieves mutable pointer to a control for low-level inspection. |
 | `win.control(name string)` | `&ControlEntry` | Direct lookup returning mutable pointer, panics if not found. |
 
+## 22. High-Level Composite Controls
+
+Composite controls are powerful pre-packaged UI blocks composed of multiple basic controls bound together with native event handlers.
+
+### `win.add_transfer_list(name string, available []string, selected []string) &SimpleWindow`
+Builds a dual-listbox "Transfer List" component. It renders an "Available" table on the left, a "Selected" table on the right, and middle buttons (`>`, `<`, `>>`, `<<`) that automatically move items between them natively in Objective-C. 
+
+### `win.add_transfer_list_opts(name string, available []string, selected []string, multi_select bool) &SimpleWindow`
+Same as `add_transfer_list`, but allows overriding the multi-selection capability.
+
+### `win.get_transfer_list_items(name string) []string`
+Retrieves the array of currently selected items from the right-side list of a transfer list component.
+
+### `win.add_property_grid(name string, props map[string]string) &SimpleWindow`
+Builds a compact key-value input form where keys are rendered as aligned labels and values are rendered as text fields. The input text fields are automatically named `{name}_{key}` (e.g. `user_form_Email`) for easy value retrieval.
+
 
 
 

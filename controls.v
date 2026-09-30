@@ -847,6 +847,9 @@ pub fn (win &SimpleWindow) add_property_grid(name string, props map[string]strin
 	unsafe {
 		mut w := &SimpleWindow(win)
 		w.upsert_control(real_name, 'propertygrid', '', '', false, 0)
+		for k, _ in props {
+			w.upsert_control('${real_name}_${k}', 'input', '', '', false, 0)
+		}
 	}
 	if win.window_info != unsafe { nil } {
 		mut keys := []&u8{}
@@ -3960,6 +3963,26 @@ pub fn (win &SimpleWindow) transfer_list(available []string, selected []string) 
 // transfer_list_opts inserts an auto-named transfer list widget with multi_select option.
 pub fn (win &SimpleWindow) transfer_list_opts(available []string, selected []string, multi_select bool) &SimpleWindow {
 	return win.add_transfer_list_opts('', available, selected, multi_select)
+}
+
+// get_transfer_list_items returns the currently selected items in the transfer list.
+pub fn (win &SimpleWindow) get_transfer_list_items(name string) []string {
+	mut res := []string{}
+	if win.window_info != unsafe { nil } {
+		mut out_count := 0
+		c_arr := C.window_get_transfer_list_selected(win.window_info, name.str, &out_count)
+		if c_arr != unsafe { nil } {
+			for i in 0 .. out_count {
+				c_str := unsafe { c_arr[i] }
+				if c_str != unsafe { nil } {
+					res << unsafe { cstring_to_vstring(c_str) }
+					C.free(c_str)
+				}
+			}
+			C.free(c_arr)
+		}
+	}
+	return res
 }
 
 // add_audio_waveform adds an audio sound level amplitude waveform visualizer widget.

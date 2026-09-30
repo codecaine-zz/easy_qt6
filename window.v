@@ -844,6 +844,7 @@ fn C.window_set_tab_pills_active(&WindowInfo, &u8, &u8)
 fn C.window_get_tab_pills_active(&WindowInfo, &u8) &u8
 
 fn C.window_add_transfer_list_control(&WindowInfo, &u8, &&u8, int, &&u8, int, bool) voidptr
+fn C.window_get_transfer_list_selected(&WindowInfo, &u8, &int) &&u8
 
 fn C.window_add_audio_waveform_control(&WindowInfo, &u8, &f64, int, int) voidptr
 

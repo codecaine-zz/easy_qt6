@@ -6091,7 +6091,8 @@ static void applyStyleToView(NSView *view, NSColor *backgroundColor, NSColor *fo
     [valueField setBezeled:YES];
     [valueField setBezelStyle:NSTextFieldSquareBezel];
     [valueField setDelegate:self];
-    [valueField setIdentifier:key];
+    [valueField setIdentifier:[NSString stringWithFormat:@"%@_%@", name, key]];
+    self.controlsByName[[[valueField identifier] lowercaseString]] = valueField;
     [valueField.widthAnchor constraintEqualToConstant:150].active = YES;
     [row addArrangedSubview:valueField];
     [valueField release];
@@ -7714,8 +7715,18 @@ static void applyStyleToView(NSView *view, NSColor *backgroundColor, NSColor *fo
   btnRemove.identifier = name;
   [btnRemove setBezelStyle:NSBezelStyleRounded];
 
+  NSButton *btnAddAll = [NSButton buttonWithTitle:@">>" target:self action:@selector(handleTransferAddAllClicked:)];
+  btnAddAll.identifier = name;
+  [btnAddAll setBezelStyle:NSBezelStyleRounded];
+
+  NSButton *btnRemoveAll = [NSButton buttonWithTitle:@"<<" target:self action:@selector(handleTransferRemoveAllClicked:)];
+  btnRemoveAll.identifier = name;
+  [btnRemoveAll setBezelStyle:NSBezelStyleRounded];
+
   [btnCol addArrangedSubview:btnAdd];
   [btnCol addArrangedSubview:btnRemove];
+  [btnCol addArrangedSubview:btnAddAll];
+  [btnCol addArrangedSubview:btnRemoveAll];
 
   // Right Column (Selected)
   NSStackView *rightCol = [[NSStackView alloc] initWithFrame:NSZeroRect];
@@ -7964,8 +7975,43 @@ static void applyStyleToView(NSView *view, NSColor *backgroundColor, NSColor *fo
   }
 }
 
+- (void)handleTransferAddAllClicked:(id)sender {
+  NSButton *btn = (NSButton *)sender;
+  NSString *name = btn.identifier;
+  NSStackView *hstack = (NSStackView *)self.controlsByName[[name lowercaseString]];
+  if (hstack) {
+    NSMutableArray *availArr = objc_getAssociatedObject(hstack, "transferAvail");
+    NSMutableArray *selArr = objc_getAssociatedObject(hstack, "transferSel");
+    NSMutableSet *availSet = objc_getAssociatedObject(hstack, "selectedAvailSet");
+    
+    if (availArr.count > 0) {
+      [selArr addObjectsFromArray:availArr];
+      [availArr removeAllObjects];
+      [availSet removeAllObjects];
+      [self rebuildTransferList:hstack name:name];
+      vlang_dispatch_event(self.win_ptr, [name UTF8String], "change", "add_all");
+    }
+  }
+}
 
-
+- (void)handleTransferRemoveAllClicked:(id)sender {
+  NSButton *btn = (NSButton *)sender;
+  NSString *name = btn.identifier;
+  NSStackView *hstack = (NSStackView *)self.controlsByName[[name lowercaseString]];
+  if (hstack) {
+    NSMutableArray *availArr = objc_getAssociatedObject(hstack, "transferAvail");
+    NSMutableArray *selArr = objc_getAssociatedObject(hstack, "transferSel");
+    NSMutableSet *selSet = objc_getAssociatedObject(hstack, "selectedSelSet");
+    
+    if (selArr.count > 0) {
+      [availArr addObjectsFromArray:selArr];
+      [selArr removeAllObjects];
+      [selSet removeAllObjects];
+      [self rebuildTransferList:hstack name:name];
+      vlang_dispatch_event(self.win_ptr, [name UTF8String], "change", "remove_all");
+    }
+  }
+}
 
 - (NSArray<NSString *> *)transferListSelectedForName:(NSString *)name {
   NSStackView *hstack = (NSStackView *)self.controlsByName[[name lowercaseString]];
@@ -17751,6 +17797,25 @@ void *window_add_transfer_list_control(main__WindowInfo *info, const char *name,
   };
   if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
   return (__bridge void *)control;
+}
+
+const char **window_get_transfer_list_selected(main__WindowInfo *info, const char *name, int *out_count) {
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  __block const char **res = NULL;
+  __block int count = 0;
+  void (^runBlock)(void) = ^{
+    NSArray<NSString *> *selected = [delegate transferListSelectedForName:nsstring(name)];
+    if (selected) {
+      count = (int)selected.count;
+      res = malloc(count * sizeof(char *));
+      for (int i = 0; i < count; i++) {
+        res[i] = strdup([selected[i] UTF8String]);
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  if (out_count) *out_count = count;
+  return res;
 }
 
 
