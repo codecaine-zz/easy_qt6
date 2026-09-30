@@ -7,16 +7,18 @@ module simplegui
 #include "window.h"
 
 #flag -framework Cocoa
-
 #flag -framework WebKit
-
 #flag -framework QuartzCore
-
 #flag -framework ApplicationServices
-
 #flag -framework IOKit
-
 #flag -framework AudioToolbox
+#flag -framework PDFKit
+#flag -framework AVKit
+#flag -framework AVFoundation
+#flag -framework MapKit
+#flag -framework CoreLocation
+#flag -framework MetalKit
+#flag -framework Metal
 
 #flag @VMODROOT/window.m
 
@@ -210,6 +212,12 @@ fn C.window_add_textarea_control(&WindowInfo, &u8, &u8) voidptr
 fn C.window_textarea_goto_line(&WindowInfo, &u8, int, int)
 
 fn C.window_add_html_view_control(&WindowInfo, &u8, &u8) voidptr
+fn C.window_add_pdf_view_control(&WindowInfo, &u8, &u8) voidptr
+fn C.window_add_avplayer_view_control(&WindowInfo, &u8, &u8) voidptr
+fn C.window_add_mtk_view_control(&WindowInfo, &u8) voidptr
+fn C.window_add_map_view_control(&WindowInfo, &u8) voidptr
+fn C.window_add_column_browser_control(&WindowInfo, &u8) voidptr
+fn C.window_show_color_sampler(&WindowInfo) &char
 
 fn C.window_add_drop_zone_control(&WindowInfo, &u8, &u8) voidptr
 

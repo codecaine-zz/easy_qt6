@@ -54,6 +54,17 @@ pub fn (win &SimpleWindow) choice_dialog(title string, message string, choices [
 	return -1
 }
 
+// show_color_sampler activates the native macOS screen magnifying glass tool and returns the clicked hex color.
+pub fn (win &SimpleWindow) show_color_sampler() string {
+	if win.window_info != unsafe { nil } {
+		res := C.window_show_color_sampler(win.window_info)
+		if res != unsafe { nil } {
+			return unsafe { cstring_to_vstring(res) }
+		}
+	}
+	return ''
+}
+
 // select_file opens a native file selection dialog and returns the chosen file path.
 pub fn (win &SimpleWindow) select_file() string {
 	if win.window_info != unsafe { nil } {

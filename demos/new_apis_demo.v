@@ -4,7 +4,7 @@ import os
 import simplegui
 
 fn main() {
-	mut win := simplegui.new_simple_window('SimpleGUI New APIs Demo', 1000, 700)
+	mut win := simplegui.new_simple_window('SimpleGUI New APIs Demo', 1200, 1000)
 
 	win.split_view('main_split', true, fn [mut win] () {
 		// Left Pane: Controls & macOS APIs
@@ -109,6 +109,7 @@ fn main() {
 
 		win.begin_row('row_dialogs2')
 		win.add_button('btn_save', 'Save File Dialog')
+		win.add_button('btn_sampler', 'Screen Color Sampler')
 		win.end_row()
 
 		win.on_click('btn_save', fn (mut win simplegui.SimpleWindow) {
@@ -116,6 +117,22 @@ fn main() {
 			win.textarea_insert_text('txt_log', '\nSave Path: ${file}')
 			win.textarea_scroll_to_end('txt_log')
 		})
+
+		win.on_click('btn_sampler', fn (mut win simplegui.SimpleWindow) {
+			hex := win.show_color_sampler()
+			win.textarea_insert_text('txt_log', '\nSampled: ${hex}')
+			win.textarea_scroll_to_end('txt_log')
+		})
+
+		win.add_separator()
+		win.add_label('lbl_adv', 'Advanced Native Views (New!)').font_size(16).bold(true)
+		
+		win.add_pdf_view('pdf1', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf') 
+		win.add_avplayer_view('vid1', 'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8') 
+		
+		win.add_mtk_view('mtk1')
+		win.add_map_view('map1')
+		win.add_column_browser('browser1')
 
 	})
 

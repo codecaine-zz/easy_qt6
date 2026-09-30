@@ -89,6 +89,11 @@ void *window_add_password_control(main__WindowInfo *info, const char *name, cons
 void *window_add_textarea_control(main__WindowInfo *info, const char *name, const char *value);
 void window_textarea_goto_line(main__WindowInfo *info, const char *name, int line_number, int focus);
 void *window_add_html_view_control(main__WindowInfo *info, const char *name, const char *html);
+void *window_add_pdf_view_control(main__WindowInfo *info, const char *name, const char *url);
+void *window_add_avplayer_view_control(main__WindowInfo *info, const char *name, const char *url);
+void *window_add_mtk_view_control(main__WindowInfo *info, const char *name);
+void *window_add_map_view_control(main__WindowInfo *info, const char *name);
+void *window_add_column_browser_control(main__WindowInfo *info, const char *name);
 void *window_add_drop_zone_control(main__WindowInfo *info, const char *name, const char *label);
 void *window_add_checkbox_control(main__WindowInfo *info, const char *name, const char *text, int checked);
 void *window_add_radio_control(main__WindowInfo *info, const char *name, const char *text, int checked);
@@ -119,6 +124,7 @@ int window_show_confirm(main__WindowInfo *info, const char *title, const char *m
 char *window_show_prompt(main__WindowInfo *info, const char *title, const char *message, const char *default_val);
 
 // File and Folder Pickers
+char *window_show_color_sampler(main__WindowInfo *info);
 char *window_select_file(main__WindowInfo *info);
 char *window_select_file_with_extensions(main__WindowInfo *info, const char *extensions);
 char *window_select_folder(main__WindowInfo *info);

@@ -2,6 +2,12 @@
 #import <WebKit/WebKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <ApplicationServices/ApplicationServices.h>
+#import <PDFKit/PDFKit.h>
+#import <AVFoundation/AVFoundation.h>
+#import <AVKit/AVKit.h>
+#import <MapKit/MapKit.h>
+#import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
 #import <objc/runtime.h>
 #import <IOKit/pwr_mgt/IOPMLib.h>
 #import <IOKit/ps/IOPowerSources.h>
@@ -3159,6 +3165,75 @@ static void applyStyleToView(NSView *view, NSColor *backgroundColor, NSColor *fo
   [self addControlToLayout:passwordField];
   return passwordField;
 }
+- (NSView *)makePDFViewWithName:(NSString *)name url:(NSString *)url {
+  PDFView *pdfView = [[PDFView alloc] initWithFrame:NSZeroRect];
+  pdfView.autoScales = YES;
+  if (url.length > 0) {
+    NSURL *fileURL = ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"]) ? [NSURL URLWithString:url] : [NSURL fileURLWithPath:url];
+    PDFDocument *doc = [[PDFDocument alloc] initWithURL:fileURL];
+    pdfView.document = doc;
+  }
+  [self makeStretchableView:pdfView minimumWidth:320];
+  [pdfView.heightAnchor constraintEqualToConstant:400].active = YES;
+  
+  self.controlsByName[[name lowercaseString]] = pdfView;
+  [self addControlToLayout:pdfView];
+  return pdfView;
+}
+
+- (NSView *)makeAVPlayerViewWithName:(NSString *)name url:(NSString *)url {
+  AVPlayerView *playerView = [[AVPlayerView alloc] initWithFrame:NSZeroRect];
+  playerView.controlsStyle = AVPlayerViewControlsStyleFloating;
+  if (url.length > 0) {
+    NSURL *fileURL = ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"]) ? [NSURL URLWithString:url] : [NSURL fileURLWithPath:url];
+    AVPlayer *player = [AVPlayer playerWithURL:fileURL];
+    playerView.player = player;
+  }
+  [self makeStretchableView:playerView minimumWidth:320];
+  [playerView.heightAnchor constraintEqualToConstant:300].active = YES;
+  
+  self.controlsByName[[name lowercaseString]] = playerView;
+  [self addControlToLayout:playerView];
+  return playerView;
+}
+
+- (NSView *)makeMTKViewWithName:(NSString *)name {
+  MTKView *mtkView = [[MTKView alloc] initWithFrame:NSZeroRect device:MTLCreateSystemDefaultDevice()];
+  mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
+  [self makeStretchableView:mtkView minimumWidth:320];
+  [mtkView.heightAnchor constraintEqualToConstant:300].active = YES;
+  
+  self.controlsByName[[name lowercaseString]] = mtkView;
+  [self addControlToLayout:mtkView];
+  return mtkView;
+}
+
+- (NSView *)makeMapViewWithName:(NSString *)name {
+  MKMapView *mapView = [[MKMapView alloc] initWithFrame:NSZeroRect];
+  mapView.mapType = MKMapTypeStandard;
+  CLLocationCoordinate2D center = CLLocationCoordinate2DMake(37.3346, -122.0090); // Apple Park
+  MKCoordinateSpan span = MKCoordinateSpanMake(0.01, 0.01);
+  MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
+  [mapView setRegion:region animated:NO];
+  [self makeStretchableView:mapView minimumWidth:320];
+  [mapView.heightAnchor constraintEqualToConstant:300].active = YES;
+  
+  self.controlsByName[[name lowercaseString]] = mapView;
+  [self addControlToLayout:mapView];
+  return mapView;
+}
+
+- (NSView *)makeBrowserWithName:(NSString *)name {
+  NSBrowser *browser = [[NSBrowser alloc] initWithFrame:NSZeroRect];
+  [browser setMaxVisibleColumns:3];
+  [self makeStretchableView:browser minimumWidth:320];
+  [browser.heightAnchor constraintEqualToConstant:200].active = YES;
+  
+  self.controlsByName[[name lowercaseString]] = browser;
+  [self addControlToLayout:browser];
+  return browser;
+}
+
 
 - (NSView *)makeHtmlViewWithName:(NSString *)name html:(NSString *)html {
   WKUserContentController *controller = [[WKUserContentController alloc] init];
@@ -11858,6 +11933,31 @@ void *window_add_html_view_control(main__WindowInfo *info, const char *name, con
   return [delegate makeHtmlViewWithName:nsstring(name) html:nsstring(html)];
 }
 
+void *window_add_pdf_view_control(main__WindowInfo *info, const char *name, const char *url) {
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  return [delegate makePDFViewWithName:nsstring(name) url:nsstring(url)];
+}
+
+void *window_add_avplayer_view_control(main__WindowInfo *info, const char *name, const char *url) {
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  return [delegate makeAVPlayerViewWithName:nsstring(name) url:nsstring(url)];
+}
+
+void *window_add_mtk_view_control(main__WindowInfo *info, const char *name) {
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  return [delegate makeMTKViewWithName:nsstring(name)];
+}
+
+void *window_add_map_view_control(main__WindowInfo *info, const char *name) {
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  return [delegate makeMapViewWithName:nsstring(name)];
+}
+
+void *window_add_column_browser_control(main__WindowInfo *info, const char *name) {
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  return [delegate makeBrowserWithName:nsstring(name)];
+}
+
 void *window_add_drop_zone_control(main__WindowInfo *info, const char *name, const char *label) {
   AppDelegate *delegate = (AppDelegate *)info->app_delegate;
   return [delegate makeDropZoneWithName:nsstring(name) label:nsstring(label)];
@@ -12616,6 +12716,33 @@ char *window_show_prompt(main__WindowInfo *info, const char *title, const char *
   
   if (inputString) {
     return strdup([inputString UTF8String]);
+  }
+  return strdup("");
+}
+
+char *window_show_color_sampler(main__WindowInfo *info) {
+  if (@available(macOS 10.15, *)) {
+    __block NSString *hexResult = @"";
+    __block BOOL done = NO;
+    NSColorSampler *sampler = [[NSColorSampler alloc] init];
+    [sampler showSamplerWithSelectionHandler:^(NSColor * _Nullable selectedColor) {
+      if (selectedColor) {
+        NSColor *rgbColor = [selectedColor colorUsingColorSpace:[NSColorSpace genericRGBColorSpace]];
+        hexResult = [NSString stringWithFormat:@"#%02X%02X%02X",
+          (int)(rgbColor.redComponent * 255.0),
+          (int)(rgbColor.greenComponent * 255.0),
+          (int)(rgbColor.blueComponent * 255.0)];
+      }
+      done = YES;
+    }];
+    
+    while (!done) {
+      NSEvent *event = [NSApp nextEventMatchingMask:NSEventMaskAny untilDate:[NSDate dateWithTimeIntervalSinceNow:0.05] inMode:NSDefaultRunLoopMode dequeue:YES];
+      if (event) {
+        [NSApp sendEvent:event];
+      }
+    }
+    return strdup([hexResult UTF8String]);
   }
   return strdup("");
 }

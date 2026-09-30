@@ -228,6 +228,46 @@ pub fn (win &SimpleWindow) add_html_view(name string, html string) &SimpleWindow
 	return win
 }
 
+pub fn (win &SimpleWindow) add_pdf_view(name string, url string) &SimpleWindow {
+	mut real_name := name
+	if real_name == '' { real_name = win.auto_name('pdfview') }
+	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'pdfview', '', url, false, 0) }
+	if win.window_info != unsafe { nil } { C.window_add_pdf_view_control(win.window_info, real_name.str, url.str) }
+	return win
+}
+
+pub fn (win &SimpleWindow) add_avplayer_view(name string, url string) &SimpleWindow {
+	mut real_name := name
+	if real_name == '' { real_name = win.auto_name('avplayerview') }
+	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'avplayerview', '', url, false, 0) }
+	if win.window_info != unsafe { nil } { C.window_add_avplayer_view_control(win.window_info, real_name.str, url.str) }
+	return win
+}
+
+pub fn (win &SimpleWindow) add_mtk_view(name string) &SimpleWindow {
+	mut real_name := name
+	if real_name == '' { real_name = win.auto_name('mtkview') }
+	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'mtkview', '', '', false, 0) }
+	if win.window_info != unsafe { nil } { C.window_add_mtk_view_control(win.window_info, real_name.str) }
+	return win
+}
+
+pub fn (win &SimpleWindow) add_map_view(name string) &SimpleWindow {
+	mut real_name := name
+	if real_name == '' { real_name = win.auto_name('mapview') }
+	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'mapview', '', '', false, 0) }
+	if win.window_info != unsafe { nil } { C.window_add_map_view_control(win.window_info, real_name.str) }
+	return win
+}
+
+pub fn (win &SimpleWindow) add_column_browser(name string) &SimpleWindow {
+	mut real_name := name
+	if real_name == '' { real_name = win.auto_name('columnbrowser') }
+	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'columnbrowser', '', '', false, 0) }
+	if win.window_info != unsafe { nil } { C.window_add_column_browser_control(win.window_info, real_name.str) }
+	return win
+}
+
 // add_drop_zone adds a drop zone control to the window layout.
 pub fn (win &SimpleWindow) add_drop_zone(name string, label string) &SimpleWindow {
 	mut real_name := name

@@ -2458,6 +2458,21 @@ Adds a high-performance WebKit browser view (`WKWebView`) rendering HTML/CSS con
 - **Parameters**:
   - `name`: Unique identifier.
   - `html`: HTML string payload.
+
+#### `win.add_pdf_view(name string, url string) &SimpleWindow`
+Adds a native macOS PDF viewer (`PDFView` from PDFKit) displaying the PDF document located at the file path `url`.
+
+#### `win.add_avplayer_view(name string, url string) &SimpleWindow`
+Adds a native macOS media player (`AVPlayerView` from AVKit) playing the video/audio file located at `url`.
+
+#### `win.add_mtk_view(name string) &SimpleWindow`
+Adds a hardware-accelerated Metal canvas view (`MTKView` from MetalKit) for advanced 2D/3D graphics rendering.
+
+#### `win.add_map_view(name string) &SimpleWindow`
+Adds a native interactive Apple MapKit map view (`MKMapView`).
+
+#### `win.add_column_browser(name string) &SimpleWindow`
+Adds a classic macOS multi-column hierarchical browser view (`NSBrowser`), visually similar to Finder's column view.
 - **Getters & Setters**: `win.set_html(name, html string)`
 
 ```v
@@ -3516,6 +3531,14 @@ Launches the native macOS file picker allowing multiple file selection. Returns 
 
 ```v
 paths := win.select_multiple_files('png,jpg')
+```
+
+### `win.show_color_sampler() string`
+
+Activates the native macOS screen magnifying glass tool (`NSColorSampler`). The cursor turns into a magnifying glass, allowing the user to click any pixel on their screen. Returns the selected color as a hex string (e.g., `#RRGGBB`). Returns an empty string if cancelled.
+
+```v
+hex := win.show_color_sampler()
 ```
 
 ### `win.show_color_picker(initial_hex string) string`
