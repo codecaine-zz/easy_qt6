@@ -39,17 +39,28 @@ fn main() {
 	// -------------------------------------------------------------
 	// System Diagnostics Bar
 	// -------------------------------------------------------------
-	has_ffmpeg, ffmpeg_path := check_bin('ffmpeg', ['/opt/homebrew/bin/ffmpeg', '/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg', '/usr/local/bin/ffmpeg'])
-	has_ffprobe, ffprobe_path := check_bin('ffprobe', ['/opt/homebrew/bin/ffprobe', '/opt/homebrew/opt/ffmpeg-full/bin/ffprobe', '/usr/local/bin/ffprobe'])
-	has_magick, magick_path := check_bin('magick', ['/opt/homebrew/bin/magick', '/opt/homebrew/opt/imagemagick-full/bin/magick', '/usr/local/bin/magick', '/opt/homebrew/bin/convert', '/usr/local/bin/convert'])
-	_, identify_path := check_bin('identify', ['/opt/homebrew/bin/identify', '/opt/homebrew/opt/imagemagick-full/bin/identify', '/usr/local/bin/identify'])
-	has_gawk, _ := check_bin('gawk', ['/opt/homebrew/bin/gawk', '/usr/local/bin/gawk', '/usr/bin/awk', '/bin/awk'])
+	has_ffmpeg, ffmpeg_path := check_bin('ffmpeg', ['/opt/homebrew/bin/ffmpeg',
+		'/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg', '/usr/local/bin/ffmpeg'])
+	has_ffprobe, ffprobe_path := check_bin('ffprobe', ['/opt/homebrew/bin/ffprobe',
+		'/opt/homebrew/opt/ffmpeg-full/bin/ffprobe', '/usr/local/bin/ffprobe'])
+	has_magick, magick_path := check_bin('magick', ['/opt/homebrew/bin/magick',
+		'/opt/homebrew/opt/imagemagick-full/bin/magick', '/usr/local/bin/magick',
+		'/opt/homebrew/bin/convert', '/usr/local/bin/convert'])
+	_, identify_path := check_bin('identify', ['/opt/homebrew/bin/identify',
+		'/opt/homebrew/opt/imagemagick-full/bin/identify', '/usr/local/bin/identify'])
+	has_gawk, _ := check_bin('gawk', ['/opt/homebrew/bin/gawk', '/usr/local/bin/gawk', '/usr/bin/awk',
+		'/bin/awk'])
 	has_sd, _ := check_bin('sd', ['/opt/homebrew/bin/sd', '/usr/local/bin/sd', '/bin/sd'])
-	has_subfinder, _ := check_bin('subfinder', ['/opt/homebrew/bin/subfinder', '/usr/local/bin/subfinder', '/bin/subfinder'])
-	has_ytdlp, _ := check_bin('yt-dlp', ['/opt/homebrew/bin/yt-dlp', '/usr/local/bin/yt-dlp', '/bin/yt-dlp'])
-	has_wget2, _ := check_bin('wget2', ['/opt/homebrew/bin/wget2', '/usr/local/bin/wget2', '/opt/homebrew/bin/wget', '/usr/local/bin/wget', '/bin/wget'])
-	has_pandoc, _ := check_bin('pandoc', ['/opt/homebrew/bin/pandoc', '/usr/local/bin/pandoc', '/bin/pandoc'])
-	has_fd, _ := check_bin('fd', ['/opt/homebrew/bin/fd', '/usr/local/bin/fd', '/bin/fd', '/usr/bin/fdfind'])
+	has_subfinder, _ := check_bin('subfinder', ['/opt/homebrew/bin/subfinder',
+		'/usr/local/bin/subfinder', '/bin/subfinder'])
+	has_ytdlp, _ := check_bin('yt-dlp', ['/opt/homebrew/bin/yt-dlp', '/usr/local/bin/yt-dlp',
+		'/bin/yt-dlp'])
+	has_wget2, _ := check_bin('wget2', ['/opt/homebrew/bin/wget2', '/usr/local/bin/wget2',
+		'/opt/homebrew/bin/wget', '/usr/local/bin/wget', '/bin/wget'])
+	has_pandoc, _ := check_bin('pandoc', ['/opt/homebrew/bin/pandoc', '/usr/local/bin/pandoc',
+		'/bin/pandoc'])
+	has_fd, _ := check_bin('fd', ['/opt/homebrew/bin/fd', '/usr/local/bin/fd', '/bin/fd',
+		'/usr/bin/fdfind'])
 	has_rg, _ := check_bin('rg', ['/opt/homebrew/bin/rg', '/usr/local/bin/rg', '/bin/rg', '/usr/bin/rg'])
 	has_cut, _ := check_bin('cut', ['/usr/bin/cut', '/bin/cut', '/opt/homebrew/bin/gcut'])
 	has_tr, _ := check_bin('tr', ['/usr/bin/tr', '/bin/tr', '/opt/homebrew/bin/gtr'])
@@ -60,7 +71,8 @@ fn main() {
 	has_qalc, _ := check_bin('qalc', ['/opt/homebrew/bin/qalc', '/usr/local/bin/qalc', '/usr/bin/qalc'])
 	has_numbat, _ := check_bin('numbat', ['/opt/homebrew/bin/numbat', '/usr/local/bin/numbat'])
 	has_kalker, _ := check_bin('kalker', ['/opt/homebrew/bin/kalker', '/usr/local/bin/kalker'])
-	has_watchexec, _ := check_bin('watchexec', ['/opt/homebrew/bin/watchexec', '/usr/local/bin/watchexec'])
+	has_watchexec, _ := check_bin('watchexec', ['/opt/homebrew/bin/watchexec',
+		'/usr/local/bin/watchexec'])
 	has_rip, _ := check_bin('rip', ['/opt/homebrew/bin/rip', '/usr/local/bin/rip'])
 
 	win.begin_group_box('grp_env', '⚡ Core CLI Engines & macOS Subsystems Status')
@@ -78,7 +90,11 @@ fn main() {
 	win.add_label('lbl_stat_fd', if has_fd { '✅ FD' } else { '❌ FD' })
 	win.add_label('lbl_stat_sed', if has_sed { '✅ sed' } else { '❌ sed' })
 	win.add_label('lbl_stat_ouch', if has_ouch { '✅ ouch' } else { '❌ ouch' })
-	win.add_label('lbl_stat_watchexec', if has_watchexec { '✅ watchexec' } else { '❌ watchexec' })
+	win.add_label('lbl_stat_watchexec', if has_watchexec {
+		'✅ watchexec'
+	} else {
+		'❌ watchexec'
+	})
 	win.add_label('lbl_stat_rip', if has_rip { '✅ rip' } else { '❌ rip' })
 	win.add_label('lbl_stat_subf', if has_subfinder { '✅ Subfinder' } else { '❌ Subfinder' })
 	win.add_label('lbl_stat_ytdlp', if has_ytdlp { '✅ yt-dlp' } else { '❌ yt-dlp' })
@@ -94,7 +110,7 @@ fn main() {
 	// Dedicated Studio Workstations (5 Categorized Workstation Blocks)
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_launchers', '🚀 Dedicated Studio Workstations (Click to Launch Independent Workspace)')
-	
+
 	// Category 1: Files, Search & Text Processing
 	win.begin_row('row_apps_1')
 	win.add_label('lbl_cat_1', '📁 Files & Search:')
@@ -171,7 +187,7 @@ fn main() {
 	// Quick Tools Suite
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_quick', '⚡ Instant Quick Tools (Async Non-Blocking)')
-	
+
 	win.begin_row('row_quick_in')
 	win.add_label('lbl_quick_file', 'Target File:')
 	win.add_input('txt_quick_in', '')
@@ -400,11 +416,11 @@ fn main() {
 	// Launch Programmer's Calculator
 	win.on_click('btn_launch_progcalc', fn (mut w simplegui.SimpleWindow) {
 		app_path := os.join_path(os.dir(@FILE), 'programmer_calculator.v')
-		w.append_console('hub_log', '🧮 Launching Programmer\'s Calculator Pro in background...\n', 1)
+		w.append_console('hub_log', "🧮 Launching Programmer's Calculator Pro in background...\n", 1)
 		go fn [app_path] () {
 			simplegui.exec_safe('v', ['run', app_path])
 		}()
-		w.toast('Programmer\'s Calculator Pro launched!')
+		w.toast("Programmer's Calculator Pro launched!")
 	})
 
 	// Launch Graph Studio
@@ -746,7 +762,8 @@ fn main() {
 		w.set_status('Converting video in background...')
 
 		go fn [mut w, ffmpeg_path, file_path, out_file] () {
-			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-c:v', 'libx264', '-crf', '22', '-preset', 'fast', '-c:a', 'aac', '-b:a', '192k', out_file])
+			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-c:v', 'libx264',
+				'-crf', '22', '-preset', 'fast', '-c:a', 'aac', '-b:a', '192k', out_file])
 			w.run_on_main_thread(fn [res, out_file] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					win_main.append_console('hub_log', '✅ Successfully created: ${out_file}\n', 4)
@@ -777,7 +794,8 @@ fn main() {
 		w.set_status('Compressing for Discord...')
 
 		go fn [mut w, ffmpeg_path, file_path, out_file] () {
-			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-c:v', 'libx264', '-crf', '28', '-vf', 'scale=-2:720', '-c:a', 'aac', '-b:a', '96k', out_file])
+			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-c:v', 'libx264',
+				'-crf', '28', '-vf', 'scale=-2:720', '-c:a', 'aac', '-b:a', '96k', out_file])
 			w.run_on_main_thread(fn [res, out_file] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					sz := os.file_size(out_file)
@@ -811,7 +829,8 @@ fn main() {
 
 		go fn [mut w, ffmpeg_path, file_path, out_file] () {
 			crop_filter := 'crop=ih*(9/16):ih'
-			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-vf', crop_filter, '-c:a', 'copy', out_file])
+			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-vf', crop_filter,
+				'-c:a', 'copy', out_file])
 			w.run_on_main_thread(fn [res, out_file] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					win_main.append_console('hub_log', '✅ Vertical 9:16 video saved: ${out_file}\n', 4)
@@ -842,7 +861,8 @@ fn main() {
 		w.set_status('Extracting MP3 audio...')
 
 		go fn [mut w, ffmpeg_path, file_path, out_file] () {
-			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-vn', '-c:a', 'libmp3lame', '-b:a', '320k', out_file])
+			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-vn', '-c:a', 'libmp3lame',
+				'-b:a', '320k', out_file])
 			w.run_on_main_thread(fn [res, out_file] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					win_main.append_console('hub_log', '✅ Extracted 320kbps MP3: ${out_file}\n', 4)
@@ -873,7 +893,8 @@ fn main() {
 		w.set_status('Normalizing audio...')
 
 		go fn [mut w, ffmpeg_path, file_path, out_file] () {
-			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-af', 'loudnorm=I=-14:LRA=7:TP=-1.5', out_file])
+			res := simplegui.exec_safe(ffmpeg_path, ['-y', '-i', file_path, '-af',
+				'loudnorm=I=-14:LRA=7:TP=-1.5', out_file])
 			w.run_on_main_thread(fn [res, out_file] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					win_main.append_console('hub_log', '✅ Broadcast Master Loudnorm Audio: ${out_file}\n', 4)
@@ -904,7 +925,8 @@ fn main() {
 		w.set_status('Converting to WebP...')
 
 		go fn [mut w, magick_path, file_path, out_file] () {
-			res := simplegui.exec_safe(magick_path, [file_path, '-quality', '85', '-define', 'webp:lossless=false', out_file])
+			res := simplegui.exec_safe(magick_path, [file_path, '-quality', '85', '-define',
+				'webp:lossless=false', out_file])
 			w.run_on_main_thread(fn [res, out_file] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					sz := os.file_size(out_file)
@@ -937,7 +959,8 @@ fn main() {
 		w.set_status('Generating favicon.ico...')
 
 		go fn [mut w, magick_path, file_path, out_file] () {
-			res := simplegui.exec_safe(magick_path, [file_path, '-define', 'icon:auto-resize=64,48,32,16', out_file])
+			res := simplegui.exec_safe(magick_path, [file_path, '-define',
+				'icon:auto-resize=64,48,32,16', out_file])
 			w.run_on_main_thread(fn [res, out_file] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					win_main.append_console('hub_log', '✅ Multi-resolution Favicon created: ${out_file}\n', 4)
@@ -968,7 +991,8 @@ fn main() {
 		w.set_status('Removing white background...')
 
 		go fn [mut w, magick_path, file_path, out_file] () {
-			res := simplegui.exec_safe(magick_path, [file_path, '-fuzz', '15%', '-transparent', 'white', out_file])
+			res := simplegui.exec_safe(magick_path, [file_path, '-fuzz', '15%', '-transparent',
+				'white', out_file])
 			w.run_on_main_thread(fn [res, out_file] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					win_main.append_console('hub_log', '✅ Transparent PNG saved: ${out_file}\n', 4)

@@ -97,8 +97,7 @@ fn test_grid_state_getters_and_setters_are_available() {
 
 fn test_grid_sort_api_is_available() {
 	mut win := simplegui.SimpleWindow{}
-	win.add_grid('inventory', ['ID', 'Task'], [['3', 'Ship'],
-		['1', 'Build'], ['2', 'Test']])
+	win.add_grid('inventory', ['ID', 'Task'], [['3', 'Ship'], ['1', 'Build'], ['2', 'Test']])
 
 	win.grid_sort_by_column('inventory', 0, true)
 }
@@ -625,13 +624,11 @@ fn test_list_sort_move_and_search_binding() {
 fn test_table_sort_move_and_csv_roundtrip() {
 	mut win := simplegui.SimpleWindow{}
 	win.add_table('inv', ['Name', 'Qty'])
-	win.set_table_rows('inv', [['bolt', '2'], ['Anchor', '10'],
-		['clip', '1']])
+	win.set_table_rows('inv', [['bolt', '2'], ['Anchor', '10'], ['clip', '1']])
 
 	// Numeric-aware column sort
 	win.sort_table_by_column('inv', 1, true)
-	assert win.get_table_rows('inv') == [['clip', '1'], ['bolt', '2'],
-		['Anchor', '10']]
+	assert win.get_table_rows('inv') == [['clip', '1'], ['bolt', '2'], ['Anchor', '10']]
 
 	// Case-insensitive text sort, descending
 	win.sort_table_by_column('inv', 0, false)
@@ -1498,7 +1495,7 @@ fn test_workflow_text_and_data_extras() {
 
 fn test_new_macos_native_controls() {
 	mut win := simplegui.new_simple_window('Native macOS Controls Test', 600, 400)
-	
+
 	// NSBrowser
 	win.add_browser_view('col_browser', 200)
 	assert win.has_control('col_browser')
@@ -1533,7 +1530,11 @@ fn test_modern_productivity_and_analytics_controls() {
 	assert win.has_control('banner1')
 
 	// 3. Segmented Progress
-	win.add_segmented_progress('seg_prog', ['Passed (45)', 'Failed (3)', 'Skipped (2)'], [45.0, 3.0, 2.0], ['#34c759', '#ff3b30', '#ff9500'], 28)
+	win.add_segmented_progress('seg_prog', ['Passed (45)', 'Failed (3)', 'Skipped (2)'], [
+		45.0,
+		3.0,
+		2.0,
+	], ['#34c759', '#ff3b30', '#ff9500'], 28)
 	assert win.has_control('seg_prog')
 
 	// 4. Feedback Mood
@@ -1560,7 +1561,12 @@ fn test_modern_productivity_and_analytics_controls() {
 	assert win.get_date_range_end('dr_picker') == '2026-06-30'
 
 	// 7. Stat Grid
-	win.add_stat_grid('kpi_grid', ['Revenue', 'Active Users', 'Uptime', 'Error Rate'], ['$128.5K', '14,200', '99.98%', '0.02%'], ['+14.2%', '+8.5%', 'Optimal', '-0.01%'], ['success', 'success', 'info', 'success'])
+	win.add_stat_grid('kpi_grid', ['Revenue', 'Active Users', 'Uptime', 'Error Rate'], [
+		'$128.5K',
+		'14,200',
+		'99.98%',
+		'0.02%',
+	], ['+14.2%', '+8.5%', 'Optimal', '-0.01%'], ['success', 'success', 'info', 'success'])
 	assert win.has_control('kpi_grid')
 }
 
@@ -1606,7 +1612,11 @@ fn test_simple_gg_ideals_image_and_media_controls() {
 	win.product_card('', 'Developer Keypad', '$79.00')
 
 	// 3. Image Gallery
-	win.add_image_gallery('gallery_main', ['img1.jpg', 'img2.jpg', 'img3.jpg'], ['First Slide', 'Second Slide', 'Third Slide'], 0)
+	win.add_image_gallery('gallery_main', ['img1.jpg', 'img2.jpg', 'img3.jpg'], [
+		'First Slide',
+		'Second Slide',
+		'Third Slide',
+	], 0)
 	assert win.has_control('gallery_main')
 	win.next_gallery_image('gallery_main')
 	win.prev_gallery_image('gallery_main')
@@ -1663,4 +1673,3 @@ fn test_simple_gg_ideals_ui_suite_and_ergonomics() {
 	assert win.has_control('app_rail')
 	win.nav_rail(nav_items)
 }
-

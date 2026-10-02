@@ -7,9 +7,9 @@ fn main() {
 		.add_label('lbl_tags', 'Project Tags:')
 		.add_token_field('project_tags', 'vlang, gui, desktop')
 		.add_separator()
+		.begin_row
 
 	// 2. Buttons to interact with Token Helpers
-	.begin_row
 
 	('btn_row1')
 		.add_button('btn_get', '1. Get Tokens')

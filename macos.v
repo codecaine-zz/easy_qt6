@@ -99,7 +99,7 @@ pub fn (win &SimpleWindow) recycle_to_trash(file_path string) bool {
 
 // speak_native speaks text using the macOS default speech synthesizer voice.
 pub fn speak_native(text string) {
-	C.window_speech_speak(text.str, ''.str)
+	C.window_speech_speak(text.str, c'')
 }
 
 // speak_native_with_voice speaks text using a specific voice name (e.g. "Samantha", "Alex").

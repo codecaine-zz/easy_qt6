@@ -57,21 +57,19 @@ fn display_radix_table(mut app simplecli.SimpleCli, val u64) {
 	oct_val := '0o' + val.str() // approximation
 	bin_val := to_binary_string(val)
 
-	app.table(
-		['Radix Base', 'Representation', 'Bit Size'],
+	app.table(['Radix Base', 'Representation', 'Bit Size'],
 		[
 			['HEX (Base 16)', hex_val, '64-bit'],
 			['DEC (Base 10)', dec_val, '64-bit'],
 			['OCT (Base 8)', oct_val, '64-bit'],
 			['BIN (Base 2)', bin_val, '64-bit formatted'],
-		]
-	)
+		])
 
 	// Bitwise Inversion
 	not_val := ~val
 	app.print_kv({
-		'Bitwise NOT (~val)': '0x' + not_val.hex().to_upper(),
-		'Byte Swapped (endian)': '0x' + swap_bytes_64(val).hex().to_upper(),
+		'Bitwise NOT (~val)':    '0x' + not_val.hex().to_upper()
+		'Byte Swapped (endian)': '0x' + swap_bytes_64(val).hex().to_upper()
 	})
 }
 

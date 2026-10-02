@@ -176,7 +176,7 @@ fn inspect_binary(bin_path string) string {
 	sb << 'Path         : ${bin_path}'
 	sz := os.file_size(bin_path)
 	sb << 'Size         : ${f64(sz) / 1024.0 / 1024.0:.2f} MB (${sz} bytes)'
-	
+
 	// File command check
 	file_res := os.execute('file ${os.quoted_path(bin_path)}')
 	if file_res.exit_code == 0 {
@@ -517,7 +517,7 @@ fn main() {
 		ok, err_msg := generate_icns_file(resolved_icon, dest_icns)
 		if ok {
 			sz := os.file_size(dest_icns)
-			w.set_value('txt_bundler_log', '✅ Successfully generated standalone .icns icon:\n   Path: ${dest_icns}\n   Size: ${f64(sz)/1024.0:.1f} KB\n')
+			w.set_value('txt_bundler_log', '✅ Successfully generated standalone .icns icon:\n   Path: ${dest_icns}\n   Size: ${f64(sz) / 1024.0:.1f} KB\n')
 			w.toast('ICNS icon generated!')
 		} else {
 			w.set_value('txt_bundler_log', '❌ Failed to generate .icns icon:\n   ${err_msg}')
@@ -600,7 +600,11 @@ fn main() {
 			exe_name = clean_alphanumeric(app_name)
 		}
 
-		resolved_out_dir := if os.is_abs_path(out_dir) { out_dir } else { os.join_path(os.getwd(), out_dir) }
+		resolved_out_dir := if os.is_abs_path(out_dir) {
+			out_dir
+		} else {
+			os.join_path(os.getwd(), out_dir)
+		}
 		os.mkdir_all(resolved_out_dir) or {
 			w.alert('Filesystem Error', 'Failed to create output directory: ${err}')
 			return
@@ -720,7 +724,7 @@ osascript -e "tell application \\"Terminal\\" to do script \\"\'${cli_bin}\' ; e
 				ok_icns, icns_err := generate_icns_file(icon_resolved, dest_icns)
 				if ok_icns {
 					icns_sz := os.file_size(dest_icns)
-					logs << '✅ Compiled AppIcon.icns (${f64(icns_sz)/1024.0:.1f} KB)'
+					logs << '✅ Compiled AppIcon.icns (${f64(icns_sz) / 1024.0:.1f} KB)'
 				} else {
 					logs << '⚠️ Icon compilation warning: ${icns_err}'
 				}
@@ -754,7 +758,7 @@ osascript -e "tell application \\"Terminal\\" to do script \\"\'${cli_bin}\' ; e
 		logs << '----------------------------------------------------------------------'
 		logs << '🎉 BUILD COMPLETE: ${app_name}.app'
 		logs << '⏱️ Total Time : ${elapsed.milliseconds()}ms (${elapsed.seconds():.2f}s)'
-		logs << '📦 Bundle Size: ${f64(total_size)/1024.0/1024.0:.2f} MB'
+		logs << '📦 Bundle Size: ${f64(total_size) / 1024.0 / 1024.0:.2f} MB'
 		logs << '📍 Location   : ${app_bundle}'
 		logs << '======================================================================'
 

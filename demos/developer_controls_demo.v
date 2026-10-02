@@ -91,12 +91,12 @@ fn main() {
 	win.begin_row('property_and_color_row')
 	win.group('inspector_group', '4. Property Inspector (Press Enter after editing)',
 		fn (mut w simplegui.SimpleWindow) {
-		w.add_property_grid('props_inspector', {
-			'Chart Mode':  'area'
-			'Timer Speed': '500ms'
-			'Status Code': '200 OK'
+			w.add_property_grid('props_inspector', {
+				'Chart Mode':  'area'
+				'Timer Speed': '500ms'
+				'Status Code': '200 OK'
+			})
 		})
-	})
 
 	win.group('color_group', '5. Theme Color Palette Grid', fn (mut w simplegui.SimpleWindow) {
 		w.add_color_grid('palette_grid', [
@@ -129,17 +129,17 @@ fn main() {
 	win.begin_row('grid_row')
 	win.group('grid_group', '6. Excel-like Editable Grid (Double-click cell to edit)',
 		fn (mut w simplegui.SimpleWindow) {
-		w.add_grid('data_grid', ['ID', 'Task Name', 'Completed', 'Action'], [
-			['1', 'Design UI Mockups', 'true', 'Run'],
-			['2', 'Write Cocoa Bridge', 'true', 'Start'],
-			['3', 'Add V Wrappers', 'false', 'Stop'],
-		])
-		w.grid_set_column_type('data_grid', 2, 'checkbox')
-		w.grid_set_column_type('data_grid', 3, 'button')
-		w.grid_set_column_enabled('data_grid', 0, false)
-		w.grid_set_row_enabled('data_grid', 1, false)
-		w.grid_set_cell_enabled('data_grid', 2, 1, false)
-	})
+			w.add_grid('data_grid', ['ID', 'Task Name', 'Completed', 'Action'], [
+				['1', 'Design UI Mockups', 'true', 'Run'],
+				['2', 'Write Cocoa Bridge', 'true', 'Start'],
+				['3', 'Add V Wrappers', 'false', 'Stop'],
+			])
+			w.grid_set_column_type('data_grid', 2, 'checkbox')
+			w.grid_set_column_type('data_grid', 3, 'button')
+			w.grid_set_column_enabled('data_grid', 0, false)
+			w.grid_set_row_enabled('data_grid', 1, false)
+			w.grid_set_cell_enabled('data_grid', 2, 1, false)
+		})
 
 	win.group('grid_actions_group', 'Grid Operations (CRUD)', fn (mut w simplegui.SimpleWindow) {
 		w.add_button('btn_grid_add_row', 'Add Row')

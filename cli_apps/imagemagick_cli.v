@@ -96,7 +96,8 @@ fn run_interactive(mut app simplecli.SimpleCli, magick_cmd string) {
 		}
 		'Generate 256x256 Thumbnail' {
 			out := 'thumb_256.png'
-			app.exec_safe(magick_cmd, [input, '-resize', '256x256^', '-gravity', 'center', '-extent', '256x256', out])
+			app.exec_safe(magick_cmd, [input, '-resize', '256x256^', '-gravity', 'center', '-extent',
+				'256x256', out])
 			app.success('Created thumbnail ${out}')
 		}
 		'Convert to Grayscale JPEG (Quality 90)' {

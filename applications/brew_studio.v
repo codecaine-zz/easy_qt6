@@ -49,7 +49,7 @@ fn main() {
 
 	// Search & Quick Operation Bar
 	win.begin_group_box('grp_brew_search', '🔍 Package Search & Information Inspection')
-	
+
 	win.begin_row('row_search_bar')
 	win.add_label('lbl_search', 'Package / Cask:')
 	win.add_input('txt_search_pkg', 'ffmpeg')
@@ -65,7 +65,7 @@ fn main() {
 
 	// Global Maintenance & Services Actions
 	win.begin_group_box('grp_global_actions', '⚡ Homebrew Ecosystem & Service Controls')
-	
+
 	win.begin_row('row_global_btns')
 	win.add_button('btn_list_installed', '📋 All Installed (Formulae & Casks)')
 	win.add_button('btn_list_formulae', '📦 Formulae Only')
@@ -111,8 +111,8 @@ fn main() {
 	// -------------------------------------------------------------
 	run_brew_cmd := fn (mut w simplegui.SimpleWindow, desc string, args []string) {
 		brew_bin := get_brew_bin()
-		w.append_console('brew_console', '▶ Executing: brew ${args.join(" ")}...\n', 1)
-		w.set_status('Running brew ${args.join(" ")}...')
+		w.append_console('brew_console', '▶ Executing: brew ${args.join(' ')}...\n', 1)
+		w.set_status('Running brew ${args.join(' ')}...')
 		w.toast('⚡ ${desc}...')
 
 		go fn [mut w, brew_bin, args, desc] () {
@@ -122,7 +122,7 @@ fn main() {
 
 			w.run_on_main_thread(fn [res, elapsed_ms, desc] (mut win_main simplegui.SimpleWindow) {
 				mut out := res.output.trim_space()
-				
+
 				// Strip stray cask errors if actual output was produced
 				if out.contains('Error: Cask ') && out.contains('\n') {
 					lines := out.split_into_lines()
@@ -293,7 +293,7 @@ fn main() {
 		}
 
 		w.append_console('brew_console', '🛠️ Scanning for orphaned Caskroom entries without installed versions...\n', 1)
-		
+
 		entries := os.ls(caskroom_dir) or { []string{} }
 		mut removed_cnt := 0
 		for entry in entries {
@@ -347,7 +347,8 @@ fn main() {
 			w.alert('Brewfile Missing', 'Could not find Brewfile in current workspace: ${brewfile}')
 			return
 		}
-		run_brew_cmd(mut w, 'Check Brewfile Dependencies', ['bundle', 'check', '--verbose', '--file', brewfile])
+		run_brew_cmd(mut w, 'Check Brewfile Dependencies', ['bundle', 'check', '--verbose', '--file',
+			brewfile])
 	})
 
 	// Brewfile View

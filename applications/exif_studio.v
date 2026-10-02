@@ -50,7 +50,7 @@ fn main() {
 
 	// Media File Selection Bar
 	win.begin_group_box('grp_file_scope', '📁 Target Media File (JPEG, PNG, HEIC, TIFF, RAW, MP4, MOV)')
-	
+
 	win.begin_row('row_file_select')
 	win.add_label('lbl_media_file', 'Media File:')
 	win.add_input('txt_media_path', '')
@@ -65,7 +65,7 @@ fn main() {
 
 	// Tag Modification & Privacy Scrubber
 	win.begin_group_box('grp_tag_tools', '🛡️ Privacy Scrubber & Metadata Tag Editor')
-	
+
 	win.begin_row('row_tag_inputs')
 	win.add_label('lbl_artist', 'Artist / Author:')
 	win.add_input('txt_artist', '')

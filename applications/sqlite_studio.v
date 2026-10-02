@@ -62,7 +62,7 @@ fn main() {
 
 	// Database File Selection & Schema Browser
 	win.begin_group_box('grp_db_config', '📁 Database Connection & Schema Explorer')
-	
+
 	win.begin_row('row_db_file')
 	win.add_label('lbl_db_path', 'Database File:')
 	win.add_input('txt_db_path', ':memory:')
@@ -78,7 +78,7 @@ fn main() {
 
 	// SQL Query Editor & Presets
 	win.begin_group_box('grp_sql_editor', '📝 SQL Query Scratchpad & Recipes')
-	
+
 	win.begin_row('row_sql_presets')
 	win.add_label('lbl_presets', 'SQL Templates:')
 	win.add_dropdown('dd_sql_presets', [
@@ -89,7 +89,7 @@ fn main() {
 		'5. Insert New Product Record (INSERT INTO)',
 		'6. Create Indexed Transactions Table (CREATE TABLE & INDEX)',
 		'7. Count Total Records Across Tables',
-		'8. Vacuum & Optimize Database (VACUUM; PRAGMA optimize;)'
+		'8. Vacuum & Optimize Database (VACUUM; PRAGMA optimize;)',
 	], '1. Product Inventory Report (JOIN & Computed Value)')
 	win.set_control_width('dd_sql_presets', 380)
 
@@ -99,7 +99,7 @@ fn main() {
 		'JSON Format (-json)',
 		'CSV Format (-csv)',
 		'Markdown Table (-markdown)',
-		'Line Mode (-line)'
+		'Line Mode (-line)',
 	], 'Table Grid (-box / -column)')
 	win.set_control_width('dd_out_mode', 220)
 	win.end_row()
@@ -219,7 +219,7 @@ fn main() {
 		} else if selected.starts_with('8.') {
 			w.set('txt_sql_query', 'VACUUM;\nPRAGMA optimize;')
 		}
-		w.toast('Loaded SQL template: ${selected.split("(")[0]}')
+		w.toast('Loaded SQL template: ${selected.split('(')[0]}')
 	})
 
 	// Execute Query Worker
@@ -236,10 +236,15 @@ fn main() {
 		out_mode_raw := w.get('dd_out_mode')
 
 		mut mode_flag := '-box'
-		if out_mode_raw.contains('-json') { mode_flag = '-json' }
-		else if out_mode_raw.contains('-csv') { mode_flag = '-csv' }
-		else if out_mode_raw.contains('-markdown') { mode_flag = '-markdown' }
-		else if out_mode_raw.contains('-line') { mode_flag = '-line' }
+		if out_mode_raw.contains('-json') {
+			mode_flag = '-json'
+		} else if out_mode_raw.contains('-csv') {
+			mode_flag = '-csv'
+		} else if out_mode_raw.contains('-markdown') {
+			mode_flag = '-markdown'
+		} else if out_mode_raw.contains('-line') {
+			mode_flag = '-line'
+		}
 
 		target_db := if db_path == '' || db_path == ':memory:' { ':memory:' } else { db_path }
 
@@ -326,7 +331,7 @@ fn main() {
 			if !save_file.ends_with('.csv') { save_file += '.csv' }
 			sqlite_bin := get_sqlite_bin()
 			target_db := if db_path == '' || db_path == ':memory:' { ':memory:' } else { db_path }
-			
+
 			res := simplegui.exec_safe(sqlite_bin, ['-csv', '-header', target_db, query_str])
 			os.write_file(save_file, res.output) or {
 				w.toast('Failed to save file.')
@@ -351,7 +356,7 @@ fn main() {
 			if !save_file.ends_with('.json') { save_file += '.json' }
 			sqlite_bin := get_sqlite_bin()
 			target_db := if db_path == '' || db_path == ':memory:' { ':memory:' } else { db_path }
-			
+
 			res := simplegui.exec_safe(sqlite_bin, ['-json', target_db, query_str])
 			os.write_file(save_file, res.output) or {
 				w.toast('Failed to save file.')

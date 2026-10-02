@@ -27,10 +27,14 @@ fn main() {
 	elapsed := app.elapsed_ms()
 
 	app.print_kv({
-		'Regex Pattern': pattern,
-		'Target Text': text,
-		'Match Result': if matches { app.green('MATCHED (true)') } else { app.red('NO MATCH (false)') },
-		'Evaluation Time': '${elapsed} ms',
+		'Regex Pattern':   pattern
+		'Target Text':     text
+		'Match Result':    if matches {
+			app.green('MATCHED (true)')
+		} else {
+			app.red('NO MATCH (false)')
+		}
+		'Evaluation Time': '${elapsed} ms'
 	})
 }
 

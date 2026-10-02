@@ -97,7 +97,7 @@ pub fn (win &SimpleWindow) show_system_notification(title string, message string
 	// Escape double quotes for execution safety
 	title_escaped := title.replace('"', '\\"')
 	msg_escaped := message.replace('"', '\\"')
-	cmd := "osascript -e 'display notification \"${msg_escaped}\" with title \"${title_escaped}\"'"
+	cmd := 'osascript -e \'display notification "${msg_escaped}" with title "${title_escaped}"\''
 	win.exec_bg(cmd)
 	return win
 }
@@ -1251,7 +1251,7 @@ pub fn (win &SimpleWindow) set_dock_badge(count int) &SimpleWindow {
 	if count <= 0 {
 		win.exec_bg('osascript -e \'tell application "System Events" to set the dock badge of the front application to 0\'')
 	} else {
-		win.exec_bg("osascript -e 'tell application \"System Events\" to set the dock badge of the front application to ${count}'")
+		win.exec_bg('osascript -e \'tell application "System Events" to set the dock badge of the front application to ${count}\'')
 	}
 	return win
 }
@@ -1278,7 +1278,7 @@ pub fn (win &SimpleWindow) get_system_theme() string {
 // Note: this is best-effort and may require Automation permissions for System Events.
 pub fn (win &SimpleWindow) set_system_dark_mode(enabled bool) &SimpleWindow {
 	value := if enabled { 'true' } else { 'false' }
-	win.exec_bg("osascript -e 'tell application \"System Events\" to tell appearance preferences to set dark mode to ${value}'")
+	win.exec_bg('osascript -e \'tell application "System Events" to tell appearance preferences to set dark mode to ${value}\'')
 	return win
 }
 
@@ -1290,7 +1290,7 @@ pub fn (win &SimpleWindow) set_system_theme(theme string) !&SimpleWindow {
 		return error('Invalid theme "${theme}". Use "dark" or "light".')
 	}
 	enabled := if mode == 'dark' { 'true' } else { 'false' }
-	cmd := "osascript -e 'tell application \"System Events\" to tell appearance preferences to set dark mode to ${enabled}'"
+	cmd := 'osascript -e \'tell application "System Events" to tell appearance preferences to set dark mode to ${enabled}\''
 	res := os.execute(cmd)
 	if res.exit_code != 0 {
 		return error('Failed to set macOS system theme: ${res.output.trim_space()}')
@@ -1381,7 +1381,7 @@ pub fn (win &SimpleWindow) trash_file(path string) !&SimpleWindow {
 		return error('File does not exist: ${path}')
 	}
 	escaped := abs_path.replace('"', '\\"')
-	script := "osascript -e 'tell application \"Finder\" to delete POSIX file \"${escaped}\"'"
+	script := 'osascript -e \'tell application "Finder" to delete POSIX file "${escaped}"\''
 	output, code := win.exec(script)
 	if code != 0 {
 		return error('Failed to move to Trash: ${output}')
@@ -1550,7 +1550,7 @@ fn power_caffeinate_pid_file_for_process(pid int) string {
 pub fn (win &SimpleWindow) start_prevent_sleep() &SimpleWindow {
 	win.stop_prevent_sleep()
 	pid_file := power_caffeinate_pid_file_for_process(win.get_pid())
-	win.exec_bg("sh -c 'caffeinate -dimsu >/dev/null 2>&1 & echo $! > \"${pid_file}\"'")
+	win.exec_bg('sh -c \'caffeinate -dimsu >/dev/null 2>&1 & echo $! > "${pid_file}"\'')
 	return win
 }
 
@@ -2914,11 +2914,11 @@ pub fn (win &SimpleWindow) parallel_exec(commands []string) []ExecResult {
 			start := time.now()
 			res := os.execute(c)
 			return ExecResult{
-				output: res.output.trim_space()
-				exit_code: res.exit_code
+				output:      res.output.trim_space()
+				exit_code:   res.exit_code
 				duration_ms: time.since(start).milliseconds()
-				timed_out: false
-				attempts: 1
+				timed_out:   false
+				attempts:    1
 			}
 		}(cmd)
 	}

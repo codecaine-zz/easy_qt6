@@ -633,8 +633,6 @@ pub fn (win &SimpleWindow) load_values_from_file(path string) ! {
 	}
 }
 
-
-
 // enable_app_autosave periodically saves application state into the recommended application support directory.
 // Default interval is 5000ms.
 pub fn (win &SimpleWindow) enable_app_autosave(interval_ms ...int) &SimpleWindow {
@@ -1706,9 +1704,9 @@ pub fn (win &SimpleWindow) clear_all_fields() &SimpleWindow {
 		} else if control.kind in ['number', 'slider', 'progress', 'levelindicator', 'stepper',
 			'knob'] {
 			win.set_value_int(control.name, 0)
-		} else if control.kind in ['input', 'password', 'textarea', 'date', 'mode', 'theme',
-			'listbox', 'color', 'search', 'dropdown', 'segmented', 'radiogroup', 'combobox',
-			'pathcontrol', 'tokenfield'] {
+		} else if control.kind in ['input', 'password', 'textarea', 'date', 'mode', 'theme', 'listbox',
+			'color', 'search', 'dropdown', 'segmented', 'radiogroup', 'combobox', 'pathcontrol',
+			'tokenfield'] {
 			win.set_text(control.name, '')
 		}
 	}
@@ -3019,7 +3017,11 @@ pub fn (win &SimpleWindow) speak(text string) &SimpleWindow {
 
 // save_layout saves window dimensions (w, h) and screen position (x, y) to the recommended user application storage location.
 pub fn (win &SimpleWindow) save_layout(app_name string) &SimpleWindow {
-	resolved_app := if app_name.trim_space() != '' { app_name.trim_space() } else { win.get_app_name() }
+	resolved_app := if app_name.trim_space() != '' {
+		app_name.trim_space()
+	} else {
+		win.get_app_name()
+	}
 	path := win.get_app_storage_path('layout.json', resolved_app)
 	x, y, w, h := win.get_bounds()
 	m := {
@@ -3035,7 +3037,11 @@ pub fn (win &SimpleWindow) save_layout(app_name string) &SimpleWindow {
 
 // restore_layout restores window position and size from saved layout in the recommended user application storage location.
 pub fn (win &SimpleWindow) restore_layout(app_name string) &SimpleWindow {
-	resolved_app := if app_name.trim_space() != '' { app_name.trim_space() } else { win.get_app_name() }
+	resolved_app := if app_name.trim_space() != '' {
+		app_name.trim_space()
+	} else {
+		win.get_app_name()
+	}
 	mut path := win.get_app_storage_path('layout.json', resolved_app)
 	if !os.exists(path) {
 		legacy_path := os.join_path(os.home_dir(), '.${resolved_app}_layout.json')
@@ -3134,4 +3140,3 @@ pub fn (win &SimpleWindow) editable_label(text string) &SimpleWindow {
 pub fn (win &SimpleWindow) nav_rail(items []SidebarItem) &SimpleWindow {
 	return win.add_nav_rail('', items)
 }
-

@@ -54,7 +54,7 @@ fn main() {
 
 	// Container & Image Target Selection
 	win.begin_group_box('grp_target_box', '🎯 Target Container / Image Specification')
-	
+
 	win.begin_row('row_target_input')
 	win.add_label('lbl_id', 'Container ID / Image Name:')
 	win.add_input('txt_target_id', '')
@@ -70,7 +70,7 @@ fn main() {
 
 	// Operations Bar
 	win.begin_group_box('grp_operations', '⚡ Container & Image Management Actions')
-	
+
 	win.begin_row('row_ops_btns')
 	win.add_button('btn_list_containers', '📦 Active Containers (ps)')
 	win.add_button('btn_list_all_containers', '📋 All Containers (ps -a)')
@@ -107,7 +107,7 @@ fn main() {
 	// -------------------------------------------------------------
 	run_docker_cmd := fn (mut w simplegui.SimpleWindow, desc string, args []string) {
 		bin_path := get_container_bin()
-		w.append_console('docker_console', '▶ Executing: ${os.file_name(bin_path)} ${args.join(" ")}...\n', 1)
+		w.append_console('docker_console', '▶ Executing: ${os.file_name(bin_path)} ${args.join(' ')}...\n', 1)
 		w.set_status('Running ${desc}...')
 		w.toast('⚡ ${desc}...')
 
@@ -141,22 +141,26 @@ fn main() {
 
 	// List Active Containers
 	win.on_click('btn_list_containers', fn [run_docker_cmd] (mut w simplegui.SimpleWindow) {
-		run_docker_cmd(mut w, 'List Active Containers', ['ps', '--format', 'table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}\t{{.Names}}'])
+		run_docker_cmd(mut w, 'List Active Containers', ['ps', '--format',
+			'table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}\t{{.Names}}'])
 	})
 
 	// List All Containers
 	win.on_click('btn_list_all_containers', fn [run_docker_cmd] (mut w simplegui.SimpleWindow) {
-		run_docker_cmd(mut w, 'List All Containers (ps -a)', ['ps', '-a', '--format', 'table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}'])
+		run_docker_cmd(mut w, 'List All Containers (ps -a)', ['ps', '-a', '--format',
+			'table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}'])
 	})
 
 	// List Images
 	win.on_click('btn_list_images', fn [run_docker_cmd] (mut w simplegui.SimpleWindow) {
-		run_docker_cmd(mut w, 'List Local Images', ['images', '--format', 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}'])
+		run_docker_cmd(mut w, 'List Local Images', ['images', '--format',
+			'table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}'])
 	})
 
 	// Container Stats
 	win.on_click('btn_container_stats', fn [run_docker_cmd] (mut w simplegui.SimpleWindow) {
-		run_docker_cmd(mut w, 'Container Resource Usage', ['stats', '--no-stream', '--format', 'table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}'])
+		run_docker_cmd(mut w, 'Container Resource Usage', ['stats', '--no-stream', '--format',
+			'table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}'])
 	})
 
 	// Volumes

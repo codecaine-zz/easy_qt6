@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive `CONTRIBUTING.md` outlining project structure, formatting, and PR guidelines.
   - Platform Support Matrix table in `README.md`.
   - Detailed `CHANGELOG.md` tracking all major releases.
+- **vlang_utils Suite Update (37 Modules)**:
+  - Synchronized developer utility suite from `codecaine-zz/vlang_utils`.
+  - Added 7 new modules: `mathutils`, `cronutils`, `urlutils`, `jwtutils`, `eventutils`, `diffutils`, and `graphutils` with full unit test coverage and standalone demos.
+  - Enhanced existing modules (`timeutils`, `asyncutils`, `cliutils`, `cryptoutils`, `fileutils`, `flowutils`, `httputils`, `sliceutils`, `sqliteutils`, `strutils`, `sysutils`).
+  - Updated API reference documentation in `UTILS_API.md` and project `README.md`.
 
 ### Changed
 - **SimpleCLI Argument Validation**:

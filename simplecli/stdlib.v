@@ -61,12 +61,12 @@ pub:
 pub fn (cli &SimpleCli) parse_url(url_str string) !SimpleURL {
 	u := urllib.parse(url_str)!
 	return SimpleURL{
-		raw: url_str
-		scheme: u.scheme
-		host: u.hostname()
-		port: u.port().int()
-		path: u.path
-		query: u.raw_query
+		raw:      url_str
+		scheme:   u.scheme
+		host:     u.hostname()
+		port:     u.port().int()
+		path:     u.path
+		query:    u.raw_query
 		fragment: u.fragment
 	}
 }
@@ -97,8 +97,8 @@ pub fn (cli &SimpleCli) http_request(method string, url string, body string) !Si
 	res := req.do()!
 	return SimpleHttpResponse{
 		status_code: res.status_code
-		body: res.body
-		url: url
+		body:        res.body
+		url:         url
 	}
 }
 

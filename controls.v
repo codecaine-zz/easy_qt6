@@ -231,40 +231,65 @@ pub fn (win &SimpleWindow) add_html_view(name string, html string) &SimpleWindow
 pub fn (win &SimpleWindow) add_pdf_view(name string, url string) &SimpleWindow {
 	mut real_name := name
 	if real_name == '' { real_name = win.auto_name('pdfview') }
-	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'pdfview', '', url, false, 0) }
-	if win.window_info != unsafe { nil } { C.window_add_pdf_view_control(win.window_info, real_name.str, url.str) }
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.upsert_control(real_name, 'pdfview', '', url, false, 0)
+	}
+	if win.window_info != unsafe { nil } {
+		C.window_add_pdf_view_control(win.window_info, real_name.str, url.str)
+	}
 	return win
 }
 
 pub fn (win &SimpleWindow) add_avplayer_view(name string, url string) &SimpleWindow {
 	mut real_name := name
 	if real_name == '' { real_name = win.auto_name('avplayerview') }
-	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'avplayerview', '', url, false, 0) }
-	if win.window_info != unsafe { nil } { C.window_add_avplayer_view_control(win.window_info, real_name.str, url.str) }
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.upsert_control(real_name, 'avplayerview', '', url, false, 0)
+	}
+	if win.window_info != unsafe { nil } {
+		C.window_add_avplayer_view_control(win.window_info, real_name.str, url.str)
+	}
 	return win
 }
 
 pub fn (win &SimpleWindow) add_mtk_view(name string) &SimpleWindow {
 	mut real_name := name
 	if real_name == '' { real_name = win.auto_name('mtkview') }
-	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'mtkview', '', '', false, 0) }
-	if win.window_info != unsafe { nil } { C.window_add_mtk_view_control(win.window_info, real_name.str) }
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.upsert_control(real_name, 'mtkview', '', '', false, 0)
+	}
+	if win.window_info != unsafe { nil } {
+		C.window_add_mtk_view_control(win.window_info, real_name.str)
+	}
 	return win
 }
 
 pub fn (win &SimpleWindow) add_map_view(name string) &SimpleWindow {
 	mut real_name := name
 	if real_name == '' { real_name = win.auto_name('mapview') }
-	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'mapview', '', '', false, 0) }
-	if win.window_info != unsafe { nil } { C.window_add_map_view_control(win.window_info, real_name.str) }
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.upsert_control(real_name, 'mapview', '', '', false, 0)
+	}
+	if win.window_info != unsafe { nil } {
+		C.window_add_map_view_control(win.window_info, real_name.str)
+	}
 	return win
 }
 
 pub fn (win &SimpleWindow) add_column_browser(name string) &SimpleWindow {
 	mut real_name := name
 	if real_name == '' { real_name = win.auto_name('columnbrowser') }
-	unsafe { mut w := &SimpleWindow(win); w.upsert_control(real_name, 'columnbrowser', '', '', false, 0) }
-	if win.window_info != unsafe { nil } { C.window_add_column_browser_control(win.window_info, real_name.str) }
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.upsert_control(real_name, 'columnbrowser', '', '', false, 0)
+	}
+	if win.window_info != unsafe { nil } {
+		C.window_add_column_browser_control(win.window_info, real_name.str)
+	}
 	return win
 }
 
@@ -1673,8 +1698,8 @@ pub fn (win &SimpleWindow) clear(name string) &SimpleWindow {
 		'stepper', 'knob'] {
 		win.set_value_int(name, 0)
 	} else if entry.kind in ['input', 'password', 'textarea', 'date', 'datetime', 'mode', 'theme',
-		'listbox', 'color', 'search', 'dropdown', 'segmented', 'radiogroup', 'combobox',
-		'pathcontrol', 'tokenfield', 'chip_group'] {
+		'listbox', 'color', 'search', 'dropdown', 'segmented', 'radiogroup', 'combobox', 'pathcontrol',
+		'tokenfield', 'chip_group'] {
 		win.set_text(name, '')
 	}
 	return win
@@ -1827,7 +1852,6 @@ pub fn (win &SimpleWindow) resize(width int, height int) &SimpleWindow {
 pub fn (win &SimpleWindow) zoom() &SimpleWindow {
 	return win.maximize()
 }
-
 
 // get_titlebar_visible retrieves the titlebar visible of the window or target control.
 pub fn (win &SimpleWindow) set_control_width(name string, width int) &SimpleWindow {
@@ -2883,8 +2907,8 @@ pub fn (win &SimpleWindow) is_control_dirty(name string) bool {
 		return false
 	}
 	entry := win.controls[idx]
-	if entry.kind in ['label', 'button', 'image', 'html_view', 'progress', 'helpbutton',
-		'imagebutton', 'stat_card', 'banner', 'section_header'] {
+	if entry.kind in ['label', 'button', 'image', 'html_view', 'progress', 'helpbutton', 'imagebutton',
+		'stat_card', 'banner', 'section_header'] {
 		return false
 	}
 	if entry.kind in ['checkbox', 'toggle', 'spinner'] {
@@ -2937,8 +2961,8 @@ pub fn (win &SimpleWindow) get_dirty_values() map[string]string {
 		if win.is_control_dirty(entry.name) {
 			if entry.kind in ['checkbox', 'toggle', 'spinner'] {
 				values[entry.name] = win.get_checked(entry.name).str()
-			} else if entry.kind in ['number', 'slider', 'vertical_slider', 'levelindicator',
-				'stepper', 'knob'] {
+			} else if entry.kind in ['number', 'slider', 'vertical_slider', 'levelindicator', 'stepper',
+				'knob'] {
 				values[entry.name] = win.get_value_int(entry.name).str()
 			} else {
 				values[entry.name] = win.get_text(entry.name)
@@ -4848,8 +4872,6 @@ pub fn (win &SimpleWindow) status_dock(status_text string, dot_color string, cou
 	return win.add_status_dock('', status_text, dot_color, count_text)
 }
 
-
-
 // show_share_sheet displays the native macOS system share sheet / popover (NSSharingServicePicker)
 // anchored to the specified control or window.
 pub fn (win &SimpleWindow) show_share_sheet(items []string, anchor_control string) &SimpleWindow {
@@ -5742,7 +5764,11 @@ pub fn (win &SimpleWindow) add_nav_rail(name string, items []SidebarItem) &Simpl
 // set_slider_tick_marks configures tick marks on a slider and optionally snaps values to tick positions.
 pub fn (win &SimpleWindow) set_slider_tick_marks(name string, count int, stops_only bool) &SimpleWindow {
 	if win.window_info != unsafe { nil } {
-		C.window_set_slider_tick_marks(win.window_info, name.str, count, if stops_only { 1 } else { 0 })
+		C.window_set_slider_tick_marks(win.window_info, name.str, count, if stops_only {
+			1
+		} else {
+			0
+		})
 	}
 	return win
 }
@@ -5750,7 +5776,11 @@ pub fn (win &SimpleWindow) set_slider_tick_marks(name string, count int, stops_o
 // set_progress_indeterminate sets whether the progress bar is indeterminate (barber pole / spinning).
 pub fn (win &SimpleWindow) set_progress_indeterminate(name string, indeterminate bool) &SimpleWindow {
 	if win.window_info != unsafe { nil } {
-		C.window_set_progress_indeterminate(win.window_info, name.str, if indeterminate { 1 } else { 0 })
+		C.window_set_progress_indeterminate(win.window_info, name.str, if indeterminate {
+			1
+		} else {
+			0
+		})
 	}
 	return win
 }
@@ -5929,4 +5959,3 @@ pub fn (win &SimpleWindow) scroll_to_bottom(name string) &SimpleWindow {
 	}
 	return win
 }
-

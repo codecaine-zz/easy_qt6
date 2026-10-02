@@ -15,29 +15,33 @@ fn main() {
 	win.add_form_field('Username:', 'username', '')
 		.placeholder('Enter username...')
 		.tooltip('Only letters and numbers')
+		.onchange
 	// Fluent onchange handler chained directly on creation
-	.onchange
-	(fn (mut w2 simplegui.SimpleWindow, val string) {
-		if val.len < 3 {
-			w2.error('Username must be at least 3 characters')
-		} else {
-			// Clear error for this control individually
-			w2.clear_error('username')
+	(
+		fn (mut w2 simplegui.SimpleWindow, val string) {
+			if val.len < 3 {
+				w2.error('Username must be at least 3 characters')
+			} else {
+				// Clear error for this control individually
+				w2.clear_error('username')
+			}
 		}
-	})
+	)
 
 	win.add_form_field('Email Address:', 'email', '')
 		.placeholder('Enter email...')
+		.onchange
 	// Fluent onchange handler chained directly on creation
-	.onchange
-	(fn (mut w2 simplegui.SimpleWindow, val string) {
-		if !val.contains('@') {
-			w2.error('Please enter a valid email')
-		} else {
-			// Clear error for this control individually
-			w2.clear_error('email')
+	(
+		fn (mut w2 simplegui.SimpleWindow, val string) {
+			if !val.contains('@') {
+				w2.error('Please enter a valid email')
+			} else {
+				// Clear error for this control individually
+				w2.clear_error('email')
+			}
 		}
-	})
+	)
 
 	win.add_vertical_spacer(10)
 

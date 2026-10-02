@@ -59,7 +59,8 @@ fn main() {
 fn run_interactive(mut app simplecli.SimpleCli, has_pandoc bool) {
 	app.panel('Pandoc Document Wizard', 'Convert between Markdown, HTML, PDF, Docx, and LaTeX.')
 	doc := app.prompt('Enter input document path', 'README.md')
-	target_fmt := app.select('Target Output Format:', ['HTML (.html)', 'Docx (.docx)', 'PDF (.pdf)', 'EPUB (.epub)'])
+	target_fmt := app.select('Target Output Format:', ['HTML (.html)', 'Docx (.docx)', 'PDF (.pdf)',
+		'EPUB (.epub)'])
 	out_file := match target_fmt {
 		'Docx (.docx)' { 'document.docx' }
 		'PDF (.pdf)' { 'document.pdf' }

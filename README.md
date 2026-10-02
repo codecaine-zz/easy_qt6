@@ -28,7 +28,7 @@ Build real, native Cocoa desktop apps in [V](https://vlang.io) with a beginner-f
 - [Demos](#demos)
 - [Production Workstations & Studio Applications](#production-workstations--studio-applications)
 - [SimpleCLI: Headless Console & RAD Toolkit](#simplecli-headless-console--rad-toolkit)
-- [Developer Utility Suite (30 Modules)](#developer-utility-suite-30-modules)
+- [Developer Utility Suite (37 Modules)](#developer-utility-suite-37-modules)
 - [Related GUI & RAD Desktop Projects](#related-gui--rad-desktop-projects)
 - [Security & Command Injection Prevention](#security--command-injection-prevention)
 - [Testing](#testing)
@@ -2181,9 +2181,9 @@ For headless console scripts, backend daemons, automation tools, and CI/CD pipel
 
 ---
 
-## Developer Utility Suite (30 Modules)
+## Developer Utility Suite (37 Modules)
 
-`vlang_simplegui` bundles the complete **`vlang_utils`** developer utility suite — 30 standalone, zero-dependency, production-grade utility modules designed for rapid application development:
+`vlang_simplegui` bundles the complete **`vlang_utils`** developer utility suite — 37 standalone, zero-dependency, production-grade utility modules designed for rapid application development:
 
 | Module | Description |
 | :--- | :--- |
@@ -2217,8 +2217,15 @@ For headless console scripts, backend daemons, automation tools, and CI/CD pipel
 | [`bitutils`](UTILS_API.md#bitutils-api) | Dynamic bitsets (`BitSet`), bitwise operations, popcount, binary string conversions, and bitmask flag manipulation. |
 | [`compressutils`](UTILS_API.md#compressutils-api) | Fast compression & decompression for Gzip, Zlib, Deflate, and Zstandard strings and byte buffers. |
 | [`tarutils`](UTILS_API.md#tarutils-api) | In-memory and on-disk TAR archive creation, unpacking, directory archiving, and tarball inspection. |
+| [`mathutils`](UTILS_API.md#mathutils-api) | 2D Math, spatial geometry, and number theory: `lerp`, `remap`, `clamp`, `round_to_step`, `Point2D`, `Rect` intersection, `gcd`, `lcm`, and power-of-two checks. |
+| [`cronutils`](UTILS_API.md#cronutils-api) | Standard 5-field cron parsing, next execution calculation (`next_after`), matching, and human-readable English summaries (`cron_to_human`). |
+| [`urlutils`](UTILS_API.md#urlutils-api) | RFC 3986 URL parsing (`parse_url`), component inspection, path segment joining (`join_path`), and credential redaction (`redact_credentials`). |
+| [`jwtutils`](UTILS_API.md#jwtutils-api) | Lightweight, zero-dependency HS256 JSON Web Token signing (`sign_jwt`) and verification (`verify_jwt`) with expiration checks. |
+| [`eventutils`](UTILS_API.md#eventutils-api) | In-memory publish-subscribe event dispatcher (`EventEmitter`, `on`, `once`, `off`, `emit`). |
+| [`diffutils`](UTILS_API.md#diffutils-api) | Line-level text diffing (`diff_lines`) and standard Git-style unified diff generation (`unified_diff`). |
+| [`graphutils`](UTILS_API.md#graphutils-api) | Generic Directed Acyclic Graphs (`Graph[T]`), cycle detection, Kahn's topological sort (`topological_sort`), BFS, and DFS. |
 
-👉 **Read the comprehensive 4,600+ line [Developer Utility Suite Reference Manual (UTILS_API.md)](UTILS_API.md).**
+👉 **Read the comprehensive 5,900+ line [Developer Utility Suite Reference Manual (UTILS_API.md)](UTILS_API.md).**
 
 ---
 

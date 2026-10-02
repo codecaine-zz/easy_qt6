@@ -51,7 +51,7 @@ fn main() {
 	// Target Domain Scope & Input
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_target', '🎯 Target Domain & Scope Configuration')
-	
+
 	win.begin_row('row_target')
 	win.add_label('lbl_domain', 'Target Domain:')
 	win.add_input('txt_domain', 'github.com')
@@ -62,7 +62,7 @@ fn main() {
 		'Fast Passive (Default Sources)',
 		'All Sources (Comprehensive -all)',
 		'Recursive Subdomains (-recursive)',
-		'Active DNS Validation (-active -oI)'
+		'Active DNS Validation (-active -oI)',
 	], 'Fast Passive (Default Sources)')
 	win.set_control_width('dd_mode', 230)
 	win.end_row()
@@ -220,12 +220,12 @@ fn main() {
 				if res.exit_code == 0 {
 					out_str := res.output.trim_space()
 					win_main.set('txt_subdomains', out_str)
-					
+
 					mut count := 0
 					if out_str != '' {
 						count = out_str.split_into_lines().len
 					}
-					
+
 					win_main.append_console('subfinder_console', '✅ Completed! Found ${count} subdomains for ${domain_input} in ${elapsed_ms} ms.\n', 4)
 					win_main.set('lbl_stats', '📊 Stats: SUCCESS  |  Target: ${domain_input}  |  Subdomains Found: ${count}  |  Duration: ${elapsed_ms} ms')
 					win_main.set_status('Discovery completed: ${count} subdomains found.')

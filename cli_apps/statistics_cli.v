@@ -58,8 +58,7 @@ fn display_stats(mut app simplecli.SimpleCli, data []f64) {
 	max_val := app.stats_max(data)
 	range_val := max_val - min_val
 
-	app.table(
-		['Statistical Metric', 'Calculated Value'],
+	app.table(['Statistical Metric', 'Calculated Value'],
 		[
 			['Sample Count (N)', '${data.len}'],
 			['Arithmetic Mean (μ)', '${mean_val:.4f}'],
@@ -71,8 +70,7 @@ fn display_stats(mut app simplecli.SimpleCli, data []f64) {
 			['Minimum Value', '${min_val:.4f}'],
 			['Maximum Value', '${max_val:.4f}'],
 			['Range (Max - Min)', '${range_val:.4f}'],
-		]
-	)
+		])
 	app.success('Calculated in ${app.elapsed_ms()} ms.')
 }
 

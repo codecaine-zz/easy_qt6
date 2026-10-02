@@ -558,8 +558,7 @@ fn (t SpyTarget) export_csv(path string, mut win simplegui.SimpleWindow) bool {
 	mut lines := []string{}
 	lines << 'Kind_Role,Name_Title,Label,Value,Enabled,Visible,Width,Height'
 	for c in ctrls {
-		lines << '"${c.kind.replace('"', '""')}","${c.name.replace('"', '""')}","${c.label.replace('"',
-			'""')}","${c.value.replace('"', '""')}",${c.enabled},${c.visible},${c.width},${c.height}'
+		lines << '"${c.kind.replace('"', '""')}","${c.name.replace('"', '""')}","${c.label.replace('"', '""')}","${c.value.replace('"', '""')}",${c.enabled},${c.visible},${c.width},${c.height}'
 	}
 	payload := lines.join('\n')
 	win.write_file(path, payload)
@@ -580,8 +579,7 @@ fn (t SpyTarget) export_json(path string, mut win simplegui.SimpleWindow) bool {
 		lines << '  "controls": ['
 		for i, ctrl in ext_ctrls {
 			comma := if i < ext_ctrls.len - 1 { ',' } else { '' }
-			lines << '    {"role":"${ctrl.role.replace('"', '\\"')}","title":"${ctrl.title.replace('"',
-				'\\"')}","value":"${ctrl.value.replace('"', '\\"')}","enabled":${ctrl.enabled}}${comma}'
+			lines << '    {"role":"${ctrl.role.replace('"', '\\"')}","title":"${ctrl.title.replace('"', '\\"')}","value":"${ctrl.value.replace('"', '\\"')}","enabled":${ctrl.enabled}}${comma}'
 		}
 		lines << '  ]'
 		lines << '}'
@@ -1198,50 +1196,50 @@ fn main() {
 	// =========================================================================
 	spy_win.group('pane_automation', 'Automation Studio, Live Watcher & Code Generator',
 		fn (mut w simplegui.SimpleWindow) {
-		w.add_label('lbl_macro_header', '🤖 One-Click Form Macro Automation Workflows:')
-		w.begin_row('macro_buttons_row')
-		w.add_button('btn_macro_autofill', '⚡ Auto-Fill Sample Ticket')
-		w.add_button('btn_macro_clear', '🧹 Reset Form Inputs')
-		w.add_button('btn_macro_toggle_checks', '🔁 Toggle Checkboxes')
-		w.end_row()
+			w.add_label('lbl_macro_header', '🤖 One-Click Form Macro Automation Workflows:')
+			w.begin_row('macro_buttons_row')
+			w.add_button('btn_macro_autofill', '⚡ Auto-Fill Sample Ticket')
+			w.add_button('btn_macro_clear', '🧹 Reset Form Inputs')
+			w.add_button('btn_macro_toggle_checks', '🔁 Toggle Checkboxes')
+			w.end_row()
 
-		w.add_vertical_spacer(8)
-		w.add_label('lbl_watcher_header', '👀 Control Watcher & Matching Options:')
-		w.begin_row('watcher_options_row')
-		w.add_checkbox('strict_selector_mode', 'Strict selector mode', false)
-		w.add_checkbox('auto_watch_control', 'Watch selected control value (800ms)', false)
-		w.add_label('watch_status', 'Watch mode: idle')
-		w.end_row()
+			w.add_vertical_spacer(8)
+			w.add_label('lbl_watcher_header', '👀 Control Watcher & Matching Options:')
+			w.begin_row('watcher_options_row')
+			w.add_checkbox('strict_selector_mode', 'Strict selector mode', false)
+			w.add_checkbox('auto_watch_control', 'Watch selected control value (800ms)', false)
+			w.add_label('watch_status', 'Watch mode: idle')
+			w.end_row()
 
-		w.add_vertical_spacer(8)
-		w.add_label('lbl_bulk_header', '🧱 Bulk Batch Control Operations:')
-		w.begin_row('bulk_actions_row')
-		w.add_button('btn_enable_all', '✅ Enable All (Filtered)')
-		w.add_button('btn_disable_all', '🚫 Disable All (Filtered)')
-		w.add_button('btn_disable_all_internal', '🧱 Disable All (Internal)')
-		w.add_button('btn_set_all', '✍️ Set All (Filtered)')
-		w.add_button('btn_get_all', '📦 Get All (Filtered)')
-		w.end_row()
+			w.add_vertical_spacer(8)
+			w.add_label('lbl_bulk_header', '🧱 Bulk Batch Control Operations:')
+			w.begin_row('bulk_actions_row')
+			w.add_button('btn_enable_all', '✅ Enable All (Filtered)')
+			w.add_button('btn_disable_all', '🚫 Disable All (Filtered)')
+			w.add_button('btn_disable_all_internal', '🧱 Disable All (Internal)')
+			w.add_button('btn_set_all', '✍️ Set All (Filtered)')
+			w.add_button('btn_get_all', '📦 Get All (Filtered)')
+			w.end_row()
 
-		w.add_vertical_spacer(8)
-		w.add_label('lbl_codegen_header', '⚡ Live Executable Automation Code Generator:')
-		w.add_label('lbl_v_code', 'V Code Snippet:')
-		w.add_input('code_snippet_v', '')
-		w.add_label('lbl_py_code', 'Python Code Snippet:')
-		w.add_input('code_snippet_py', '')
+			w.add_vertical_spacer(8)
+			w.add_label('lbl_codegen_header', '⚡ Live Executable Automation Code Generator:')
+			w.add_label('lbl_v_code', 'V Code Snippet:')
+			w.add_input('code_snippet_v', '')
+			w.add_label('lbl_py_code', 'Python Code Snippet:')
+			w.add_input('code_snippet_py', '')
 
-		w.begin_row('copy_snippets_row')
-		w.add_button('btn_copy_v_snippet', '📋 Copy V Code Snippet')
-		w.add_button('btn_copy_py_snippet', '📋 Copy Python Snippet')
-		w.end_row()
+			w.begin_row('copy_snippets_row')
+			w.add_button('btn_copy_v_snippet', '📋 Copy V Code Snippet')
+			w.add_button('btn_copy_py_snippet', '📋 Copy Python Snippet')
+			w.end_row()
 
-		w.add_vertical_spacer(8)
-		w.add_label('lbl_export_header', '💾 Target Snapshot Export Tools:')
-		w.begin_row('export_tools_row')
-		w.add_button('btn_export_json_file', '💾 Save Target Snapshot JSON')
-		w.add_button('btn_export_csv_file', '📊 Save Control Tree CSV')
-		w.end_row()
-	})
+			w.add_vertical_spacer(8)
+			w.add_label('lbl_export_header', '💾 Target Snapshot Export Tools:')
+			w.begin_row('export_tools_row')
+			w.add_button('btn_export_json_file', '💾 Save Target Snapshot JSON')
+			w.add_button('btn_export_csv_file', '📊 Save Control Tree CSV')
+			w.end_row()
+		})
 
 	// =========================================================================
 	// TAB 4: Live Logs & Action Audit History

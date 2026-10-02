@@ -17,9 +17,9 @@ fn main() {
 
 	// --- 1. NSBrowser: Miller Columns Multi-Column Browser ---
 	win.add_section_header('sec_browser', '1. NSBrowser: Multi-Column Cascading Browser', 'Miller Columns navigation like Finder Column View')
-	
+
 	win.add_browser_view('finder_browser', 180)
-	
+
 	// Populate column 0 (Root categories)
 	win.set_browser_column_items('finder_browser', 0, [
 		'Documents',
@@ -54,7 +54,8 @@ fn main() {
 	win.add_button('btn_share_url', '🔗 Share SimpleGUI Repo')
 		.tooltip('Open macOS Share Sheet for URL')
 		.onclick(fn (mut w simplegui.SimpleWindow) {
-			w.show_share_sheet(['https://github.com/codecaine/vlang_simplegui', 'Build native macOS desktop apps with V and SimpleGUI!'], 'btn_share_url')
+			w.show_share_sheet(['https://github.com/codecaine/vlang_simplegui',
+				'Build native macOS desktop apps with V and SimpleGUI!'], 'btn_share_url')
 			w.toast_info('Opened macOS System Share Sheet')
 		})
 

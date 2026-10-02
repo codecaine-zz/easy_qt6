@@ -65,7 +65,13 @@ fn count_sentences(text string) int {
 			count++
 		}
 	}
-	return if count > 0 { count } else if text.trim_space() != '' { 1 } else { 0 }
+	return if count > 0 {
+		count
+	} else if text.trim_space() != '' {
+		1
+	} else {
+		0
+	}
 }
 
 fn count_paragraphs(text string) int {
@@ -110,7 +116,7 @@ fn calculate_word_frequencies(text string) []string {
 	mut pairs := []WordFrequency{}
 	for k, v in words_map {
 		pairs << WordFrequency{
-			word: k
+			word:  k
 			count: v
 		}
 	}
@@ -545,7 +551,7 @@ fn main() {
 '
 		}
 		'SQL: Table & Analytics Query' {
-			return '-- ===================================================
+			return "-- ===================================================
 -- Analytics Database Schema & Performance Query
 -- ===================================================
 
@@ -553,7 +559,7 @@ CREATE TABLE IF NOT EXISTS system_telemetry (
     id BIGSERIAL PRIMARY KEY,
     session_id UUID NOT NULL,
     event_type VARCHAR(64) NOT NULL,
-    payload JSONB DEFAULT \'{}\'::jsonb,
+    payload JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -566,10 +572,10 @@ SELECT
     MIN(created_at) AS first_seen,
     MAX(created_at) AS last_seen
 FROM system_telemetry
-WHERE created_at >= NOW() - INTERVAL \'7 days\'
+WHERE created_at >= NOW() - INTERVAL '7 days'
 GROUP BY event_type
 ORDER BY total_occurrences DESC;
-'
+"
 		}
 		'Bash: Automation Script' {
 			return '#!/usr/bin/env bash
@@ -623,18 +629,18 @@ fn main() {
 
 	mut state := &EditorState{
 		current_file_path: ''
-		is_dirty: false
-		font_size: 14
-		font_family: 'Menlo'
-		active_view: '📝 Editor & Tools'
+		is_dirty:          false
+		font_size:         14
+		font_family:       'Menlo'
+		active_view:       '📝 Editor & Tools'
 		active_buffer_idx: 0
-		buffers: [
+		buffers:           [
 			ScratchpadBuffer{ name: 'Scratchpad 1', content: '// Welcome to SimpleGUI Text Editor Pro!\n// Full-featured macOS Developer & Text Studio.\n\nfn main() {\n    println("Hello, World!")\n}\n', file: '' },
 			ScratchpadBuffer{ name: 'Scratchpad 2', content: '# Scratchpad 2\nWrite notes, queries, or ideas here.\n', file: '' },
 			ScratchpadBuffer{ name: 'Scratchpad 3', content: '{\n  "status": "ready",\n  "buffer": 3\n}\n', file: '' },
 			ScratchpadBuffer{ name: 'Scratchpad 4', content: '-- Scratchpad 4: SQL & Data\nSELECT * FROM documents WHERE active = true;\n', file: '' },
 		]
-		original_content: ''
+		original_content:  ''
 	}
 
 	state.original_content = state.buffers[0].content
@@ -646,7 +652,8 @@ fn main() {
 	win.add_heading('📝 Text Editor Pro Studio')
 
 	win.add_label('lbl_buf_sel', '  Active Buffer:')
-	win.add_dropdown('dd_buffer', ['1: Scratchpad 1', '2: Scratchpad 2', '3: Scratchpad 3', '4: Scratchpad 4'], '1: Scratchpad 1')
+	win.add_dropdown('dd_buffer', ['1: Scratchpad 1', '2: Scratchpad 2', '3: Scratchpad 3',
+		'4: Scratchpad 4'], '1: Scratchpad 1')
 	win.set_control_width('dd_buffer', 160)
 
 	win.add_label('lbl_theme_hdr', '  Theme:')
@@ -717,7 +724,7 @@ fn main() {
 		'Monaco',
 		'Courier New',
 		'Helvetica',
-		'System'
+		'System',
 	], 'Menlo')
 	win.set_control_width('dd_font_family', 110)
 	win.end_row()
@@ -808,7 +815,7 @@ fn main() {
 		'Node.js (node)',
 		'Bash (bash -s)',
 		'Ruby (ruby)',
-		'Perl (perl)'
+		'Perl (perl)',
 	], 'V (v run)')
 	win.set_control_width('dd_runtime', 180)
 
@@ -855,7 +862,7 @@ fn main() {
 		'Buffer 1: Scratchpad 1',
 		'Buffer 2: Scratchpad 2',
 		'Buffer 3: Scratchpad 3',
-		'Buffer 4: Scratchpad 4'
+		'Buffer 4: Scratchpad 4',
 	], 'Saved File on Disk')
 	win.set_control_width('dd_diff_target', 200)
 
@@ -885,7 +892,7 @@ fn main() {
 		'Markdown: Documentation',
 		'SQL: Table & Analytics Query',
 		'Bash: Automation Script',
-		'Dockerfile: Multi-Stage Build'
+		'Dockerfile: Multi-Stage Build',
 	], 'V: CLI Application')
 	win.set_control_width('dd_templates', 240)
 
@@ -951,8 +958,16 @@ fn main() {
 
 		read_time_min := f64(word_count) / 200.0
 		speak_time_min := f64(word_count) / 130.0
-		read_str := if read_time_min < 1.0 { '${int(read_time_min * 60)} seconds' } else { '${read_time_min:.1f} minutes' }
-		speak_str := if speak_time_min < 1.0 { '${int(speak_time_min * 60)} seconds' } else { '${speak_time_min:.1f} minutes' }
+		read_str := if read_time_min < 1.0 {
+			'${int(read_time_min * 60)} seconds'
+		} else {
+			'${read_time_min:.1f} minutes'
+		}
+		speak_str := if speak_time_min < 1.0 {
+			'${int(speak_time_min * 60)} seconds'
+		} else {
+			'${speak_time_min:.1f} minutes'
+		}
 
 		md5_sum := md5.hexhash(text)
 		sha256_sum := sha256.hexhash(text)
@@ -964,8 +979,16 @@ fn main() {
 		report << '📝 TEXT EDITOR PRO — DOCUMENT TELEMETRY & METRIC REPORT'
 		report << '========================================================================'
 		report << 'File Name / Buffer   : ' + file_display
-		report << 'Disk File Path       : ' + if state.current_file_path != '' { state.current_file_path } else { '(In-Memory Scratchpad Buffer)' }
-		report << 'Status               : ' + if state.is_dirty { 'Modified (Unsaved Changes)' } else { 'Saved / Clean' }
+		report << 'Disk File Path       : ' + if state.current_file_path != '' {
+			state.current_file_path
+		} else {
+			'(In-Memory Scratchpad Buffer)'
+		}
+		report << 'Status               : ' + if state.is_dirty {
+			'Modified (Unsaved Changes)'
+		} else {
+			'Saved / Clean'
+		}
 		report << 'Character Encoding   : UTF-8'
 		report << ''
 		report << '📊 STRUCTURAL COUNTS:'
@@ -984,10 +1007,18 @@ fn main() {
 		report << '------------------------------------------------------------------------'
 		report << 'Estimated Reading Time (200 WPM) : ${read_str}'
 		report << 'Estimated Speaking Time (130 WPM): ${speak_str}'
-		report << 'Average Word Length             : ' + if word_count > 0 { '${f64(char_count) / f64(word_count):.1f} chars/word' } else { '0' }
+		report << 'Average Word Length             : ' + if word_count > 0 {
+			'${f64(char_count) / f64(word_count):.1f} chars/word'
+		} else {
+			'0'
+		}
 		report << 'Maximum Line Length             : ${max_line_len} chars'
 		if longest_line.len > 0 {
-			disp_longest := if longest_line.len > 60 { longest_line[..60] + '...' } else { longest_line }
+			disp_longest := if longest_line.len > 60 {
+				longest_line[..60] + '...'
+			} else {
+				longest_line
+			}
 			report << 'Longest Line Preview            : "${disp_longest}"'
 		}
 		report << ''
@@ -1322,7 +1353,11 @@ fn main() {
 				tokens := line.split(' ')
 				mut new_tokens := []string{}
 				for tok in tokens {
-					matched := if match_case { tok == find_str } else { tok.to_lower() == find_str.to_lower() }
+					matched := if match_case {
+						tok == find_str
+					} else {
+						tok.to_lower() == find_str.to_lower()
+					}
 					if matched {
 						new_tokens << replace_str
 					} else {
@@ -1446,7 +1481,11 @@ fn main() {
 			mut out := words[0].to_lower()
 			for i in 1 .. words.len {
 				w_str := words[i]
-				out += w_str[..1].to_upper() + if w_str.len > 1 { w_str[1..].to_lower() } else { '' }
+				out += w_str[..1].to_upper() + if w_str.len > 1 {
+					w_str[1..].to_lower()
+				} else {
+					''
+				}
 			}
 			res_lines << out
 		}
@@ -1713,7 +1752,8 @@ fn main() {
 	win.on_click('btn_minify_json', fn [mut state, update_telemetry] (mut w simplegui.SimpleWindow) {
 		text := w.get('txt_editor').trim_space()
 		if text == '' { return }
-		res := simplegui.exec_safe_stdin('python3', ['-c', 'import sys, json; print(json.dumps(json.loads(sys.stdin.read()), separators=(",", ":")))'], text)
+		res := simplegui.exec_safe_stdin('python3', ['-c',
+			'import sys, json; print(json.dumps(json.loads(sys.stdin.read()), separators=(",", ":")))'], text)
 		if res.exit_code == 0 && res.output.trim_space() != '' {
 			w.set('txt_editor', res.output.trim_space())
 			state.is_dirty = true
@@ -2060,7 +2100,11 @@ fn main() {
 		// Clean up temporary script file
 		os.rm(tmp_script) or {}
 
-		status_badge := if res.exit_code == 0 { '🟢 SUCCESS (Exit 0)' } else { '🔴 FAILED (Exit ${res.exit_code})' }
+		status_badge := if res.exit_code == 0 {
+			'🟢 SUCCESS (Exit 0)'
+		} else {
+			'🔴 FAILED (Exit ${res.exit_code})'
+		}
 
 		mut out := []string{}
 		out << '========================================================================'

@@ -1056,7 +1056,6 @@ fn C.window_add_nav_rail_control(&WindowInfo, &u8, &&u8, &&u8, &&u8, &&u8, &int,
 fn C.window_get_nav_rail_selected(&WindowInfo, &u8) &u8
 fn C.window_set_nav_rail_selected(&WindowInfo, &u8, &u8)
 
-
 fn C.window_set_alpha(&WindowInfo, f64)
 
 fn C.window_get_alpha(&WindowInfo) f64
@@ -1996,7 +1995,11 @@ pub fn (win &SimpleWindow) grid_set_column_enabled(name string, col_idx int, ena
 // grid_set_row_enabled enables or disables a row.
 pub fn (win &SimpleWindow) grid_set_row_enabled(name string, row_idx int, enabled bool) &SimpleWindow {
 	if win.window_info != unsafe { nil } {
-		C.window_grid_set_row_enabled(win.window_info, name.str, row_idx, if enabled { 1 } else { 0 })
+		C.window_grid_set_row_enabled(win.window_info, name.str, row_idx, if enabled {
+			1
+		} else {
+			0
+		})
 	}
 	return win
 }

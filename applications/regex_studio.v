@@ -174,7 +174,7 @@ fn main() {
 
 	// Regex Configuration & Pattern Bar
 	win.begin_group_box('grp_pattern_config', '🎯 Regular Expression & Substitution Specification')
-	
+
 	win.begin_row('row_pattern_input')
 	win.add_label('lbl_pattern', 'Regex Pattern:')
 	win.add_input('txt_pattern', r'([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})')
@@ -190,7 +190,7 @@ fn main() {
 		'6. UUID v4 ([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})',
 		'7. Hex Color Codes (#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})',
 		'8. Markdown Links (\\[([^\\]]+)\\]\\(([^\\)]+)\\))',
-		'9. Key-Value Pairs (([a-zA-Z0-9_]+)\\s*:\\s*([^,\\n]+))'
+		'9. Key-Value Pairs (([a-zA-Z0-9_]+)\\s*:\\s*([^,\\n]+))',
 	], '1. Email Addresses ([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})')
 	win.set_control_width('dd_regex_presets', 320)
 	win.end_row()
@@ -219,7 +219,7 @@ fn main() {
 
 	// Dual Pane: Test Input Text & Matches/Substitutions Output
 	win.begin_row('row_dual_pane')
-	
+
 	win.begin_group_box('grp_test_text', '📥 Test Target Text')
 	win.add_textarea('txt_target_text', sample_test_text)
 	win.set_control_height('txt_target_text', 320)
@@ -281,7 +281,7 @@ fn main() {
 			w.set_text('txt_pattern', r'([a-zA-Z0-9_]+)\s*:\s*([^,\n]+)')
 			w.set_text('txt_replacement', r'"$1": "$2"')
 		}
-		w.toast('Applied regex recipe: ${selected.split("(")[0]}')
+		w.toast('Applied regex recipe: ${selected.split('(')[0]}')
 	})
 
 	// Load Sample Text

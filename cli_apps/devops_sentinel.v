@@ -72,12 +72,12 @@ fn run_sentinel_monitor(mut app simplecli.SimpleCli) {
 	uptime := app.get_uptime_seconds()
 
 	app.print_kv({
-		'CPU Model':     cpu_info,
-		'Cores / Arch':  '${cores} Cores (${arch})',
-		'Total Memory':  ram,
-		'Local IP / MAC': '${local_ip} (${mac})',
-		'Default Gateway': gateway,
-		'Uptime':        '${uptime / 3600}h ${(uptime % 3600) / 60}m ${uptime % 60}s',
+		'CPU Model':       cpu_info
+		'Cores / Arch':    '${cores} Cores (${arch})'
+		'Total Memory':    ram
+		'Local IP / MAC':  '${local_ip} (${mac})'
+		'Default Gateway': gateway
+		'Uptime':          '${uptime / 3600}h ${(uptime % 3600) / 60}m ${uptime % 60}s'
 	})
 
 	app.step(2, 'Probing Critical Network & Backend Service Endpoints')
@@ -112,10 +112,10 @@ fn run_sentinel_monitor(mut app simplecli.SimpleCli) {
 	app.progress_bar(disk_stats.percent, 100.0, 'Root Partition (/) Storage: ${disk_gb_used:.1f} GB / ${disk_gb_total:.1f} GB')
 
 	app.print_kv({
-		'CPU Utilization': '${cpu_usage:.1f}%',
-		'Load Averages':   '${l1:.2f} (1m), ${l5:.2f} (5m), ${l15:.2f} (15m)',
-		'Disk Used %':     '${disk_stats.percent:.1f}% (${disk_gb_used:.1f} / ${disk_gb_total:.1f} GB)',
-		'Power Status':    batt_str,
+		'CPU Utilization': '${cpu_usage:.1f}%'
+		'Load Averages':   '${l1:.2f} (1m), ${l5:.2f} (5m), ${l15:.2f} (15m)'
+		'Disk Used %':     '${disk_stats.percent:.1f}% (${disk_gb_used:.1f} / ${disk_gb_total:.1f} GB)'
+		'Power Status':    batt_str
 	})
 
 	// Threshold Warnings

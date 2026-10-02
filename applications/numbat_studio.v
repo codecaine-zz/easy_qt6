@@ -67,8 +67,8 @@ fn main() {
 	win.set_padding(14)
 
 	mut state := &AppState{
-		history: []NumbatHistoryItem{}
-		active_tab: '⚡ Physical Calculator'
+		history:     []NumbatHistoryItem{}
+		active_tab:  '⚡ Physical Calculator'
 		last_result: '0'
 	}
 
@@ -95,7 +95,7 @@ fn main() {
 		'🌌 Fundamental Constants',
 		'📐 Dimensional Unit Guide',
 		'📚 Physics & Engineering Recipes',
-		'📜 Calculation History'
+		'📜 Calculation History',
 	])
 
 	// -------------------------------------------------------------
@@ -319,10 +319,10 @@ fn main() {
 
 			// Record history item
 			item := NumbatHistoryItem{
-				timestamp: time.now().format_ss()
+				timestamp:  time.now().format_ss()
 				expression: clean
-				result: res
-				mode: mode_label
+				result:     res
+				mode:       mode_label
 			}
 			state.history << item
 			update_history_view(mut w)
@@ -391,27 +391,67 @@ fn main() {
 	})
 
 	// Unit Keypad Buttons
-	win.on_click('btn_u_arrow', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' -> ') })
-	win.on_click('btn_u_kmh', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' km/h') })
-	win.on_click('btn_u_mph', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' mph') })
-	win.on_click('btn_u_mps', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' m/s') })
-	win.on_click('btn_u_kj', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' kJ') })
-	win.on_click('btn_u_kwh', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' kWh') })
-	win.on_click('btn_u_watts', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' W') })
-	win.on_click('btn_u_hp', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' hp') })
-	win.on_click('btn_u_celsius', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' °C') })
-	win.on_click('btn_u_fahrenheit', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' °F') })
+	win.on_click('btn_u_arrow', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' -> ')
+	})
+	win.on_click('btn_u_kmh', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' km/h')
+	})
+	win.on_click('btn_u_mph', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' mph')
+	})
+	win.on_click('btn_u_mps', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' m/s')
+	})
+	win.on_click('btn_u_kj', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' kJ')
+	})
+	win.on_click('btn_u_kwh', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' kWh')
+	})
+	win.on_click('btn_u_watts', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' W')
+	})
+	win.on_click('btn_u_hp', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' hp')
+	})
+	win.on_click('btn_u_celsius', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' °C')
+	})
+	win.on_click('btn_u_fahrenheit', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' °F')
+	})
 
-	win.on_click('btn_u_newtons', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' N') })
-	win.on_click('btn_u_pascals', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' Pa') })
-	win.on_click('btn_u_psi', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' psi') })
-	win.on_click('btn_u_bar', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' bar') })
-	win.on_click('btn_u_atm', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' atm') })
-	win.on_click('btn_u_coulomb', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' C') })
-	win.on_click('btn_u_volts', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' V') })
-	win.on_click('btn_u_ohms', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' ohm') })
-	win.on_click('btn_u_ev', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' eV') })
-	win.on_click('btn_u_ly', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' ly') })
+	win.on_click('btn_u_newtons', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' N')
+	})
+	win.on_click('btn_u_pascals', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' Pa')
+	})
+	win.on_click('btn_u_psi', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' psi')
+	})
+	win.on_click('btn_u_bar', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' bar')
+	})
+	win.on_click('btn_u_atm', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' atm')
+	})
+	win.on_click('btn_u_coulomb', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' C')
+	})
+	win.on_click('btn_u_volts', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' V')
+	})
+	win.on_click('btn_u_ohms', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' ohm')
+	})
+	win.on_click('btn_u_ev', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' eV')
+	})
+	win.on_click('btn_u_ly', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' ly')
+	})
 
 	// -------------------------------------------------------------
 	// Tab 2: Multi-Line Physics IDE

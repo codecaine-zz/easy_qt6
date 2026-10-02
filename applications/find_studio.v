@@ -23,125 +23,125 @@ struct FindRecipe {
 fn get_all_find_recipes() []FindRecipe {
 	return [
 		FindRecipe{
-			title: '🧹 Clean System Cruft (.DS_Store, *.tmp, *~, *.swp)'
-			category: 'Maintenance'
-			name_pat: '*.tmp, .DS_Store, *~, *.swp, *.bak'
-			type_sel: 'Files (f)'
-			size_filter: 'Any'
-			time_filter: 'Any Time'
-			depth_max: 'Unlimited'
+			title:        '🧹 Clean System Cruft (.DS_Store, *.tmp, *~, *.swp)'
+			category:     'Maintenance'
+			name_pat:     '*.tmp, .DS_Store, *~, *.swp, *.bak'
+			type_sel:     'Files (f)'
+			size_filter:  'Any'
+			time_filter:  'Any Time'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git'
-			perm_filter: ''
-			desc: 'Finds macOS metadata, editor swap files, and temporary leftover artifacts.'
+			perm_filter:  ''
+			desc:         'Finds macOS metadata, editor swap files, and temporary leftover artifacts.'
 		},
 		FindRecipe{
-			title: '🐘 Enormous Large Files (>500MB Disk Cleanup)'
-			category: 'Storage'
-			name_pat: '*'
-			type_sel: 'Files (f)'
-			size_filter: '> 500 MB'
-			time_filter: 'Any Time'
-			depth_max: 'Unlimited'
+			title:        '🐘 Enormous Large Files (>500MB Disk Cleanup)'
+			category:     'Storage'
+			name_pat:     '*'
+			type_sel:     'Files (f)'
+			size_filter:  '> 500 MB'
+			time_filter:  'Any Time'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git'
-			perm_filter: ''
-			desc: 'Identifies space-consuming disk hogs, ISOs, virtual disks, and database dumps.'
+			perm_filter:  ''
+			desc:         'Identifies space-consuming disk hogs, ISOs, virtual disks, and database dumps.'
 		},
 		FindRecipe{
-			title: '⏰ Recently Modified Files (Last 24 Hours)'
-			category: 'Activity'
-			name_pat: '*'
-			type_sel: 'Files (f)'
-			size_filter: 'Any'
-			time_filter: 'Modified in last 24h (-1d)'
-			depth_max: 'Unlimited'
+			title:        '⏰ Recently Modified Files (Last 24 Hours)'
+			category:     'Activity'
+			name_pat:     '*'
+			type_sel:     'Files (f)'
+			size_filter:  'Any'
+			time_filter:  'Modified in last 24h (-1d)'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git, node_modules'
-			perm_filter: ''
-			desc: 'Discovers files created or modified within the past day.'
+			perm_filter:  ''
+			desc:         'Discovers files created or modified within the past day.'
 		},
 		FindRecipe{
-			title: '🕳️ Empty Files & Zero-Byte Artifacts'
-			category: 'Maintenance'
-			name_pat: '*'
-			type_sel: 'Files (f)'
-			size_filter: 'Empty (0 Bytes)'
-			time_filter: 'Any Time'
-			depth_max: 'Unlimited'
+			title:        '🕳️ Empty Files & Zero-Byte Artifacts'
+			category:     'Maintenance'
+			name_pat:     '*'
+			type_sel:     'Files (f)'
+			size_filter:  'Empty (0 Bytes)'
+			time_filter:  'Any Time'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git'
-			perm_filter: ''
-			desc: 'Finds blank files taking up inode space.'
+			perm_filter:  ''
+			desc:         'Finds blank files taking up inode space.'
 		},
 		FindRecipe{
-			title: '📦 Node Modules & Build Folders'
-			category: 'Storage'
-			name_pat: 'node_modules, target, .build, bin, obj, dist'
-			type_sel: 'Directories (d)'
-			size_filter: 'Any'
-			time_filter: 'Any Time'
-			depth_max: 'Unlimited'
+			title:        '📦 Node Modules & Build Folders'
+			category:     'Storage'
+			name_pat:     'node_modules, target, .build, bin, obj, dist'
+			type_sel:     'Directories (d)'
+			size_filter:  'Any'
+			time_filter:  'Any Time'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git'
-			perm_filter: ''
-			desc: 'Finds heavy dependency and compiler build output directories.'
+			perm_filter:  ''
+			desc:         'Finds heavy dependency and compiler build output directories.'
 		},
 		FindRecipe{
-			title: '🔑 Private Keys & Sensitive Env Files'
-			category: 'Security'
-			name_pat: '*.pem, *.key, id_rsa*, id_ed25519*, *.pfx, *.p12, .env*'
-			type_sel: 'Files (f)'
-			size_filter: 'Any'
-			time_filter: 'Any Time'
-			depth_max: 'Unlimited'
+			title:        '🔑 Private Keys & Sensitive Env Files'
+			category:     'Security'
+			name_pat:     '*.pem, *.key, id_rsa*, id_ed25519*, *.pfx, *.p12, .env*'
+			type_sel:     'Files (f)'
+			size_filter:  'Any'
+			time_filter:  'Any Time'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git'
-			perm_filter: ''
-			desc: 'Audits sensitive security certificates, SSH private keys, and environment files.'
+			perm_filter:  ''
+			desc:         'Audits sensitive security certificates, SSH private keys, and environment files.'
 		},
 		FindRecipe{
-			title: '⚡ Executable Binaries & Shell Scripts'
-			category: 'Audit'
-			name_pat: '*'
-			type_sel: 'Files (f)'
-			size_filter: 'Any'
-			time_filter: 'Any Time'
-			depth_max: 'Unlimited'
+			title:        '⚡ Executable Binaries & Shell Scripts'
+			category:     'Audit'
+			name_pat:     '*'
+			type_sel:     'Files (f)'
+			size_filter:  'Any'
+			time_filter:  'Any Time'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git'
-			perm_filter: 'Executable (+111)'
-			desc: 'Finds runnable scripts and executable binaries across folders.'
+			perm_filter:  'Executable (+111)'
+			desc:         'Finds runnable scripts and executable binaries across folders.'
 		},
 		FindRecipe{
-			title: '📜 Stale Log Files (>30 Days Old)'
-			category: 'Maintenance'
-			name_pat: '*.log, *.out, *.trace'
-			type_sel: 'Files (f)'
-			size_filter: 'Any'
-			time_filter: 'Older than 30 days (+30d)'
-			depth_max: 'Unlimited'
+			title:        '📜 Stale Log Files (>30 Days Old)'
+			category:     'Maintenance'
+			name_pat:     '*.log, *.out, *.trace'
+			type_sel:     'Files (f)'
+			size_filter:  'Any'
+			time_filter:  'Older than 30 days (+30d)'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git'
-			perm_filter: ''
-			desc: 'Finds old unrotated log files ready for archiving or deletion.'
+			perm_filter:  ''
+			desc:         'Finds old unrotated log files ready for archiving or deletion.'
 		},
 		FindRecipe{
-			title: '🔗 Broken / Dangling Symbolic Links'
-			category: 'Diagnostics'
-			name_pat: '*'
-			type_sel: 'Symlinks (l)'
-			size_filter: 'Any'
-			time_filter: 'Any Time'
-			depth_max: 'Unlimited'
+			title:        '🔗 Broken / Dangling Symbolic Links'
+			category:     'Diagnostics'
+			name_pat:     '*'
+			type_sel:     'Symlinks (l)'
+			size_filter:  'Any'
+			time_filter:  'Any Time'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git'
-			perm_filter: ''
-			desc: 'Lists all symbolic links across the directory tree.'
+			perm_filter:  ''
+			desc:         'Lists all symbolic links across the directory tree.'
 		},
 		FindRecipe{
-			title: '💻 Source Code Tree (.v, .rs, .go, .py, .ts, .c)'
-			category: 'Developer'
-			name_pat: '*.v, *.rs, *.go, *.py, *.ts, *.js, *.c, *.h, *.cpp'
-			type_sel: 'Files (f)'
-			size_filter: 'Any'
-			time_filter: 'Any Time'
-			depth_max: 'Unlimited'
+			title:        '💻 Source Code Tree (.v, .rs, .go, .py, .ts, .c)'
+			category:     'Developer'
+			name_pat:     '*.v, *.rs, *.go, *.py, *.ts, *.js, *.c, *.h, *.cpp'
+			type_sel:     'Files (f)'
+			size_filter:  'Any'
+			time_filter:  'Any Time'
+			depth_max:    'Unlimited'
 			exclude_dirs: '.git, node_modules, target, .build'
-			perm_filter: ''
-			desc: 'Lists all software source files while skipping vendor/build trees.'
-		}
+			perm_filter:  ''
+			desc:         'Lists all software source files while skipping vendor/build trees.'
+		},
 	]
 }
 
@@ -236,7 +236,7 @@ fn main() {
 		'Directories (d)',
 		'Symlinks (l)',
 		'Sockets (s)',
-		'Pipes (p)'
+		'Pipes (p)',
 	], 'All Entries')
 	win.set_control_width('dd_type', 140)
 	win.end_row()
@@ -252,7 +252,7 @@ fn main() {
 		'> 1 MB',
 		'< 1 MB',
 		'< 100 KB',
-		'Empty (0 Bytes)'
+		'Empty (0 Bytes)',
 	], 'Any')
 	win.set_control_width('dd_size', 130)
 
@@ -264,7 +264,7 @@ fn main() {
 		'Modified in last 7 days (-7d)',
 		'Older than 30 days (+30d)',
 		'Older than 90 days (+90d)',
-		'Older than 1 year (+365d)'
+		'Older than 1 year (+365d)',
 	], 'Any Time')
 	win.set_control_width('dd_time', 210)
 
@@ -275,7 +275,7 @@ fn main() {
 		'2 Levels',
 		'3 Levels',
 		'5 Levels',
-		'10 Levels'
+		'10 Levels',
 	], 'Unlimited')
 	win.set_control_width('dd_depth', 130)
 	win.end_row()
@@ -291,7 +291,7 @@ fn main() {
 		'Executable (+111)',
 		'Readable (444)',
 		'Writable (644)',
-		'World Writable (+002)'
+		'World Writable (+002)',
 	], 'Any')
 	win.set_control_width('dd_perm', 160)
 
@@ -343,19 +343,31 @@ fn main() {
 
 		// Depth
 		depth_sel := win.get('dd_depth')
-		if depth_sel.contains('1 Level') { args << ['-maxdepth', '1'] }
-		else if depth_sel.contains('2 Levels') { args << ['-maxdepth', '2'] }
-		else if depth_sel.contains('3 Levels') { args << ['-maxdepth', '3'] }
-		else if depth_sel.contains('5 Levels') { args << ['-maxdepth', '5'] }
-		else if depth_sel.contains('10 Levels') { args << ['-maxdepth', '10'] }
+		if depth_sel.contains('1 Level') {
+			args << ['-maxdepth', '1']
+		} else if depth_sel.contains('2 Levels') {
+			args << ['-maxdepth', '2']
+		} else if depth_sel.contains('3 Levels') {
+			args << ['-maxdepth', '3']
+		} else if depth_sel.contains('5 Levels') {
+			args << ['-maxdepth', '5']
+		} else if depth_sel.contains('10 Levels') {
+			args << ['-maxdepth', '10']
+		}
 
 		// Type
 		type_sel := win.get('dd_type')
-		if type_sel.contains('Files') { args << ['-type', 'f'] }
-		else if type_sel.contains('Directories') { args << ['-type', 'd'] }
-		else if type_sel.contains('Symlinks') { args << ['-type', 'l'] }
-		else if type_sel.contains('Sockets') { args << ['-type', 's'] }
-		else if type_sel.contains('Pipes') { args << ['-type', 'p'] }
+		if type_sel.contains('Files') {
+			args << ['-type', 'f']
+		} else if type_sel.contains('Directories') {
+			args << ['-type', 'd']
+		} else if type_sel.contains('Symlinks') {
+			args << ['-type', 'l']
+		} else if type_sel.contains('Sockets') {
+			args << ['-type', 's']
+		} else if type_sel.contains('Pipes') {
+			args << ['-type', 'p']
+		}
 
 		// Name Patterns (supports comma separated list like "*.tmp, *.bak")
 		name_input := win.get('txt_name').trim_space()
@@ -378,30 +390,51 @@ fn main() {
 
 		// Size
 		size_sel := win.get('dd_size')
-		if size_sel.contains('> 1 GB') { args << ['-size', '+1G'] }
-		else if size_sel.contains('> 500 MB') { args << ['-size', '+500M'] }
-		else if size_sel.contains('> 100 MB') { args << ['-size', '+100M'] }
-		else if size_sel.contains('> 10 MB') { args << ['-size', '+10M'] }
-		else if size_sel.contains('> 1 MB') { args << ['-size', '+1M'] }
-		else if size_sel.contains('< 1 MB') { args << ['-size', '-1M'] }
-		else if size_sel.contains('< 100 KB') { args << ['-size', '-100k'] }
-		else if size_sel.contains('Empty') { args << ['-size', '0'] }
+		if size_sel.contains('> 1 GB') {
+			args << ['-size', '+1G']
+		} else if size_sel.contains('> 500 MB') {
+			args << ['-size', '+500M']
+		} else if size_sel.contains('> 100 MB') {
+			args << ['-size', '+100M']
+		} else if size_sel.contains('> 10 MB') {
+			args << ['-size', '+10M']
+		} else if size_sel.contains('> 1 MB') {
+			args << ['-size', '+1M']
+		} else if size_sel.contains('< 1 MB') {
+			args << ['-size', '-1M']
+		} else if size_sel.contains('< 100 KB') {
+			args << ['-size', '-100k']
+		} else if size_sel.contains('Empty') {
+			args << ['-size', '0']
+		}
 
 		// Age / Modified Time
 		time_sel := win.get('dd_time')
-		if time_sel.contains('-60m') { args << ['-mmin', '-60'] }
-		else if time_sel.contains('-1d') { args << ['-mtime', '-1'] }
-		else if time_sel.contains('-7d') { args << ['-mtime', '-7'] }
-		else if time_sel.contains('+30d') { args << ['-mtime', '+30'] }
-		else if time_sel.contains('+90d') { args << ['-mtime', '+90'] }
-		else if time_sel.contains('+365d') { args << ['-mtime', '+365'] }
+		if time_sel.contains('-60m') {
+			args << ['-mmin', '-60']
+		} else if time_sel.contains('-1d') {
+			args << ['-mtime', '-1']
+		} else if time_sel.contains('-7d') {
+			args << ['-mtime', '-7']
+		} else if time_sel.contains('+30d') {
+			args << ['-mtime', '+30']
+		} else if time_sel.contains('+90d') {
+			args << ['-mtime', '+90']
+		} else if time_sel.contains('+365d') {
+			args << ['-mtime', '+365']
+		}
 
 		// Permissions
 		perm_sel := win.get('dd_perm')
-		if perm_sel.contains('+111') { args << ['-perm', '+111'] }
-		else if perm_sel.contains('444') { args << ['-perm', '444'] }
-		else if perm_sel.contains('644') { args << ['-perm', '644'] }
-		else if perm_sel.contains('+002') { args << ['-perm', '+002'] }
+		if perm_sel.contains('+111') {
+			args << ['-perm', '+111']
+		} else if perm_sel.contains('444') {
+			args << ['-perm', '444']
+		} else if perm_sel.contains('644') {
+			args << ['-perm', '644']
+		} else if perm_sel.contains('+002') {
+			args << ['-perm', '+002']
+		}
 
 		// Detailed Listing or Print
 		if win.get_bool('chk_details') {

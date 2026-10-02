@@ -136,8 +136,7 @@ fn test_new_useful_window_controls() {
 	mut win := simplegui.new_simple_window('New Useful Controls Test', 800, 600)
 
 	// 1. Quick Action Bar
-	win.add_quick_action_bar('quick_bar', ['Refresh', 'Export', 'Settings'], ['🔄', '📤',
-		'⚙️'])
+	win.add_quick_action_bar('quick_bar', ['Refresh', 'Export', 'Settings'], ['🔄', '📤', '⚙️'])
 	assert win.has_control('quick_bar') == true
 	win.set_quick_action_enabled('quick_bar', 0, false)
 

@@ -69,7 +69,7 @@ fn main() {
 
 	// Query Controls
 	win.begin_group_box('grp_dns_scope', '🎯 Target Domain & Query Parameters')
-	
+
 	win.begin_row('row_target_bar')
 	win.add_label('lbl_domain', 'Domain Name:')
 	win.add_input('txt_domain', 'github.com')
@@ -86,7 +86,7 @@ fn main() {
 		'NS (Name Servers)',
 		'SOA (Start of Authority)',
 		'PTR (Reverse DNS)',
-		'CAA (Certificate Authority Auth)'
+		'CAA (Certificate Authority Auth)',
 	], 'ANY (All Records)')
 	win.set_control_width('dd_record_type', 210)
 
@@ -97,7 +97,7 @@ fn main() {
 		'Google (8.8.8.8)',
 		'Quad9 (9.9.9.9)',
 		'OpenDNS (208.67.222.222)',
-		'AdGuard (94.140.14.14)'
+		'AdGuard (94.140.14.14)',
 	], 'Default System DNS')
 	win.set_control_width('dd_nameserver', 180)
 	win.end_row()
@@ -158,11 +158,17 @@ fn main() {
 
 		server_raw := w.get('dd_nameserver')
 		mut server_arg := ''
-		if server_raw.contains('1.1.1.1') { server_arg = '@1.1.1.1' }
-		else if server_raw.contains('8.8.8.8') { server_arg = '@8.8.8.8' }
-		else if server_raw.contains('9.9.9.9') { server_arg = '@9.9.9.9' }
-		else if server_raw.contains('208.67.222.222') { server_arg = '@208.67.222.222' }
-		else if server_raw.contains('94.140.14.14') { server_arg = '@94.140.14.14' }
+		if server_raw.contains('1.1.1.1') {
+			server_arg = '@1.1.1.1'
+		} else if server_raw.contains('8.8.8.8') {
+			server_arg = '@8.8.8.8'
+		} else if server_raw.contains('9.9.9.9') {
+			server_arg = '@9.9.9.9'
+		} else if server_raw.contains('208.67.222.222') {
+			server_arg = '@208.67.222.222'
+		} else if server_raw.contains('94.140.14.14') {
+			server_arg = '@94.140.14.14'
+		}
 
 		is_short := w.get('chk_short') == 'true'
 		is_trace := w.get('chk_trace') == 'true'
@@ -186,7 +192,7 @@ fn main() {
 			args << '+dnssec'
 		}
 
-		w.append_console('dns_console', '▶ Resolving DNS: dig ${args.join(" ")}\n', 1)
+		w.append_console('dns_console', '▶ Resolving DNS: dig ${args.join(' ')}\n', 1)
 		w.set_status('Querying DNS records for ${domain}...')
 
 		go fn [mut w, dig_bin, args, domain, rec_type] () {
@@ -261,7 +267,7 @@ fn main() {
 
 		go fn [mut w, dig_bin, domain] () {
 			t0 := time.ticks()
-			
+
 			mx_res := simplegui.exec_safe(dig_bin, [domain, 'MX', '+short'])
 			spf_res := simplegui.exec_safe(dig_bin, [domain, 'TXT', '+short'])
 			dmarc_res := simplegui.exec_safe(dig_bin, ['_dmarc.' + domain, 'TXT', '+short'])
@@ -273,7 +279,11 @@ fn main() {
 			report += '===================================================\n\n'
 
 			report += '--- 1. MX (Mail Exchange) Servers ---\n'
-			report += if mx_res.output.trim_space() != '' { mx_res.output.trim_space() } else { 'No MX records found.' }
+			report += if mx_res.output.trim_space() != '' {
+				mx_res.output.trim_space()
+			} else {
+				'No MX records found.'
+			}
 			report += '\n\n--- 2. SPF (Sender Policy Framework) ---\n'
 			mut has_spf := false
 			for line in spf_res.output.split_into_lines() {

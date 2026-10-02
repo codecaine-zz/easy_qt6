@@ -71,7 +71,7 @@ fn main() {
 	// File Selection Group
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_files', '📁 Image Input & Output')
-	
+
 	// Input File Row
 	win.begin_row('row_input')
 	win.add_label('lbl_input', 'Input Image:')
@@ -120,10 +120,11 @@ fn main() {
 		'1920x1080 (FHD 16:9)',
 		'1280x720 (HD 720p)',
 		'3840x2160 (4K UHD)',
-		'Custom Dimensions'
+		'Custom Dimensions',
 	], 'Original Size')
 	win.add_label('lbl_dpi', 'Target DPI:')
-	win.add_dropdown('dd_dpi', ['Original', '72 DPI (Web Screen)', '150 DPI (Balanced)', '300 DPI (High-Res Print)'], 'Original')
+	win.add_dropdown('dd_dpi', ['Original', '72 DPI (Web Screen)', '150 DPI (Balanced)',
+		'300 DPI (High-Res Print)'], 'Original')
 	win.end_row()
 
 	win.begin_row('row_res_2')
@@ -131,7 +132,8 @@ fn main() {
 	win.add_input('txt_custom_w', '1920')
 	win.add_label('lbl_custom_h', 'Custom Height:')
 	win.add_input('txt_custom_h', '1080')
-	win.add_dropdown('dd_aspect_mode', ['Fit within (Preserve Aspect Ratio)', 'Exact Dimensions (Stretch)', 'Crop & Fill Center'], 'Fit within (Preserve Aspect Ratio)')
+	win.add_dropdown('dd_aspect_mode', ['Fit within (Preserve Aspect Ratio)',
+		'Exact Dimensions (Stretch)', 'Crop & Fill Center'], 'Fit within (Preserve Aspect Ratio)')
 	win.end_row()
 	win.end_group_box()
 
@@ -139,9 +141,12 @@ fn main() {
 	win.begin_group_box('pane_format', 'Modern Web Formats, Favicon.ico & Privacy Optimization')
 	win.begin_row('row_fmt_1')
 	win.add_label('lbl_format', 'Target Format:')
-	win.add_dropdown('dd_format', ['webp (Modern Web)', 'avif (Ultra High Compression)', 'jpeg (Universal)', 'png (Lossless Alpha)', 'ico (Multi-Res Favicon)', 'svg (Rasterize)', 'pdf (Single Document)', 'tiff', 'bmp'], 'webp (Modern Web)')
+	win.add_dropdown('dd_format', ['webp (Modern Web)', 'avif (Ultra High Compression)',
+		'jpeg (Universal)', 'png (Lossless Alpha)', 'ico (Multi-Res Favicon)', 'svg (Rasterize)',
+		'pdf (Single Document)', 'tiff', 'bmp'], 'webp (Modern Web)')
 	win.add_label('lbl_quality', 'Quality / Compression:')
-	win.add_dropdown('dd_quality', ['95% (Maximum Quality)', '85% (High Quality Web)', '75% (Standard Balance)', '60% (Compact Size)', '40% (Max Compression)'], '85% (High Quality Web)')
+	win.add_dropdown('dd_quality', ['95% (Maximum Quality)', '85% (High Quality Web)',
+		'75% (Standard Balance)', '60% (Compact Size)', '40% (Max Compression)'], '85% (High Quality Web)')
 	win.end_row()
 
 	win.begin_row('row_fmt_2')
@@ -163,7 +168,7 @@ fn main() {
 		'Facebook Link Preview (1.91:1 1200x630)',
 		'LinkedIn Background Banner (1584x396)',
 		'Apple App Store Icon (1024x1024)',
-		'Favicon Multi-Size ICO (16, 32, 48, 64px)'
+		'Favicon Multi-Size ICO (16, 32, 48, 64px)',
 	], 'Instagram Square Post (1:1 1080x1080)')
 	win.end_row()
 
@@ -176,9 +181,11 @@ fn main() {
 	win.begin_group_box('pane_bg_remove', 'Magic Background Color Removal & Transparency')
 	win.begin_row('row_bg_1')
 	win.add_label('lbl_bg_color', 'Color to Make Transparent:')
-	win.add_dropdown('dd_bg_color', ['white (Solid White Background)', 'black (Solid Black Background)', '#00ff00 (Chroma Green Screen)', '#0000ff (Chroma Blue Screen)'], 'white (Solid White Background)')
+	win.add_dropdown('dd_bg_color', ['white (Solid White Background)', 'black (Solid Black Background)',
+		'#00ff00 (Chroma Green Screen)', '#0000ff (Chroma Blue Screen)'], 'white (Solid White Background)')
 	win.add_label('lbl_fuzz', 'Color Tolerance (Fuzz):')
-	win.add_dropdown('dd_fuzz', ['5% (Strict Match)', '10% (Recommended)', '20% (Broader)', '35% (Aggressive)'], '10% (Recommended)')
+	win.add_dropdown('dd_fuzz', ['5% (Strict Match)', '10% (Recommended)', '20% (Broader)',
+		'35% (Aggressive)'], '10% (Recommended)')
 	win.end_row()
 
 	win.begin_row('row_bg_2')
@@ -194,7 +201,8 @@ fn main() {
 	win.add_label('lbl_crop_h', 'Crop Height:')
 	win.add_input('txt_crop_h', '600')
 	win.add_label('lbl_gravity', 'Gravity:')
-	win.add_dropdown('dd_gravity', ['Center', 'North (Top)', 'South (Bottom)', 'East (Right)', 'West (Left)', 'NorthWest', 'SouthEast'], 'Center')
+	win.add_dropdown('dd_gravity', ['Center', 'North (Top)', 'South (Bottom)', 'East (Right)',
+		'West (Left)', 'NorthWest', 'SouthEast'], 'Center')
 	win.end_row()
 
 	win.begin_row('row_crop_2')
@@ -219,17 +227,19 @@ fn main() {
 		'Invert / Negative',
 		'Charcoal Sketch Effect',
 		'Oil Painting Effect',
-		'Vignette (Radial Shadow)'
+		'Vignette (Radial Shadow)',
 	], 'None')
 	win.add_label('lbl_rotate', 'Rotation / Orientation:')
-	win.add_dropdown('dd_rotate', ['None', 'Rotate 90° CW', 'Rotate 90° CCW', 'Rotate 180°', 'Flip Horizontal', 'Flip Vertical', 'Auto-Orient from EXIF'], 'None')
+	win.add_dropdown('dd_rotate', ['None', 'Rotate 90° CW', 'Rotate 90° CCW', 'Rotate 180°',
+		'Flip Horizontal', 'Flip Vertical', 'Auto-Orient from EXIF'], 'None')
 	win.end_row()
 
 	win.begin_row('row_eff_2')
 	win.add_label('lbl_border', 'Border Width:')
 	win.add_dropdown('dd_border_w', ['0 (No border)', '5px', '10px', '20px', '40px'], '0 (No border)')
 	win.add_label('lbl_border_col', 'Border Color:')
-	win.add_dropdown('dd_border_col', ['white', 'black', '#1e293b (Slate)', '#3b82f6 (Blue)', '#ef4444 (Red)', '#10b981 (Emerald)'], 'white')
+	win.add_dropdown('dd_border_col', ['white', 'black', '#1e293b (Slate)', '#3b82f6 (Blue)',
+		'#ef4444 (Red)', '#10b981 (Emerald)'], 'white')
 	win.end_row()
 	win.end_group_box()
 
@@ -240,14 +250,16 @@ fn main() {
 	win.add_input('txt_wm_text', '© 2026 Studio')
 	win.set_control_width('txt_wm_text', 400)
 	win.add_label('lbl_wm_pos', 'Position:')
-	win.add_dropdown('dd_wm_pos', ['SouthEast (Bottom-Right)', 'Center', 'South (Bottom-Center)', 'NorthEast (Top-Right)', 'SouthWest (Bottom-Left)'], 'SouthEast (Bottom-Right)')
+	win.add_dropdown('dd_wm_pos', ['SouthEast (Bottom-Right)', 'Center', 'South (Bottom-Center)',
+		'NorthEast (Top-Right)', 'SouthWest (Bottom-Left)'], 'SouthEast (Bottom-Right)')
 	win.end_row()
 
 	win.begin_row('row_wm_2')
 	win.add_label('lbl_wm_size', 'Font Size (pt):')
 	win.add_dropdown('dd_wm_size', ['18', '24', '32', '48', '64', '96'], '32')
 	win.add_label('lbl_wm_color', 'Color:')
-	win.add_dropdown('dd_wm_color', ['rgba(255,255,255,0.75) (White Semi-Transparent)', 'white', 'black', 'rgba(0,0,0,0.6) (Black Semi-Transparent)', 'gold', 'red'], 'rgba(255,255,255,0.75) (White Semi-Transparent)')
+	win.add_dropdown('dd_wm_color', ['rgba(255,255,255,0.75) (White Semi-Transparent)', 'white',
+		'black', 'rgba(0,0,0,0.6) (Black Semi-Transparent)', 'gold', 'red'], 'rgba(255,255,255,0.75) (White Semi-Transparent)')
 	win.end_row()
 	win.end_group_box()
 
@@ -260,7 +272,7 @@ fn main() {
 		'Combine Folder Images into Single Multi-Page PDF',
 		'Stitch Images Horizontally Side-by-Side (+append)',
 		'Stitch Images Vertically Stacked (-append)',
-		'2x2 Grid Montage Collage'
+		'2x2 Grid Montage Collage',
 	], 'Convert PDF to High-Res Images (300 DPI)')
 	win.end_row()
 	win.end_group_box()
@@ -282,7 +294,7 @@ fn main() {
 		'Convert All Images to PNG',
 		'Convert All Images to JPEG',
 		'Resize All Images 50%',
-		'Strip EXIF from All Images'
+		'Strip EXIF from All Images',
 	], 'Convert All Images to WebP (Quality 85%)')
 	win.add_button('btn_run_batch', '⚡ Run Batch Queue')
 	win.end_row()
@@ -366,22 +378,32 @@ fn main() {
 					} else if aspect.contains('Exact') {
 						cmd_parts << ['-resize', '${w}x${h}!']
 					} else {
-						cmd_parts << ['-resize', '${w}x${h}^', '-gravity', 'center', '-extent', '${w}x${h}']
+						cmd_parts << ['-resize', '${w}x${h}^', '-gravity', 'center', '-extent',
+							'${w}x${h}']
 					}
 				}
 			}
 
 			dpi := win.get('dd_dpi')
-			if dpi.contains('72') { cmd_parts << ['-density', '72'] }
-			else if dpi.contains('150') { cmd_parts << ['-density', '150'] }
-			else if dpi.contains('300') { cmd_parts << ['-density', '300'] }
+			if dpi.contains('72') {
+				cmd_parts << ['-density', '72']
+			} else if dpi.contains('150') {
+				cmd_parts << ['-density', '150']
+			} else if dpi.contains('300') {
+				cmd_parts << ['-density', '300']
+			}
 		} else if current_tab.contains('Web Formats') {
 			q_sel := win.get('dd_quality')
 			mut q := '85'
-			if q_sel.contains('95') { q = '95' }
-			else if q_sel.contains('75') { q = '75' }
-			else if q_sel.contains('60') { q = '60' }
-			else if q_sel.contains('40') { q = '40' }
+			if q_sel.contains('95') {
+				q = '95'
+			} else if q_sel.contains('75') {
+				q = '75'
+			} else if q_sel.contains('60') {
+				q = '60'
+			} else if q_sel.contains('40') {
+				q = '40'
+			}
 
 			fmt := win.get('dd_format')
 			if fmt.contains('ico') {
@@ -411,23 +433,44 @@ fn main() {
 				cmd_parts << ['-define', 'icon:auto-resize=64,48,32,16']
 			}
 		} else if current_tab.contains('Remove Background') {
-			bg_col := if win.get('dd_bg_color').contains('black') { 'black' } else if win.get('dd_bg_color').contains('Green') { '#00ff00' } else { 'white' }
-			fuzz_val := if win.get('dd_fuzz').contains('5%') { '5%' } else if win.get('dd_fuzz').contains('20%') { '20%' } else if win.get('dd_fuzz').contains('35%') { '35%' } else { '10%' }
-			
+			bg_col := if win.get('dd_bg_color').contains('black') {
+				'black'
+			} else if win.get('dd_bg_color').contains('Green') {
+				'#00ff00'
+			} else {
+				'white'
+			}
+			fuzz_val := if win.get('dd_fuzz').contains('5%') {
+				'5%'
+			} else if win.get('dd_fuzz').contains('20%') {
+				'20%'
+			} else if win.get('dd_fuzz').contains('35%') {
+				'35%'
+			} else {
+				'10%'
+			}
+
 			cmd_parts << ['-fuzz', fuzz_val, '-transparent', bg_col]
 			cmd_parts << ['-trim', '+repage']
 		} else if current_tab.contains('Crop') || current_tab.contains('Shadow') {
 			cw := win.get('txt_crop_w').trim_space()
 			ch := win.get('txt_crop_h').trim_space()
 			grav := win.get('dd_gravity')
-			
+
 			mut g := 'Center'
-			if grav.contains('NorthWest') { g = 'NorthWest' }
-			else if grav.contains('SouthEast') { g = 'SouthEast' }
-			else if grav.contains('North') { g = 'North' }
-			else if grav.contains('South') { g = 'South' }
-			else if grav.contains('East') { g = 'East' }
-			else if grav.contains('West') { g = 'West' }
+			if grav.contains('NorthWest') {
+				g = 'NorthWest'
+			} else if grav.contains('SouthEast') {
+				g = 'SouthEast'
+			} else if grav.contains('North') {
+				g = 'North'
+			} else if grav.contains('South') {
+				g = 'South'
+			} else if grav.contains('East') {
+				g = 'East'
+			} else if grav.contains('West') {
+				g = 'West'
+			}
 
 			cmd_parts << ['-gravity', g]
 			if cw != '' && ch != '' {
@@ -460,16 +503,31 @@ fn main() {
 			}
 
 			rot := win.get('dd_rotate')
-			if rot.contains('90° CW') { cmd_parts << ['-rotate', '90'] }
-			else if rot.contains('90° CCW') { cmd_parts << ['-rotate', '-90'] }
-			else if rot.contains('180°') { cmd_parts << ['-rotate', '180'] }
-			else if rot.contains('Flip Horizontal') { cmd_parts << ['-flop'] }
-			else if rot.contains('Flip Vertical') { cmd_parts << ['-flip'] }
-			else if rot.contains('Auto-Orient') { cmd_parts << ['-auto-orient'] }
+			if rot.contains('90° CW') {
+				cmd_parts << ['-rotate', '90']
+			} else if rot.contains('90° CCW') {
+				cmd_parts << ['-rotate', '-90']
+			} else if rot.contains('180°') {
+				cmd_parts << ['-rotate', '180']
+			} else if rot.contains('Flip Horizontal') {
+				cmd_parts << ['-flop']
+			} else if rot.contains('Flip Vertical') {
+				cmd_parts << ['-flip']
+			} else if rot.contains('Auto-Orient') {
+				cmd_parts << ['-auto-orient']
+			}
 
 			bw := win.get('dd_border_w')
 			if !bw.contains('0') && bw != '' {
-				bpx := if bw.contains('5px') { '5x5' } else if bw.contains('10px') { '10x10' } else if bw.contains('20px') { '20x20' } else { '40x40' }
+				bpx := if bw.contains('5px') {
+					'5x5'
+				} else if bw.contains('10px') {
+					'10x10'
+				} else if bw.contains('20px') {
+					'20x20'
+				} else {
+					'40x40'
+				}
 				bcol := win.get('dd_border_col').all_before(' ')
 				cmd_parts << ['-bordercolor', bcol, '-border', bpx]
 			}
@@ -477,17 +535,23 @@ fn main() {
 			text := win.get('txt_wm_text').trim_space()
 			pos := win.get('dd_wm_pos')
 			mut g := 'SouthEast'
-			if pos.contains('Center') { g = 'Center' }
-			else if pos.contains('South') { g = 'South' }
-			else if pos.contains('NorthEast') { g = 'NorthEast' }
-			else if pos.contains('SouthWest') { g = 'SouthWest' }
+			if pos.contains('Center') {
+				g = 'Center'
+			} else if pos.contains('South') {
+				g = 'South'
+			} else if pos.contains('NorthEast') {
+				g = 'NorthEast'
+			} else if pos.contains('SouthWest') {
+				g = 'SouthWest'
+			}
 
 			sz := win.get('dd_wm_size')
 			pt := if sz != '' { sz } else { '32' }
 			col := win.get('dd_wm_color').all_before(' ')
 
 			if text != '' {
-				cmd_parts << ['-gravity', g, '-pointsize', pt, '-fill', '"${col}"', '-annotate', '+20+20', '"${text}"']
+				cmd_parts << ['-gravity', g, '-pointsize', pt, '-fill', '"${col}"', '-annotate',
+					'+20+20', '"${text}"']
 			}
 		} else if current_tab.contains('PDF') {
 			mode := win.get('dd_pdf_mode')
@@ -532,7 +596,7 @@ fn main() {
 		if path != '' {
 			w.set('txt_input', path)
 			w.append_console('log_console', '📁 Selected Image: ${path}\n', 1)
-			
+
 			dir := os.dir(path)
 			file_stem := os.file_name(path).all_before_last('.')
 			default_out := os.join_path(dir, '${file_stem}_optimized.webp')
@@ -561,16 +625,23 @@ fn main() {
 		dir := os.dir(in_path)
 		stem := os.file_name(in_path).all_before_last('.')
 		current_tab := w.get('tabs_mode')
-		
+
 		mut ext := 'webp'
 		if current_tab.contains('Web Formats') {
 			fmt := w.get('dd_format')
-			if fmt.contains('ico') { ext = 'ico' }
-			else if fmt.contains('avif') { ext = 'avif' }
-			else if fmt.contains('png') { ext = 'png' }
-			else if fmt.contains('jpeg') { ext = 'jpg' }
-			else if fmt.contains('pdf') { ext = 'pdf' }
-			else { ext = 'webp' }
+			if fmt.contains('ico') {
+				ext = 'ico'
+			} else if fmt.contains('avif') {
+				ext = 'avif'
+			} else if fmt.contains('png') {
+				ext = 'png'
+			} else if fmt.contains('jpeg') {
+				ext = 'jpg'
+			} else if fmt.contains('pdf') {
+				ext = 'pdf'
+			} else {
+				ext = 'webp'
+			}
 		} else if current_tab.contains('Remove Background') {
 			ext = 'png'
 		} else if current_tab.contains('Social') && w.get('dd_soc_preset').contains('Favicon') {
@@ -639,10 +710,11 @@ fn main() {
 			mut processed := 0
 			for f in files {
 				ext := os.file_ext(f).to_lower()
-				if ext in ['.png', '.jpg', '.jpeg', '.webp', '.tiff', '.bmp', '.gif', '.heic', '.avif'] {
+				if ext in ['.png', '.jpg', '.jpeg', '.webp', '.tiff', '.bmp', '.gif', '.heic',
+					'.avif'] {
 					full_in := os.join_path(dir, f)
 					stem := f.all_before_last('.')
-					
+
 					mut raw_args := [full_in]
 					mut full_out := ''
 					if action.contains('AVIF') {

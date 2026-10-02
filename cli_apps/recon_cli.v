@@ -44,10 +44,10 @@ fn main() {
 	headers_out, _ := app.exec('curl -s -I -L https://${target} | head -n 10')
 
 	app.print_kv({
-		'Target Host': target,
-		'Primary Resolved IP': primary_ip,
-		'HTTPS Available': '${app.ping_tcp_port(target, 443, 1000)}',
-		'HTTP Available': '${app.ping_tcp_port(target, 80, 1000)}',
+		'Target Host':         target
+		'Primary Resolved IP': primary_ip
+		'HTTPS Available':     '${app.ping_tcp_port(target, 443, 1000)}'
+		'HTTP Available':      '${app.ping_tcp_port(target, 80, 1000)}'
 	})
 
 	app.panel('HTTP Response Headers', headers_out)

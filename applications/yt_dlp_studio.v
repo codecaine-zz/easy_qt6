@@ -60,7 +60,7 @@ fn main() {
 	// URL Input & Destination Directory
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_url_box', '🔗 Target Media URL & Save Location')
-	
+
 	win.begin_row('row_url')
 	win.add_label('lbl_url', 'Media / Playlist URL:')
 	win.add_input('txt_url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
@@ -83,7 +83,7 @@ fn main() {
 	// Format, Quality & Audio Suite Presets
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_quality_box', '⚙️ Quality, Container & Audio Presets')
-	
+
 	win.begin_row('row_preset_sel')
 	win.add_label('lbl_format_preset', 'Download Preset:')
 	win.add_dropdown('dd_preset', [
@@ -95,7 +95,7 @@ fn main() {
 		'🎵 Audio Only: FLAC (Lossless Audio)',
 		'🎵 Audio Only: AAC / M4A (256kbps Apple Native)',
 		'🎵 Audio Only: Opus (Best Voice / Podcast Codec)',
-		'🎵 Audio Only: WAV (Uncompressed PCM)'
+		'🎵 Audio Only: WAV (Uncompressed PCM)',
 	], '🎥 Best Video + Best Audio (Auto MP4/MKV)')
 	win.set_control_width('dd_preset', 380)
 
@@ -250,7 +250,9 @@ fn main() {
 		w.toast('⚡ Fetching metadata...')
 
 		go fn [mut w, ytdlp, url] () {
-			res := simplegui.exec_safe(ytdlp, ['--print', '%(title)s | %(uploader)s | %(duration_string)s | %(view_count)s views | %(resolution)s', url])
+			res := simplegui.exec_safe(ytdlp, ['--print',
+				'%(title)s | %(uploader)s | %(duration_string)s | %(view_count)s views | %(resolution)s',
+				url])
 			w.run_on_main_thread(fn [res] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					win_main.append_console('dl_console', 'ℹ️ Media Metadata:\n' + res.output + '\n', 4)
@@ -376,7 +378,8 @@ fn main() {
 			if playlist_range.contains('-') {
 				parts := playlist_range.split('-')
 				if parts.len >= 2 {
-					raw_args << ['--playlist-start', parts[0].trim_space(), '--playlist-end', parts[1].trim_space()]
+					raw_args << ['--playlist-start', parts[0].trim_space(), '--playlist-end',
+						parts[1].trim_space()]
 				}
 			} else {
 				raw_args << ['--playlist-items', playlist_range]

@@ -487,7 +487,6 @@ pub fn (win &SimpleWindow) begin_split_view(name string, vertical bool) &SimpleW
 	return win
 }
 
-
 // end_split_view ends the current split view layout container.
 pub fn (win &SimpleWindow) end_split_view() &SimpleWindow {
 	if win.window_info != unsafe { nil } {

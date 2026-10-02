@@ -137,7 +137,7 @@ fn test_simplecli_visual_components() {
 	app.banner('My Tool', 'v1.0')
 	app.panel('Status', 'All systems operational.\nCPU: OK\nRAM: OK')
 	app.divider('-', 40)
-	
+
 	headers := ['ID', 'Task', 'Status']
 	rows := [
 		['1', 'Database Migration', 'Completed'],
@@ -147,9 +147,9 @@ fn test_simplecli_visual_components() {
 	app.table(headers, rows)
 	app.progress_bar(50, 100, 'Processing')
 	app.print_kv({
-		'Host': 'localhost',
-		'Port': '8080',
-		'Env':  'Test',
+		'Host': 'localhost'
+		'Port': '8080'
+		'Env':  'Test'
 	})
 
 	assert true
@@ -157,13 +157,13 @@ fn test_simplecli_visual_components() {
 
 fn test_sparkline_and_charts() {
 	app := new('ChartTest')
-	
+
 	// Sparklines
 	spark := app.sparkline([1.0, 3.0, 5.0, 7.0, 10.0])
 	assert spark.len > 0
 	assert sparkline([10.0, 20.0, 30.0]).len > 0
 	assert app.sparkline([]).len == 0
-	
+
 	// Bar chart
 	app.bar_chart('Metrics', {
 		'CPU': 45.0
@@ -213,7 +213,7 @@ fn test_diff_and_text() {
 
 fn test_badges_alerts_and_tasks() {
 	app := new('BadgeAlertTest')
-	
+
 	b1 := app.badge('STATUS', 'ACTIVE', .info)
 	assert b1.contains('STATUS: ACTIVE')
 	b2 := badge('ENV', 'PROD', .error)

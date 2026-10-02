@@ -285,7 +285,7 @@ fn main() {
 
 	// Format Selector & Preset Configuration
 	win.begin_group_box('grp_format_config', 'Format Direction & Data Templates')
-	
+
 	win.begin_row('row_formats')
 	win.add_label('lbl_from', 'From Format:')
 	win.add_dropdown('dd_from_fmt', ['JSON', 'YAML', 'TOML', 'CSV', 'XML'], 'JSON')
@@ -303,7 +303,7 @@ fn main() {
 		'2. CSV Employees Database',
 		'3. YAML Deployment Manifest',
 		'4. TOML Application Config',
-		'5. XML Meta Document'
+		'5. XML Meta Document',
 	], '1. JSON Server Architecture')
 	win.set_control_width('dd_sample_data', 230)
 	win.end_row()
@@ -427,7 +427,7 @@ fn main() {
 						'// Duration: ${elapsed_ms} ms\n' +
 						'// ========================================================\n\n' +
 						'// Diagnostic Parser Details:\n' +
-						'// ${actual_err.replace("\n", "\n// ")}\n\n' +
+						'// ${actual_err.replace('\n', '\n// ')}\n\n' +
 						'// Please check the syntax of your source ${from_fmt} stream.'
 					win_main.set('txt_output_data', error_view)
 					win_main.append_console('conv_console', ' [CONVERSION ERROR] ${from_fmt} -> ${to_fmt}:\n' + actual_err + '\n', 2)
@@ -446,13 +446,19 @@ fn main() {
 		if path != '' && os.exists(path) {
 			content := os.read_file(path) or { '' }
 			w.set('txt_input_data', content)
-			
+
 			// Detect format by extension
-			if path.ends_with('.json') { w.set('dd_from_fmt', 'JSON') }
-			else if path.ends_with('.yaml') || path.ends_with('.yml') { w.set('dd_from_fmt', 'YAML') }
-			else if path.ends_with('.toml') { w.set('dd_from_fmt', 'TOML') }
-			else if path.ends_with('.csv') { w.set('dd_from_fmt', 'CSV') }
-			else if path.ends_with('.xml') { w.set('dd_from_fmt', 'XML') }
+			if path.ends_with('.json') {
+				w.set('dd_from_fmt', 'JSON')
+			} else if path.ends_with('.yaml') || path.ends_with('.yml') {
+				w.set('dd_from_fmt', 'YAML')
+			} else if path.ends_with('.toml') {
+				w.set('dd_from_fmt', 'TOML')
+			} else if path.ends_with('.csv') {
+				w.set('dd_from_fmt', 'CSV')
+			} else if path.ends_with('.xml') {
+				w.set('dd_from_fmt', 'XML')
+			}
 
 			w.toast('Loaded ${os.file_name(path)}')
 			w.append_console('conv_console', ' Loaded file: ${path} (${content.len} bytes)\n', 1)
@@ -482,9 +488,9 @@ fn main() {
 			'json' { '.json' }
 			'yaml' { '.yaml' }
 			'toml' { '.toml' }
-			'csv'  { '.csv' }
-			'xml'  { '.xml' }
-			else   { '.txt' }
+			'csv' { '.csv' }
+			'xml' { '.xml' }
+			else { '.txt' }
 		}
 		path := w.save_file_picker()
 		if path != '' {

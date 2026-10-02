@@ -50,14 +50,14 @@ fn main() {
 
 	// File Selection & Language Scope
 	win.begin_group_box('grp_ocr_source', '📁 Source Document / Image & Language Configuration')
-	
+
 	win.begin_row('row_source_input')
 	win.add_label('lbl_file', 'Image / Document:')
 	win.add_input('txt_image_path', '')
 	win.set_control_width('txt_image_path', 380)
 
 	win.add_button('btn_select_image', '📂 Open Image (PNG, JPG, TIFF, PDF)...')
-	
+
 	win.add_label('lbl_lang', 'Language (-l):')
 	win.add_dropdown('dd_ocr_lang', [
 		'eng (English)',
@@ -72,7 +72,7 @@ fn main() {
 		'por (Portuguese)',
 		'ara (Arabic)',
 		'kor (Korean)',
-		'osd (Orientation & Script Detection)'
+		'osd (Orientation & Script Detection)',
 	], 'eng (English)')
 	win.set_control_width('dd_ocr_lang', 200)
 	win.end_row()
@@ -85,7 +85,7 @@ fn main() {
 		'7 - Single text line (Banners / Headers)',
 		'8 - Single word (Badges / Signage)',
 		'11 - Sparse text (Receipts / Invoices / Diagrams)',
-		'1 - Automatic page segmentation with OSD'
+		'1 - Automatic page segmentation with OSD',
 	], '3 - Fully automatic page segmentation (Default)')
 	win.set_control_width('dd_ocr_psm', 380)
 
@@ -94,7 +94,7 @@ fn main() {
 		'Plain Text (stdout / .txt)',
 		'Searchable PDF (.pdf)',
 		'HOCR HTML (.hocr)',
-		'TSV Tabular Positions (.tsv)'
+		'TSV Tabular Positions (.tsv)',
 	], 'Plain Text (stdout / .txt)')
 	win.set_control_width('dd_ocr_out_fmt', 220)
 	win.end_row()

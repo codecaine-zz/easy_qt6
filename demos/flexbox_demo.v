@@ -36,13 +36,13 @@ fn main() {
 	// Example 3: Equal Distribution Chips (Row + Space-Around + Center)
 	win.group('grp_ex3', '3. Evenly Spaced Action Badges (row, space_around, center)',
 		fn (mut w simplegui.SimpleWindow) {
-		w.flex_box('flex_around_bar', 'row', 'space_around', 'center', fn (mut f simplegui.SimpleWindow) {
-			f.add_button('btn_tag1', '🏷️ Design')
-			f.add_button('btn_tag2', '🏷️ Frontend')
-			f.add_button('btn_tag3', '🏷️ Backend')
-			f.add_button('btn_tag4', '🏷️ DevOps')
+			w.flex_box('flex_around_bar', 'row', 'space_around', 'center', fn (mut f simplegui.SimpleWindow) {
+				f.add_button('btn_tag1', '🏷️ Design')
+				f.add_button('btn_tag2', '🏷️ Frontend')
+				f.add_button('btn_tag3', '🏷️ Backend')
+				f.add_button('btn_tag4', '🏷️ DevOps')
+			})
 		})
-	})
 
 	win.add_vertical_spacer(10)
 

@@ -6,10 +6,10 @@ fn test_system_info_apis() {
 	// macOS version
 	ver := simplegui.get_macos_version()
 	assert ver.starts_with('macOS')
-	
+
 	maj := simplegui.get_macos_version_major()
 	assert maj >= 10
-	
+
 	comp_name := simplegui.get_computer_name()
 	assert comp_name.len > 0
 
@@ -45,7 +45,7 @@ fn test_user_defaults() {
 fn test_screens_and_display() {
 	screens := simplegui.get_screens()
 	assert screens.len > 0
-	
+
 	main_screen := simplegui.get_main_screen()
 	assert main_screen.width > 0
 	assert main_screen.height > 0
@@ -89,7 +89,7 @@ fn test_haptics_and_sound() {
 	simplegui.perform_haptic_feedback('generic')
 	simplegui.perform_haptic_feedback('alignment')
 	simplegui.perform_haptic_feedback('level_change')
-	
+
 	assert simplegui.is_sound_file_playing() == false
 	simplegui.stop_sound_file()
 }

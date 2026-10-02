@@ -73,7 +73,8 @@ fn main() {
 
 fn run_interactive(mut app simplecli.SimpleCli, has_ouch bool) {
 	app.panel('Archive Manager Wizard', 'Compress and decompress ZIP, TAR, GZ, 7Z, and ZSTD archives.')
-	choice := app.select('Action:', ['Compress Folder to ZIP', 'Compress Folder to Tar.gz', 'Decompress Archive'])
+	choice := app.select('Action:', ['Compress Folder to ZIP', 'Compress Folder to Tar.gz',
+		'Decompress Archive'])
 	match choice {
 		'Compress Folder to ZIP' {
 			src := app.prompt('Input folder', '.')

@@ -55,7 +55,7 @@ fn main() {
 
 	// Job Scheduler Specification & Presets Bar
 	win.begin_group_box('grp_job_presets', '🎯 Scheduled Task Templates & Cron Expression Builder')
-	
+
 	win.begin_row('row_presets_bar')
 	win.add_label('lbl_template', 'Schedule Template:')
 	win.add_dropdown('dd_schedule_presets', [
@@ -65,7 +65,7 @@ fn main() {
 		'4. File Watcher Daemon (WatchPaths: ~/Downloads)',
 		'5. Cron: Every 5 Minutes (*/5 * * * *)',
 		'6. Cron: Daily at 9:00 AM (0 9 * * *)',
-		'7. Cron: Every Sunday at Midnight (0 0 * * 0)'
+		'7. Cron: Every Sunday at Midnight (0 0 * * 0)',
 	], '1. Hourly Background Task (StartInterval: 3600)')
 	win.set_control_width('dd_schedule_presets', 380)
 
@@ -88,7 +88,7 @@ fn main() {
 
 	// Dual Pane: Plist / Cron Editor & Output
 	win.begin_row('row_dual_pane')
-	
+
 	win.begin_group_box('grp_plist_editor', '📝 Launchd Plist / Cron Job Definition')
 	win.add_textarea('txt_job_definition', sample_launchd_plist)
 	win.set_control_height('txt_job_definition', 320)
@@ -190,7 +190,7 @@ fn main() {
 			w.set('txt_job_definition', '# Crontab: Run weekly backup on Sunday at Midnight
 0 0 * * 0 /usr/bin/tar -czf /tmp/weekly_backup.tar.gz /Users/Shared >> /tmp/cron_backup.log 2>&1')
 		}
-		w.toast('Loaded template: ${selected.split("(")[0]}')
+		w.toast('Loaded template: ${selected.split('(')[0]}')
 	})
 
 	// List Launchd Daemons
@@ -224,7 +224,11 @@ fn main() {
 
 			w.run_on_main_thread(fn [res, elapsed_ms] (mut win_main simplegui.SimpleWindow) {
 				out := res.output.trim_space()
-				win_main.set('txt_job_output', if out != '' { out } else { 'No crontab entries installed for current user.' })
+				win_main.set('txt_job_output', if out != '' {
+					out
+				} else {
+					'No crontab entries installed for current user.'
+				})
 				win_main.append_console('job_console', '✅ Crontab table read in ${elapsed_ms} ms.\n', 4)
 				win_main.set('lbl_stats', '📊 Stats: CRONTAB CHECKED  |  Duration: ${elapsed_ms} ms')
 				win_main.set_status('Crontab loaded.')

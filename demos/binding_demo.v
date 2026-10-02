@@ -30,32 +30,32 @@ fn main() {
 	// =============================================================
 	win.group('sec_group_1', '1. Checkbox & Switch Logic (enables / disables / shows / hides)',
 		fn (mut w simplegui.SimpleWindow) {
-		// 1.1 bind_checkbox_enables
-		w.add_switch('enable_pin', '1. Enable Security PIN Input (bind_checkbox_enables)',
-			false)
-		w.add_input('pin_code', '9482').placeholder('Enter PIN...')
+			// 1.1 bind_checkbox_enables
+			w.add_switch('enable_pin', '1. Enable Security PIN Input (bind_checkbox_enables)',
+				false)
+			w.add_input('pin_code', '9482').placeholder('Enter PIN...')
 
-		w.add_separator()
+			w.add_separator()
 
-		// 1.2 bind_checkbox_disables
-		w.add_checkbox('use_defaults', '2. Use Default Configuration (bind_checkbox_disables custom setting)',
-			false)
-		w.add_input('custom_config', 'Port 8080').placeholder('Custom config...')
+			// 1.2 bind_checkbox_disables
+			w.add_checkbox('use_defaults', '2. Use Default Configuration (bind_checkbox_disables custom setting)',
+				false)
+			w.add_input('custom_config', 'Port 8080').placeholder('Custom config...')
 
-		w.add_separator()
+			w.add_separator()
 
-		// 1.3 bind_checkbox_shows
-		w.add_checkbox('show_details', '3. Show Advanced Debug Panel (bind_checkbox_shows)',
-			false)
-		w.add_input('debug_info', 'Debug Logs: Active verbose tracing mode').placeholder('Debug details...')
+			// 1.3 bind_checkbox_shows
+			w.add_checkbox('show_details', '3. Show Advanced Debug Panel (bind_checkbox_shows)',
+				false)
+			w.add_input('debug_info', 'Debug Logs: Active verbose tracing mode').placeholder('Debug details...')
 
-		w.add_separator()
+			w.add_separator()
 
-		// 1.4 bind_checkbox_hides
-		w.add_checkbox('hide_banner', '4. Hide Promotional Banner (bind_checkbox_hides)',
-			false)
-		w.add_label('promo_banner', '🔥 SPECIAL PROMO: Upgrade to Pro for 50% Off!')
-	})
+			// 1.4 bind_checkbox_hides
+			w.add_checkbox('hide_banner', '4. Hide Promotional Banner (bind_checkbox_hides)',
+				false)
+			w.add_label('promo_banner', '🔥 SPECIAL PROMO: Upgrade to Pro for 50% Off!')
+		})
 
 	// Apply section 1 bindings
 	win.bind_checkbox_enables('enable_pin', ['pin_code'])
@@ -70,12 +70,12 @@ fn main() {
 	// =============================================================
 	win.group('sec_group_2', '2. Required Inputs Form Validation (bind_inputs_to_button)',
 		fn (mut w simplegui.SimpleWindow) {
-		w.add_input('req_field_1', 'ada_lovelace').placeholder('Username (required)...')
-		w.add_input('req_field_2', 'ada@example.com').placeholder('Email address (required)...')
-		w.add_action_row({
-			'5. Submit Account (Enabled when both filled)': on_submit
+			w.add_input('req_field_1', 'ada_lovelace').placeholder('Username (required)...')
+			w.add_input('req_field_2', 'ada@example.com').placeholder('Email address (required)...')
+			w.add_action_row({
+				'5. Submit Account (Enabled when both filled)': on_submit
+			})
 		})
-	})
 
 	// 1.5 bind_inputs_to_button
 	win.bind_inputs_to_button(['req_field_1', 'req_field_2'], '5. Submit Account (Enabled when both filled)')

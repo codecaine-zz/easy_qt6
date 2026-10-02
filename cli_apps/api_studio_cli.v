@@ -45,9 +45,9 @@ fn send_api_request(mut app simplecli.SimpleCli, method string, url string, body
 	}
 
 	app.print_kv({
-		'Status': status_color,
-		'Latency': '${elapsed} ms',
-		'Body Size': '${res.body.len} bytes',
+		'Status':    status_color
+		'Latency':   '${elapsed} ms'
+		'Body Size': '${res.body.len} bytes'
 	})
 
 	app.panel('Response Body', res.body)

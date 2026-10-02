@@ -362,7 +362,11 @@ fn main() {
 		}
 		snippet := get_template_snippet(resolved_name)
 		if snippet != '' {
-			display_code := if state.show_line_numbers { add_line_numbers(snippet) } else { snippet }
+			display_code := if state.show_line_numbers {
+				add_line_numbers(snippet)
+			} else {
+				snippet
+			}
 			w.set_text('code_editor', display_code)
 			state.is_dirty = (snippet != state.original_code)
 			w.set_text('code_stats', format_stats_header(state.selected_file, snippet,

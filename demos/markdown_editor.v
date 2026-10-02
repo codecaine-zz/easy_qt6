@@ -325,8 +325,7 @@ fn markdown_to_html(md string, theme string) string {
 	}
 
 	// Dynamic, beautiful wrap with system font stylesheet matching theme
-	return
-		'<html><head><meta charset="utf-8"></head><body style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Helvetica, Arial, sans-serif; font-size: 14px; background-color: ' +
+	return '<html><head><meta charset="utf-8"></head><body style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Helvetica, Arial, sans-serif; font-size: 14px; background-color: ' +
 		body_bg + '; color: ' + body_fg + '; padding: 18px; margin: 0; line-height: 1.6;">' + html +
 		'</body></html>'
 }

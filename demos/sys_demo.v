@@ -399,8 +399,7 @@ fn demo_network(mut w simplegui.SimpleWindow) {
 
 	log(mut w, 'dns_lookup "google.com"', w.dns_lookup('google.com'))
 	log(mut w, 'dns_lookup "vlang.io"', w.dns_lookup('vlang.io'))
-	log(mut w, 'wait_for_port("google.com", 443)', '${w.wait_for_port('google.com', 443,
-		2000, 100)}')
+	log(mut w, 'wait_for_port("google.com", 443)', '${w.wait_for_port('google.com', 443, 2000, 100)}')
 
 	log(mut w, 'get_wifi_ssid', w.get_wifi_ssid())
 	log(mut w, 'get_network_interfaces', w.get_network_interfaces().join(', '))

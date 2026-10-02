@@ -20,10 +20,10 @@ $if macos || linux || freebsd {
 	#include <sys/types.h>
 	#include <sys/time.h>
 
-$if macos || freebsd {
-	#include <sys/sysctl.h>
-	fn C.sysctl(name &int, namelen u32, oldp voidptr, oldlenp &usize, newp voidptr, newlen usize) int
-}
+	$if macos || freebsd {
+		#include <sys/sysctl.h>
+		fn C.sysctl(name &int, namelen u32, oldp voidptr, oldlenp &usize, newp voidptr, newlen usize) int
+	}
 
 	fn C.getloadavg(loadavg &f64, nelem int) int
 }
@@ -40,25 +40,25 @@ pub:
 // FileMetadata represents file system metadata.
 pub struct FileMetadata {
 pub:
-	path         string
-	name         string
-	size_bytes   u64
-	is_dir       bool
-	is_link      bool
-	is_readable  bool
-	is_writable  bool
-	created_time i64
+	path          string
+	name          string
+	size_bytes    u64
+	is_dir        bool
+	is_link       bool
+	is_readable   bool
+	is_writable   bool
+	created_time  i64
 	modified_time i64
 }
 
 // ExecResult contains detailed results for process execution with retries or timeouts.
 pub struct ExecResult {
 pub:
-	output     string
-	exit_code  int
+	output      string
+	exit_code   int
 	duration_ms i64
-	timed_out  bool
-	attempts   int
+	timed_out   bool
+	attempts    int
 }
 
 // =============================================================================
@@ -136,17 +136,17 @@ pub fn (cli &SimpleCli) exec_safe(tool string, args []string) (string, int) {
 // exec_timeout executes a command with a maximum timeout limit in milliseconds.
 pub fn (cli &SimpleCli) exec_timeout(command string, timeout_ms int) (string, int, bool) {
 	start_time := time.now()
-	
+
 	// Create temporary result files
 	temp_out := os.join_path(os.temp_dir(), 'simplecli_timeout_${os.getpid()}_${time.now().unix_nano()}.log')
 	temp_done := temp_out + '.done'
-	
+
 	spawn fn (cmd string, out_file string, done_file string) {
 		res := os.execute(cmd)
 		os.write_file(out_file, res.output) or {}
 		os.write_file(done_file, '${res.exit_code}') or {}
 	}(command, temp_out, temp_done)
-	
+
 	for {
 		if os.exists(temp_done) {
 			code_str := os.read_file(temp_done) or { '0' }
@@ -155,7 +155,7 @@ pub fn (cli &SimpleCli) exec_timeout(command string, timeout_ms int) (string, in
 			os.rm(temp_out) or {}
 			return out_str.trim_space(), code_str.trim_space().int(), false
 		}
-		
+
 		elapsed := time.since(start_time).milliseconds()
 		if elapsed >= timeout_ms {
 			os.rm(temp_done) or {}
@@ -164,7 +164,7 @@ pub fn (cli &SimpleCli) exec_timeout(command string, timeout_ms int) (string, in
 		}
 		time.sleep(10 * time.millisecond)
 	}
-	
+
 	return '', 0, false
 }
 
@@ -173,17 +173,17 @@ pub fn (cli &SimpleCli) exec_retry(command string, max_retries int, initial_dela
 	start := time.now()
 	mut delay := initial_delay_ms
 	mut attempts := 0
-	
+
 	for attempts < max_retries {
 		attempts++
 		out, code := cli.exec(command)
 		if code == 0 {
 			return ExecResult{
-				output: out
-				exit_code: code
+				output:      out
+				exit_code:   code
 				duration_ms: time.since(start).milliseconds()
-				timed_out: false
-				attempts: attempts
+				timed_out:   false
+				attempts:    attempts
 			}
 		}
 		if attempts < max_retries {
@@ -191,14 +191,14 @@ pub fn (cli &SimpleCli) exec_retry(command string, max_retries int, initial_dela
 			delay = int(f64(delay) * backoff_factor)
 		}
 	}
-	
+
 	out, code := cli.exec(command)
 	return ExecResult{
-		output: out
-		exit_code: code
+		output:      out
+		exit_code:   code
 		duration_ms: time.since(start).milliseconds()
-		timed_out: false
-		attempts: attempts
+		timed_out:   false
+		attempts:    attempts
 	}
 }
 
@@ -212,11 +212,11 @@ pub fn (cli &SimpleCli) parallel_exec(commands []string) []ExecResult {
 			start := time.now()
 			res := os.execute(c)
 			return ExecResult{
-				output: res.output.trim_space()
-				exit_code: res.exit_code
+				output:      res.output.trim_space()
+				exit_code:   res.exit_code
 				duration_ms: time.since(start).milliseconds()
-				timed_out: false
-				attempts: 1
+				timed_out:   false
+				attempts:    1
 			}
 		}(cmd)
 	}
@@ -576,9 +576,9 @@ pub fn (cli &SimpleCli) get_disk_usage(path string) !DiskStats {
 					pct_str := parts[4].replace('%', '')
 					return DiskStats{
 						total_bytes: total_k * 1024
-						used_bytes: used_k * 1024
-						free_bytes: avail_k * 1024
-						percent: pct_str.f64()
+						used_bytes:  used_k * 1024
+						free_bytes:  avail_k * 1024
+						percent:     pct_str.f64()
 					}
 				}
 			}
@@ -641,7 +641,7 @@ pub fn (cli &SimpleCli) get_swap_usage() string {
 				}
 			}
 			used := total - free
-			return 'total = ${f64(total)/1024:.0f}M  used = ${f64(used)/1024:.0f}M  free = ${f64(free)/1024:.0f}M'
+			return 'total = ${f64(total) / 1024:.0f}M  used = ${f64(used) / 1024:.0f}M  free = ${f64(free) / 1024:.0f}M'
 		}
 	}
 	return 'Swap: N/A'
@@ -906,16 +906,16 @@ pub fn (cli &SimpleCli) get_file_metadata(path string) !FileMetadata {
 	is_dir_flag := os.is_dir(resolved)
 	is_link_flag := os.is_link(resolved)
 	size := if is_dir_flag { u64(0) } else { u64(os.file_size(resolved)) }
-	
+
 	return FileMetadata{
-		path: resolved
-		name: os.file_name(resolved)
-		size_bytes: size
-		is_dir: is_dir_flag
-		is_link: is_link_flag
-		is_readable: os.is_readable(resolved)
-		is_writable: os.is_writable(resolved)
-		created_time: 0
+		path:          resolved
+		name:          os.file_name(resolved)
+		size_bytes:    size
+		is_dir:        is_dir_flag
+		is_link:       is_link_flag
+		is_readable:   os.is_readable(resolved)
+		is_writable:   os.is_writable(resolved)
+		created_time:  0
 		modified_time: 0
 	}
 }
@@ -924,11 +924,11 @@ pub fn (cli &SimpleCli) get_file_metadata(path string) !FileMetadata {
 pub fn (cli &SimpleCli) reveal_in_file_manager(path string) &SimpleCli {
 	resolved := resolve_user_path(path)
 	$if macos {
-		os.execute("open -R \"${resolved}\"")
+		os.execute('open -R "${resolved}"')
 	} $else $if windows {
-		os.execute("explorer.exe /select,\"${resolved}\"")
+		os.execute('explorer.exe /select,"${resolved}"')
 	} $else {
-		os.execute("xdg-open \"${os.dir(resolved)}\" 2>/dev/null")
+		os.execute('xdg-open "${os.dir(resolved)}" 2>/dev/null')
 	}
 	return cli
 }
@@ -936,13 +936,17 @@ pub fn (cli &SimpleCli) reveal_in_file_manager(path string) &SimpleCli {
 // open_in_browser opens the specified URL in the default web browser.
 pub fn (cli &SimpleCli) open_in_browser(url string) &SimpleCli {
 	$if macos {
-		os.execute("open \"${url}\"")
+		os.execute('open "${url}"')
 	} $else $if windows {
-		os.execute("start \"\" \"${url}\"")
+		os.execute('start "" "${url}"')
 	} $else {
 		for opener in ['xdg-open', 'gio', 'gnome-open', 'kde-open5', 'kde-open'] {
 			if os.find_abs_path_of_executable(opener) or { '' } != '' {
-				cmd := if opener == 'gio' { 'gio open "${url}" 2>/dev/null' } else { '${opener} "${url}" 2>/dev/null' }
+				cmd := if opener == 'gio' {
+					'gio open "${url}" 2>/dev/null'
+				} else {
+					'${opener} "${url}" 2>/dev/null'
+				}
 				os.execute(cmd)
 				return cli
 			}
@@ -1018,7 +1022,7 @@ pub fn (cli &SimpleCli) get_wifi_ssid() string {
 			return out.trim_space()
 		}
 	} $else $if linux {
-		out, code := cli.exec("iwgetid -r 2>/dev/null")
+		out, code := cli.exec('iwgetid -r 2>/dev/null')
 		if code == 0 && out.len > 0 {
 			return out.trim_space()
 		}
@@ -1087,16 +1091,16 @@ pub fn (cli &SimpleCli) get_listening_ports() []int {
 // show_system_notification triggers a native OS desktop notification banner.
 pub fn (cli &SimpleCli) show_system_notification(title string, message string) &SimpleCli {
 	$if macos {
-		script := "display notification \"${message}\" with title \"${title}\""
+		script := 'display notification "${message}" with title "${title}"'
 		os.execute("osascript -e '${script}'")
 	} $else $if windows {
 		script := "[reflection.assembly]::loadwithpartialname('System.Windows.Forms'); [reflection.assembly]::loadwithpartialname('System.Drawing'); \$notify = new-object system.windows.forms.notifyicon; \$notify.icon = [system.drawing.systemicons]::information; \$notify.visible = \$true; \$notify.showballoontip(0, '${title}', '${message}', [system.windows.forms.tooltipicon]::None)"
-		os.execute("powershell -Command \"${script}\"")
+		os.execute('powershell -Command "${script}"')
 	} $else {
 		for cmd in [
-			"notify-send \"${title}\" \"${message}\" 2>/dev/null",
-			"kdialog --title \"${title}\" --passivepopup \"${message}\" 2>/dev/null",
-			"zenity --notification --window-icon=info --text=\"${message}\" 2>/dev/null",
+			'notify-send "${title}" "${message}" 2>/dev/null',
+			'kdialog --title "${title}" --passivepopup "${message}" 2>/dev/null',
+			'zenity --notification --window-icon=info --text="${message}" 2>/dev/null',
 		] {
 			prog := cmd.split(' ')[0]
 			if os.find_abs_path_of_executable(prog) or { '' } != '' {
@@ -1116,7 +1120,7 @@ pub fn (cli &SimpleCli) notify(title string, message string) &SimpleCli {
 // bounce_dock requests user attention by bouncing the macOS Dock application icon.
 pub fn (cli &SimpleCli) bounce_dock() &SimpleCli {
 	$if macos {
-		os.execute("osascript -e 'tell application \"System Events\" to tell (first application process whose frontmost is true) to set visible to true' 2>/dev/null")
+		os.execute('osascript -e \'tell application "System Events" to tell (first application process whose frontmost is true) to set visible to true\' 2>/dev/null')
 	}
 	return cli
 }
@@ -1124,7 +1128,7 @@ pub fn (cli &SimpleCli) bounce_dock() &SimpleCli {
 // set_dock_badge sets a text badge on the macOS Dock application icon.
 pub fn (cli &SimpleCli) set_dock_badge(badge string) &SimpleCli {
 	$if macos {
-		os.execute("osascript -e 'tell application \"Finder\" to set badge of current application to \"${badge}\"' 2>/dev/null")
+		os.execute('osascript -e \'tell application "Finder" to set badge of current application to "${badge}"\' 2>/dev/null')
 	}
 	return cli
 }
@@ -1148,9 +1152,9 @@ pub fn (cli &SimpleCli) beep_n(count int) &SimpleCli {
 // play_system_sound plays a built-in OS sound effect (e.g. Ping, Glass, Hero).
 pub fn (cli &SimpleCli) play_system_sound(sound_name string) &SimpleCli {
 	$if macos {
-		os.execute("afplay /System/Library/Sounds/${sound_name}.aiff &")
+		os.execute('afplay /System/Library/Sounds/${sound_name}.aiff &')
 	} $else $if windows {
-		os.execute("powershell -c \"[System.Media.SystemSounds]::${sound_name}.Play()\"")
+		os.execute('powershell -c "[System.Media.SystemSounds]::${sound_name}.Play()"')
 	} $else {
 		cli.beep()
 	}
@@ -1160,11 +1164,11 @@ pub fn (cli &SimpleCli) play_system_sound(sound_name string) &SimpleCli {
 // say speaks text aloud using the OS Text-to-Speech synthesizer.
 pub fn (cli &SimpleCli) say(text string) &SimpleCli {
 	$if macos {
-		os.execute("say \"${text}\" &")
+		os.execute('say "${text}" &')
 	} $else $if windows {
-		os.execute("powershell -Command \"Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('${text}')\"")
+		os.execute('powershell -Command "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak(\'${text}\')"')
 	} $else {
-		os.execute("spd-say \"${text}\" 2>/dev/null &")
+		os.execute('spd-say "${text}" 2>/dev/null &')
 	}
 	return cli
 }
@@ -1172,7 +1176,7 @@ pub fn (cli &SimpleCli) say(text string) &SimpleCli {
 // speak_with_voice speaks text using a specific synthesizer voice name.
 pub fn (cli &SimpleCli) speak_with_voice(text string, voice string) &SimpleCli {
 	$if macos {
-		os.execute("say -v \"${voice}\" \"${text}\" &")
+		os.execute('say -v "${voice}" "${text}" &')
 	} $else {
 		cli.say(text)
 	}
@@ -1192,7 +1196,13 @@ pub fn (cli &SimpleCli) get_volume() int {
 
 // set_volume adjusts the system master audio volume percentage (0-100).
 pub fn (cli &SimpleCli) set_volume(volume_percent int) &SimpleCli {
-	clamped := if volume_percent < 0 { 0 } else if volume_percent > 100 { 100 } else { volume_percent }
+	clamped := if volume_percent < 0 {
+		0
+	} else if volume_percent > 100 {
+		100
+	} else {
+		volume_percent
+	}
 	$if macos {
 		os.execute("osascript -e 'set volume output volume ${clamped}'")
 	}
@@ -1381,18 +1391,18 @@ pub fn (cli &SimpleCli) clear_clipboard() &SimpleCli {
 // ask displays a native OS confirmation popup dialog ("OK" / "Cancel").
 pub fn (cli &SimpleCli) ask(title string, question string) bool {
 	$if macos {
-		script := "button returned of (display dialog \"${question}\" with title \"${title}\" buttons {\"Cancel\", \"OK\"} default button \"OK\")"
+		script := 'button returned of (display dialog "${question}" with title "${title}" buttons {"Cancel", "OK"} default button "OK")'
 		res := os.execute("osascript -e '${script}'")
 		return res.exit_code == 0 && res.output.trim_space() == 'OK'
 	} $else $if windows {
 		script := "Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show('${question}', '${title}', 'YesNo') -eq 'Yes'"
-		res := os.execute("powershell -Command \"${script}\"")
+		res := os.execute('powershell -Command "${script}"')
 		return res.exit_code == 0 && res.output.trim_space() == 'True'
 	} $else {
 		for cmd in [
-			"zenity --question --title=\"${title}\" --text=\"${question}\" 2>/dev/null",
-			"kdialog --yesno \"${question}\" 2>/dev/null",
-			"yad --question --title=\"${title}\" --text=\"${question}\" 2>/dev/null",
+			'zenity --question --title="${title}" --text="${question}" 2>/dev/null',
+			'kdialog --yesno "${question}" 2>/dev/null',
+			'yad --question --title="${title}" --text="${question}" 2>/dev/null',
 		] {
 			prog := cmd.split(' ')[0]
 			if os.find_abs_path_of_executable(prog) or { '' } != '' {
@@ -1409,7 +1419,7 @@ pub fn (cli &SimpleCli) ask(title string, question string) bool {
 // osascript_dialog displays a native input dialog on macOS.
 pub fn (cli &SimpleCli) osascript_dialog(prompt_text string, default_answer string) string {
 	$if macos {
-		script := "text returned of (display dialog \"${prompt_text}\" default answer \"${default_answer}\")"
+		script := 'text returned of (display dialog "${prompt_text}" default answer "${default_answer}")'
 		res := os.execute("osascript -e '${script}'")
 		if res.exit_code == 0 {
 			return res.output.trim_space()

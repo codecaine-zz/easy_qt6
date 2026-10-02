@@ -79,7 +79,7 @@ fn main() {
 	// File Selection Group
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_files', '📁 Media Input & Output')
-	
+
 	// Input File Row
 	win.begin_row('row_input')
 	win.add_label('lbl_input', 'Input File:')
@@ -119,14 +119,17 @@ fn main() {
 	win.begin_group_box('pane_transcode', 'Video Transcode, Codecs & Hardware Acceleration')
 	win.begin_row('row_tc_1')
 	win.add_label('lbl_vcodec', 'Video Codec:')
-	win.add_dropdown('dd_vcodec', ['H.264 (libx264 - Universal)', 'H.265/HEVC (libx265 - High Efficiency)', 'Apple ProRes 422 HQ', 'AV1 (libsvtav1 - Next-Gen)', 'VP9 (WebM)', 'Copy (Instant Lossless Remux)'], 'H.264 (libx264 - Universal)')
+	win.add_dropdown('dd_vcodec', ['H.264 (libx264 - Universal)',
+		'H.265/HEVC (libx265 - High Efficiency)', 'Apple ProRes 422 HQ', 'AV1 (libsvtav1 - Next-Gen)',
+		'VP9 (WebM)', 'Copy (Instant Lossless Remux)'], 'H.264 (libx264 - Universal)')
 	win.add_label('lbl_container', 'Container Format:')
 	win.add_dropdown('dd_container', ['mp4', 'mkv', 'mov', 'webm', 'avi', 'ts', 'm4v'], 'mp4')
 	win.end_row()
 
 	win.begin_row('row_tc_2')
 	win.add_label('lbl_crf', 'Quality (CRF):')
-	win.add_dropdown('dd_crf', ['18 (Near Lossless / Master)', '20 (High Quality Web)', '23 (Balanced Standard)', '28 (Compact / Small File)', '32 (Max Space Saving)'], '23 (Balanced Standard)')
+	win.add_dropdown('dd_crf', ['18 (Near Lossless / Master)', '20 (High Quality Web)',
+		'23 (Balanced Standard)', '28 (Compact / Small File)', '32 (Max Space Saving)'], '23 (Balanced Standard)')
 	win.add_label('lbl_preset', 'Encoding Speed:')
 	win.add_dropdown('dd_preset', ['ultrafast', 'veryfast', 'fast', 'medium', 'slow', 'veryslow'], 'medium')
 	win.end_row()
@@ -150,7 +153,7 @@ fn main() {
 		'YouTube 1080p Standard (8 Mbps)',
 		'YouTube 4K UHD (35 Mbps)',
 		'TikTok / Reels 1080x1920 (Vertical 9:16)',
-		'Twitter / X Video (H.264 1080p)'
+		'Twitter / X Video (H.264 1080p)',
 	], 'Discord Free (< 10 MB)')
 	win.add_label('lbl_custom_mb', 'Target Size (MB):')
 	win.add_input('txt_target_mb', '9.5')
@@ -166,16 +169,20 @@ fn main() {
 	win.begin_group_box('pane_audio', 'Audio Extraction, Loudnorm (EBU R128) & Filtering')
 	win.begin_row('row_aud_1')
 	win.add_label('lbl_acodec', 'Audio Format:')
-	win.add_dropdown('dd_aformat', ['mp3', 'aac', 'flac (Lossless)', 'wav (Uncompressed PCM)', 'ogg (Vorbis)', 'm4a (Apple AAC)', 'opus'], 'mp3')
+	win.add_dropdown('dd_aformat', ['mp3', 'aac', 'flac (Lossless)', 'wav (Uncompressed PCM)',
+		'ogg (Vorbis)', 'm4a (Apple AAC)', 'opus'], 'mp3')
 	win.add_label('lbl_abitrate', 'Bitrate:')
-	win.add_dropdown('dd_abitrate', ['320 kbps (Studio Master)', '256 kbps (High Quality)', '192 kbps (Standard)', '128 kbps (Compact)', '64 kbps (Voice / Podcast)'], '192 kbps (Standard)')
+	win.add_dropdown('dd_abitrate', ['320 kbps (Studio Master)', '256 kbps (High Quality)',
+		'192 kbps (Standard)', '128 kbps (Compact)', '64 kbps (Voice / Podcast)'], '192 kbps (Standard)')
 	win.end_row()
 
 	win.begin_row('row_aud_2')
 	win.add_label('lbl_channels', 'Channels:')
-	win.add_dropdown('dd_achannels', ['Original Channels', 'Stereo (2.0)', 'Mono (1.0)', 'Surround (5.1)'], 'Original Channels')
+	win.add_dropdown('dd_achannels', ['Original Channels', 'Stereo (2.0)', 'Mono (1.0)',
+		'Surround (5.1)'], 'Original Channels')
 	win.add_label('lbl_volume', 'Volume Adjustment:')
-	win.add_dropdown('dd_avolume', ['100% (Original)', '125% (+2dB)', '150% (+3.5dB)', '200% (+6dB Boost)', '50% (-6dB Quiet)'], '100% (Original)')
+	win.add_dropdown('dd_avolume', ['100% (Original)', '125% (+2dB)', '150% (+3.5dB)',
+		'200% (+6dB Boost)', '50% (-6dB Quiet)'], '100% (Original)')
 	win.end_row()
 
 	win.begin_row('row_aud_3')
@@ -211,17 +218,20 @@ fn main() {
 		'1080x1920 (TikTok / Reels / Shorts 9:16)',
 		'1080x1080 (Instagram Square 1:1)',
 		'854x480 (480p SD)',
-		'640x360 (360p Mobile)'
+		'640x360 (360p Mobile)',
 	], '1920x1080 (1080p FHD 16:9)')
 	win.add_label('lbl_fps', 'Frame Rate:')
-	win.add_dropdown('dd_fps', ['Original FPS', '60 fps (Smooth)', '30 fps (Standard)', '24 fps (Cinema)', '15 fps'], 'Original FPS')
+	win.add_dropdown('dd_fps', ['Original FPS', '60 fps (Smooth)', '30 fps (Standard)',
+		'24 fps (Cinema)', '15 fps'], 'Original FPS')
 	win.end_row()
 
 	win.begin_row('row_flt_2')
 	win.add_label('lbl_transform', 'Rotation / Orientation:')
-	win.add_dropdown('dd_transform', ['None', 'Rotate 90° Clockwise', 'Rotate 90° Counter-Clockwise', 'Rotate 180°', 'Flip Horizontal', 'Flip Vertical', 'Grayscale / Black & White'], 'None')
+	win.add_dropdown('dd_transform', ['None', 'Rotate 90° Clockwise', 'Rotate 90° Counter-Clockwise',
+		'Rotate 180°', 'Flip Horizontal', 'Flip Vertical', 'Grayscale / Black & White'], 'None')
 	win.add_label('lbl_speed', 'Playback Speed:')
-	win.add_dropdown('dd_speed', ['1.0x (Normal)', '0.5x (Slow Motion)', '1.5x (Speed Up)', '2.0x (Double Speed)', '4.0x (Timelapse)', '8.0x (Hyperlapse)'], '1.0x (Normal)')
+	win.add_dropdown('dd_speed', ['1.0x (Normal)', '0.5x (Slow Motion)', '1.5x (Speed Up)',
+		'2.0x (Double Speed)', '4.0x (Timelapse)', '8.0x (Hyperlapse)'], '1.0x (Normal)')
 	win.end_row()
 
 	win.begin_row('row_flt_3')
@@ -241,7 +251,8 @@ fn main() {
 
 	win.begin_row('row_frame_2')
 	win.add_label('lbl_storyboard', 'Storyboard Contact Sheet Mode:')
-	win.add_dropdown('dd_storyboard', ['Single Frame Thumbnail', '3x3 Grid (9 Thumbnails)', '4x4 Grid (16 Thumbnails)', '5x5 Grid (25 Thumbnails)'], 'Single Frame Thumbnail')
+	win.add_dropdown('dd_storyboard', ['Single Frame Thumbnail', '3x3 Grid (9 Thumbnails)',
+		'4x4 Grid (16 Thumbnails)', '5x5 Grid (25 Thumbnails)'], 'Single Frame Thumbnail')
 	win.end_row()
 	win.end_group_box()
 
@@ -249,9 +260,11 @@ fn main() {
 	win.begin_group_box('pane_gif', 'HD Animated GIF Creator with 2-Pass Palette Filter')
 	win.begin_row('row_gif_1')
 	win.add_label('lbl_gif_fps', 'GIF Frame Rate:')
-	win.add_dropdown('dd_gif_fps', ['15 fps (Smooth)', '20 fps', '24 fps (Cinema)', '30 fps (Ultra Smooth)', '10 fps (Compact)'], '15 fps (Smooth)')
+	win.add_dropdown('dd_gif_fps', ['15 fps (Smooth)', '20 fps', '24 fps (Cinema)',
+		'30 fps (Ultra Smooth)', '10 fps (Compact)'], '15 fps (Smooth)')
 	win.add_label('lbl_gif_width', 'GIF Width:')
-	win.add_dropdown('dd_gif_width', ['480px (Standard Web)', '640px (Medium)', '800px (Large)', '320px (Small Icon)'], '480px (Standard Web)')
+	win.add_dropdown('dd_gif_width', ['480px (Standard Web)', '640px (Medium)', '800px (Large)',
+		'320px (Small Icon)'], '480px (Standard Web)')
 	win.end_row()
 
 	win.begin_row('row_gif_2')
@@ -271,7 +284,8 @@ fn main() {
 
 	win.begin_row('row_batch_2')
 	win.add_label('lbl_batch_ext', 'Target Format:')
-	win.add_dropdown('dd_batch_format', ['Convert All Videos to MP4 (H.264)', 'Convert All Videos to WebM', 'Extract All Audio to MP3', 'Extract All Audio to WAV'], 'Convert All Videos to MP4 (H.264)')
+	win.add_dropdown('dd_batch_format', ['Convert All Videos to MP4 (H.264)',
+		'Convert All Videos to WebM', 'Extract All Audio to MP3', 'Extract All Audio to WAV'], 'Convert All Videos to MP4 (H.264)')
 	win.add_button('btn_run_batch', '⚡ Run Batch Queue')
 	win.end_row()
 	win.end_group_box()
@@ -331,7 +345,7 @@ fn main() {
 
 		if current_tab.contains('Transcode') || current_tab == '' {
 			vcodec_sel := win.get('dd_vcodec')
-			
+
 			if vcodec_sel.contains('Copy') {
 				cmd_parts << ['-c', 'copy']
 			} else {
@@ -369,14 +383,19 @@ fn main() {
 		} else if current_tab.contains('Target Size') {
 			target_preset := win.get('dd_target_preset')
 			mut target_mb := win.get('txt_target_mb').trim_space().f64()
-			if target_preset.contains('10 MB') { target_mb = 9.5 }
-			else if target_preset.contains('50 MB') { target_mb = 48.0 }
-			else if target_preset.contains('16 MB') { target_mb = 15.0 }
-			else if target_preset.contains('25 MB') { target_mb = 24.0 }
+			if target_preset.contains('10 MB') {
+				target_mb = 9.5
+			} else if target_preset.contains('50 MB') {
+				target_mb = 48.0
+			} else if target_preset.contains('16 MB') {
+				target_mb = 15.0
+			} else if target_preset.contains('25 MB') {
+				target_mb = 24.0
+			}
 
 			dur := get_media_duration(in_file)
 			effective_dur := if dur > 0.0 { dur } else { 60.0 }
-			
+
 			audio_kbps := 128.0
 			total_kbits := target_mb * 8192.0
 			video_kbps := (total_kbits / effective_dur) - audio_kbps
@@ -384,17 +403,24 @@ fn main() {
 			max_r := int(f64(v_rate) * 1.4)
 			buf_r := v_rate * 2
 
-			cmd_parts << ['-c:v', 'libx264', '-b:v', '${v_rate}k', '-maxrate', '${max_r}k', '-bufsize', '${buf_r}k', '-preset', 'medium', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart']
+			cmd_parts << ['-c:v', 'libx264', '-b:v', '${v_rate}k', '-maxrate', '${max_r}k', '-bufsize',
+				'${buf_r}k', '-preset', 'medium', '-c:a', 'aac', '-b:a', '128k', '-movflags',
+				'+faststart']
 		} else if current_tab.contains('Audio') {
 			cmd_parts << ['-vn']
 			format_sel := win.get('dd_aformat')
 			bitrate_sel := win.get('dd_abitrate')
-			
+
 			mut br := '192k'
-			if bitrate_sel.contains('320') { br = '320k' }
-			else if bitrate_sel.contains('256') { br = '256k' }
-			else if bitrate_sel.contains('128') { br = '128k' }
-			else if bitrate_sel.contains('64') { br = '64k' }
+			if bitrate_sel.contains('320') {
+				br = '320k'
+			} else if bitrate_sel.contains('256') {
+				br = '256k'
+			} else if bitrate_sel.contains('128') {
+				br = '128k'
+			} else if bitrate_sel.contains('64') {
+				br = '64k'
+			}
 
 			if format_sel.contains('mp3') {
 				cmd_parts << ['-c:a', 'libmp3lame', '-b:a', br]
@@ -412,10 +438,15 @@ fn main() {
 
 			mut af_filters := []string{}
 			vol_sel := win.get('dd_avolume')
-			if vol_sel.contains('125%') { af_filters << 'volume=1.25' }
-			else if vol_sel.contains('150%') { af_filters << 'volume=1.5' }
-			else if vol_sel.contains('200%') { af_filters << 'volume=2.0' }
-			else if vol_sel.contains('50%') { af_filters << 'volume=0.5' }
+			if vol_sel.contains('125%') {
+				af_filters << 'volume=1.25'
+			} else if vol_sel.contains('150%') {
+				af_filters << 'volume=1.5'
+			} else if vol_sel.contains('200%') {
+				af_filters << 'volume=2.0'
+			} else if vol_sel.contains('50%') {
+				af_filters << 'volume=0.5'
+			}
 
 			af_filters << 'loudnorm=I=-16:TP=-1.5:LRA=11'
 
@@ -481,9 +512,13 @@ fn main() {
 			}
 
 			fps_sel := win.get('dd_fps')
-			if fps_sel.contains('60') { cmd_parts << ['-r', '60'] }
-			else if fps_sel.contains('30') { cmd_parts << ['-r', '30'] }
-			else if fps_sel.contains('24') { cmd_parts << ['-r', '24'] }
+			if fps_sel.contains('60') {
+				cmd_parts << ['-r', '60']
+			} else if fps_sel.contains('30') {
+				cmd_parts << ['-r', '30']
+			} else if fps_sel.contains('24') {
+				cmd_parts << ['-r', '24']
+			}
 
 			if vf_filters.len > 0 {
 				cmd_parts << ['-vf', '"' + vf_filters.join(',') + '"']
@@ -492,18 +527,45 @@ fn main() {
 		} else if current_tab.contains('Frame') || current_tab.contains('Storyboard') {
 			t_stamp := win.get('txt_thumb_time').trim_space()
 			sb_mode := win.get('dd_storyboard')
-			
+
 			if sb_mode.contains('Single Frame') {
-				cmd_parts = [ffmpeg, '-y', '-ss', t_stamp, '-i', '"${in_file}"', '-vframes', '1', '-q:v', '2']
+				cmd_parts = [ffmpeg, '-y', '-ss', t_stamp, '-i', '"${in_file}"', '-vframes', '1',
+					'-q:v', '2']
 			} else {
-				grid_tile := if sb_mode.contains('3x3') { '3x3' } else if sb_mode.contains('5x5') { '5x5' } else { '4x4' }
-				cmd_parts = [ffmpeg, '-y', '-i', '"${in_file}"', '-vf', '"fps=1/10,scale=320:-1,tile=${grid_tile}"', '-vframes', '1']
+				grid_tile := if sb_mode.contains('3x3') {
+					'3x3'
+				} else if sb_mode.contains('5x5') {
+					'5x5'
+				} else {
+					'4x4'
+				}
+				cmd_parts = [ffmpeg, '-y', '-i', '"${in_file}"', '-vf',
+					'"fps=1/10,scale=320:-1,tile=${grid_tile}"', '-vframes', '1']
 			}
 		} else if current_tab.contains('GIF') {
-			gif_fps := if win.get('dd_gif_fps').contains('24') { '24' } else if win.get('dd_gif_fps').contains('30') { '30' } else if win.get('dd_gif_fps').contains('20') { '20' } else if win.get('dd_gif_fps').contains('10') { '10' } else { '15' }
-			gif_w := if win.get('dd_gif_width').contains('640') { '640' } else if win.get('dd_gif_width').contains('800') { '800' } else if win.get('dd_gif_width').contains('320') { '320' } else { '480' }
-			
-			cmd_parts << ['-vf', '"fps=${gif_fps},scale=${gif_w}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"']
+			gif_fps := if win.get('dd_gif_fps').contains('24') {
+				'24'
+			} else if win.get('dd_gif_fps').contains('30') {
+				'30'
+			} else if win.get('dd_gif_fps').contains('20') {
+				'20'
+			} else if win.get('dd_gif_fps').contains('10') {
+				'10'
+			} else {
+				'15'
+			}
+			gif_w := if win.get('dd_gif_width').contains('640') {
+				'640'
+			} else if win.get('dd_gif_width').contains('800') {
+				'800'
+			} else if win.get('dd_gif_width').contains('320') {
+				'320'
+			} else {
+				'480'
+			}
+
+			cmd_parts << ['-vf',
+				'"fps=${gif_fps},scale=${gif_w}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"']
 		}
 
 		target_out := if out_file != '' { '"${out_file}"' } else { '"output.mp4"' }
@@ -565,16 +627,23 @@ fn main() {
 		dir := os.dir(in_path)
 		stem := os.file_name(in_path).all_before_last('.')
 		current_tab := w.get('tabs_mode')
-		
+
 		mut ext := 'mp4'
 		if current_tab.contains('Audio') {
 			fmt := w.get('dd_aformat')
-			if fmt.contains('mp3') { ext = 'mp3' }
-			else if fmt.contains('flac') { ext = 'flac' }
-			else if fmt.contains('wav') { ext = 'wav' }
-			else if fmt.contains('ogg') { ext = 'ogg' }
-			else if fmt.contains('opus') { ext = 'opus' }
-			else { ext = 'm4a' }
+			if fmt.contains('mp3') {
+				ext = 'mp3'
+			} else if fmt.contains('flac') {
+				ext = 'flac'
+			} else if fmt.contains('wav') {
+				ext = 'wav'
+			} else if fmt.contains('ogg') {
+				ext = 'ogg'
+			} else if fmt.contains('opus') {
+				ext = 'opus'
+			} else {
+				ext = 'm4a'
+			}
 		} else if current_tab.contains('GIF') {
 			ext = 'gif'
 		} else if current_tab.contains('Frame') || current_tab.contains('Storyboard') {
@@ -602,7 +671,8 @@ fn main() {
 		w.set_status('Inspecting media stream metadata...')
 
 		go fn [mut w, in_path, ffprobe, ffmpeg] () {
-			res := simplegui.exec_safe(ffprobe, ['-v', 'error', '-show_format', '-show_streams', '-pretty', in_path])
+			res := simplegui.exec_safe(ffprobe, ['-v', 'error', '-show_format', '-show_streams',
+				'-pretty', in_path])
 			w.run_on_main_thread(fn [res, in_path, ffmpeg] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 {
 					win_main.append_console('log_console', '=== STREAM & CODEC INFORMATION ===\n' + res.output + '\n', 4)
@@ -646,7 +716,7 @@ fn main() {
 				if ext in ['.mp4', '.mov', '.mkv', '.avi', '.webm', '.flv', '.wmv', '.m4v'] {
 					full_in := os.join_path(dir, f)
 					stem := f.all_before_last('.')
-					
+
 					mut raw_args := ['-y', '-i', full_in]
 					mut full_out := ''
 					if mode.contains('MP3') {
@@ -657,10 +727,12 @@ fn main() {
 						raw_args << ['-vn', '-c:a', 'pcm_s16le', full_out]
 					} else if mode.contains('WebM') {
 						full_out = os.join_path(dir, '${stem}_batch.webm')
-						raw_args << ['-c:v', 'libvpx-vp9', '-crf', '30', '-b:v', '0', '-c:a', 'libopus', full_out]
+						raw_args << ['-c:v', 'libvpx-vp9', '-crf', '30', '-b:v', '0', '-c:a', 'libopus',
+							full_out]
 					} else {
 						full_out = os.join_path(dir, '${stem}_batch.mp4')
-						raw_args << ['-c:v', 'libx264', '-crf', '23', '-preset', 'fast', '-c:a', 'aac', '-b:a', '192k', full_out]
+						raw_args << ['-c:v', 'libx264', '-crf', '23', '-preset', 'fast', '-c:a',
+							'aac', '-b:a', '192k', full_out]
 					}
 
 					w.run_on_main_thread(fn [f] (mut win_main simplegui.SimpleWindow) {

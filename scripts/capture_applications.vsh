@@ -104,7 +104,7 @@ fn main() {
 		basename := filename.replace('.v', '')
 		bin_target := 'bin/${basename}'
 
-		println('\n[${i+1}/${all_files.len}] Processing: ${basename}...')
+		println('\n[${i + 1}/${all_files.len}] Processing: ${basename}...')
 
 		// Compile
 		println('  Compiling ${app_path} -> ${bin_target}...')

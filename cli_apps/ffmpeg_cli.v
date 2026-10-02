@@ -97,7 +97,8 @@ fn run_interactive(mut app simplecli.SimpleCli) {
 		}
 		'Compress & Scale to 720p' {
 			out := 'scaled_720p.mp4'
-			app.exec_safe('ffmpeg', ['-y', '-i', input, '-vf', 'scale=1280:720', '-c:v', 'libx264', '-crf', '23', out])
+			app.exec_safe('ffmpeg', ['-y', '-i', input, '-vf', 'scale=1280:720', '-c:v', 'libx264',
+				'-crf', '23', out])
 			app.success('Rendered 720p to ${out}')
 		}
 		'Inspect Streams Metadata (ffprobe)' {

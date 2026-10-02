@@ -11,9 +11,9 @@ fn main() {
 		.add_labeled_date_picker('Start Date', 'start_date', '2026-07-20')
 		.add_labeled_progress('Download State', 'progress_bar', 75)
 		.add_separator()
+		.begin_row
 
 	// 2. Form Action Buttons
-	.begin_row
 
 	('btn_row')
 		.add_button('btn_get', 'Read Values')

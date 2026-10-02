@@ -86,7 +86,7 @@ fn main() {
 	// Format Selection & Transformation Matrix
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_format_box', '⚙️ Format Conversion Matrix & Publishing Presets')
-	
+
 	win.begin_row('row_formats')
 	win.add_label('lbl_from', 'Input Format (-f):')
 	win.add_dropdown('dd_from', [
@@ -100,7 +100,7 @@ fn main() {
 		'textile',
 		'mediawiki',
 		'typst',
-		'json (Pandoc AST)'
+		'json (Pandoc AST)',
 	], 'markdown (GitHub Flavored)')
 	win.set_control_width('dd_from', 230)
 
@@ -118,7 +118,7 @@ fn main() {
 		'plain (Clean Text)',
 		'man (Unix Man Page)',
 		'rtf (Rich Text Format)',
-		'json (AST Structure)'
+		'json (AST Structure)',
 	], 'html5 (Modern HTML)')
 	win.set_control_width('dd_to', 220)
 
@@ -130,7 +130,7 @@ fn main() {
 		'zenburn',
 		'kate',
 		'monochrome',
-		'breezeDark'
+		'breezeDark',
 	], 'pygments')
 	win.set_control_width('dd_theme', 110)
 	win.end_row()
@@ -265,7 +265,7 @@ fn main() {
 		if path != '' && os.exists(path) {
 			content := os.read_file(path) or { '' }
 			w.set('txt_input_data', content)
-			
+
 			// Auto-detect format from extension
 			ext := os.file_ext(path).to_lower()
 			if ext in ['.md', '.markdown'] {

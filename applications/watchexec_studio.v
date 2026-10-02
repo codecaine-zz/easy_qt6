@@ -145,15 +145,15 @@ fn main() {
 	ver_str := get_watchexec_version(bin_path)
 
 	mut state := &WatcherState{
-		is_watching: false
-		process_pid: 0
-		total_triggers: 0
+		is_watching:     false
+		process_pid:     0
+		total_triggers:  0
 		last_trigger_ts: 'None'
-		watchexec_bin: bin_path
-		active_command: 'v -check .'
-		active_dir: os.getwd()
-		output_buffer: ''
-		should_stop: false
+		watchexec_bin:   bin_path
+		active_command:  'v -check .'
+		active_dir:      os.getwd()
+		output_buffer:   ''
+		should_stop:     false
 	}
 
 	// -------------------------------------------------------------
@@ -471,7 +471,11 @@ fn main() {
 				banner += ' Duration  : ${elapsed_ms} ms  |  Exit Code: ${res.exit_code}\n'
 				banner += '========================================================================\n\n'
 
-				out_text := if res.output.trim_space() != '' { res.output.trim_space() } else { '(Command exited with code ${res.exit_code} and produced no output)' }
+				out_text := if res.output.trim_space() != '' {
+					res.output.trim_space()
+				} else {
+					'(Command exited with code ${res.exit_code} and produced no output)'
+				}
 				win_main.set('txt_live_output', banner + out_text + '\n\n')
 
 				if res.exit_code == 0 {

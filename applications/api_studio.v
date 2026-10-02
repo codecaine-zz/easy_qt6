@@ -57,7 +57,7 @@ fn main() {
 
 	// Request URL & Method Bar
 	win.begin_group_box('grp_request_url', '🌐 Target Endpoint & HTTP Method')
-	
+
 	win.begin_row('row_url_bar')
 	win.add_label('lbl_method', 'Method:')
 	win.add_dropdown('dd_http_method', [
@@ -67,7 +67,7 @@ fn main() {
 		'PATCH',
 		'DELETE',
 		'HEAD',
-		'OPTIONS'
+		'OPTIONS',
 	], 'GET')
 	win.set_control_width('dd_http_method', 110)
 
@@ -84,7 +84,7 @@ fn main() {
 		'5. GitHub Public API (User Info)',
 		'6. CoinGecko Crypto Ticker (BTC)',
 		'7. IPInfo Geolocation Query',
-		'8. Cat Facts Random API'
+		'8. Cat Facts Random API',
 	], '1. JSONPlaceholder GET Post')
 	win.set_control_width('dd_api_presets', 210)
 	win.end_row()
@@ -104,7 +104,7 @@ fn main() {
 
 	// Request Configuration: Headers & Body
 	win.begin_row('row_req_config')
-	
+
 	win.begin_group_box('grp_headers', '📋 Request Headers (Name: Value per line)')
 	win.add_textarea('txt_headers', 'Accept: application/json\nContent-Type: application/json\nUser-Agent: SimpleGUI-API-Studio/1.0')
 	win.set_control_height('txt_headers', 120)

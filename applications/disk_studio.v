@@ -31,7 +31,7 @@ fn main() {
 
 	// Directory Scope Selector
 	win.begin_group_box('grp_disk_scope', '📁 Target Directory & Filesystem Scope')
-	
+
 	win.begin_row('row_target_dir')
 	win.add_label('lbl_dir', 'Directory:')
 	win.add_input('txt_target_dir', '~')
@@ -46,7 +46,7 @@ fn main() {
 
 	// Analysis & Cleanup Actions Bar
 	win.begin_group_box('grp_disk_actions', '🔍 Storage Telemetry & Cleanup Tools')
-	
+
 	win.begin_row('row_actions_btns')
 	win.add_button('btn_analyze_usage', '📊 Directory Breakdown (du -sh)')
 	win.add_button('btn_largest_files', '🐘 Top 30 Largest Files')
@@ -106,7 +106,11 @@ fn main() {
 	// Directory Breakdown Action
 	win.on_click('btn_analyze_usage', fn (mut w simplegui.SimpleWindow) {
 		raw_target := w.get('txt_target_dir').trim_space()
-		target_dir := if raw_target.starts_with('~') { raw_target.replace('~', os.home_dir()) } else { raw_target }
+		target_dir := if raw_target.starts_with('~') {
+			raw_target.replace('~', os.home_dir())
+		} else {
+			raw_target
+		}
 		if target_dir == '' || !os.exists(target_dir) {
 			w.alert('Directory Required', 'Please select a valid directory on disk.')
 			return
@@ -202,7 +206,11 @@ fn main() {
 
 			w.run_on_main_thread(fn [res, elapsed_ms] (mut win_main simplegui.SimpleWindow) {
 				out := res.output.trim_space()
-				win_main.set('txt_disk_output', if out != '' { out } else { 'No developer junk directories found in this path.' })
+				win_main.set('txt_disk_output', if out != '' {
+					out
+				} else {
+					'No developer junk directories found in this path.'
+				})
 				win_main.append_console('disk_console', '✅ Developer junk scan complete in ${elapsed_ms} ms.\n', 4)
 				win_main.set('lbl_stats', '📊 Stats: DEV JUNK SCAN COMPLETE  |  Duration: ${elapsed_ms} ms')
 				win_main.set_status('Developer junk scan finished.')

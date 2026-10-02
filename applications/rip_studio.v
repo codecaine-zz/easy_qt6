@@ -18,10 +18,10 @@ struct GraveyardRecord {
 }
 
 struct GraveyardStats {
-	path        string
-	active_cnt  int
-	total_cnt   int
-	total_bytes i64
+	path         string
+	active_cnt   int
+	total_cnt    int
+	total_bytes  i64
 	restored_cnt int
 }
 
@@ -95,10 +95,10 @@ fn load_graveyard_records(graveyard_dir string) ([]GraveyardRecord, GraveyardSta
 
 	if !os.exists(record_file) {
 		return records, GraveyardStats{
-			path: graveyard_dir
-			active_cnt: 0
-			total_cnt: 0
-			total_bytes: 0
+			path:         graveyard_dir
+			active_cnt:   0
+			total_cnt:    0
+			total_bytes:  0
 			restored_cnt: 0
 		}
 	}
@@ -144,13 +144,13 @@ fn load_graveyard_records(graveyard_dir string) ([]GraveyardRecord, GraveyardSta
 			item_name := os.file_name(orig)
 
 			records << GraveyardRecord{
-				time_str: t_clean
-				original: orig
+				time_str:    t_clean
+				original:    orig
 				destination: dest
-				name: item_name
-				size_bytes: sz
-				is_dir: is_d
-				is_active: is_active
+				name:        item_name
+				size_bytes:  sz
+				is_dir:      is_d
+				is_active:   is_active
 			}
 		}
 	}
@@ -159,10 +159,10 @@ fn load_graveyard_records(graveyard_dir string) ([]GraveyardRecord, GraveyardSta
 	records.reverse()
 
 	return records, GraveyardStats{
-		path: graveyard_dir
-		active_cnt: active_count
-		total_cnt: records.len
-		total_bytes: total_size
+		path:         graveyard_dir
+		active_cnt:   active_count
+		total_cnt:    records.len
+		total_bytes:  total_size
 		restored_cnt: restored_count
 	}
 }
@@ -251,7 +251,8 @@ fn main() {
 	win.control('btn_decompose_graveyard').set_elevation(1).set_vector_icon('trash').set_width(150)
 	win.end_row()
 
-	table_headers := ['Item Name', 'Original Path', 'Buried At', 'Type', 'Size', 'Status', 'Graveyard Destination']
+	table_headers := ['Item Name', 'Original Path', 'Buried At', 'Type', 'Size', 'Status',
+		'Graveyard Destination']
 	win.add_table('tbl_graveyard', table_headers)
 	win.set_control_height('tbl_graveyard', 280)
 
@@ -630,7 +631,11 @@ fn main() {
 					win_main.toast('Resurrected ${name}!')
 					refresh_all_views(mut win_main, rip_bin, current_graveyard)
 				} else {
-					err_msg := if res.output.trim_space() != '' { res.output.trim_space() } else { 'Failed to resurrect "${name}".' }
+					err_msg := if res.output.trim_space() != '' {
+						res.output.trim_space()
+					} else {
+						'Failed to resurrect "${name}".'
+					}
 					win_main.set('txt_activity_log', ' Resurrection Error:\n' + err_msg)
 					win_main.set_status('Resurrection failed.')
 					win_main.toast('Failed to resurrect "${name}".')
@@ -688,17 +693,19 @@ fn main() {
 			w.set('txt_activity_log', '=== File Preview: ${name} (${sz_str}) ===\n[File exceeds 1MB - previewing first 4KB]\n')
 		}
 		raw_preview := os.read_file(dest) or { '[Binary Data / Unreadable]' }
-		snippet := if raw_preview.len > 4000 { raw_preview[..4000] + '\n... [truncated]' } else { raw_preview }
+		snippet := if raw_preview.len > 4000 {
+			raw_preview[..4000] + '\n... [truncated]'
+		} else {
+			raw_preview
+		}
 		w.set('txt_activity_log', '=== File Preview: ${name} (${orig}) ===\n${snippet}\n')
 		w.toast('File preview loaded in console.')
 	})
 
 	// Decompose Graveyard
 	win.on_click('btn_decompose_graveyard', fn [rip_bin, current_graveyard, refresh_all_views] (mut w simplegui.SimpleWindow) {
-		confirmed := w.confirm(
-			'Decompose Graveyard?',
-			'Decomposing permanently purges all files resting in the graveyard.\nThis action is irreversible and recovers disk space immediately.\n\nAre you sure you want to proceed?'
-		)
+		confirmed := w.confirm('Decompose Graveyard?',
+			'Decomposing permanently purges all files resting in the graveyard.\nThis action is irreversible and recovers disk space immediately.\n\nAre you sure you want to proceed?')
 		if !confirmed {
 			w.toast('Decomposition cancelled.')
 			return
@@ -720,7 +727,11 @@ fn main() {
 					win_main.toast('Graveyard emptied!')
 					refresh_all_views(mut win_main, rip_bin, current_graveyard)
 				} else {
-					err_msg := if res.output.trim_space() != '' { res.output.trim_space() } else { 'Failed to empty graveyard.' }
+					err_msg := if res.output.trim_space() != '' {
+						res.output.trim_space()
+					} else {
+						'Failed to empty graveyard.'
+					}
 					win_main.set('txt_activity_log', ' Decompose Error:\n' + err_msg)
 					win_main.set_status('Failed to empty graveyard.')
 					win_main.toast('Decompose operation failed.')
@@ -732,10 +743,8 @@ fn main() {
 
 	// Wire up danger zone decompose button
 	win.on_click('btn_exec_decompose', fn [rip_bin, current_graveyard, refresh_all_views] (mut w simplegui.SimpleWindow) {
-		confirmed := w.confirm(
-			'Permanently Decompose Graveyard?',
-			'All items in ${current_graveyard} will be permanently destroyed.\nConfirm permanent deletion?'
-		)
+		confirmed := w.confirm('Permanently Decompose Graveyard?',
+			'All items in ${current_graveyard} will be permanently destroyed.\nConfirm permanent deletion?')
 		if !confirmed {
 			w.toast('Aborted.')
 			return
@@ -866,7 +875,11 @@ fn main() {
 					win_main.set('txt_target_path', '')
 					refresh_all_views(mut win_main, rip_bin, current_graveyard)
 				} else {
-					err_msg := if res.output.trim_space() != '' { res.output.trim_space() } else { 'Failed to bury target item.' }
+					err_msg := if res.output.trim_space() != '' {
+						res.output.trim_space()
+					} else {
+						'Failed to bury target item.'
+					}
 					win_main.set('txt_activity_log', ' Bury Error (code ${res.exit_code}):\n' + err_msg)
 					win_main.set_status('Bury operation failed.')
 					win_main.toast('Failed to bury item!')

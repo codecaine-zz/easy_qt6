@@ -122,13 +122,13 @@ mut:
 	grid_headers                 map[string][]string
 	on_close_requested_fn        CloseRequestedCallback = unsafe { nil }
 pub mut:
-	ws_client                    voidptr = unsafe { nil }
-	state_store                  map[string]string
-	state_listeners              map[string][]StringEventCallback
-	app_id                       string
-	auto_save_state              bool = true
-	fullscreen                   bool
-	theme                        Theme
+	ws_client       voidptr = unsafe { nil }
+	state_store     map[string]string
+	state_listeners map[string][]StringEventCallback
+	app_id          string
+	auto_save_state bool = true
+	fullscreen      bool
+	theme           Theme
 }
 
 pub type Control = ControlEntry
@@ -968,11 +968,28 @@ pub fn should_persist_control(ctrl &ControlEntry) bool {
 
 	// Supported input/preference control kinds
 	if ctrl.kind !in [
-		'input', 'textbox', 'search', 'search_bar', 'file_picker', 'date_picker', 'time_picker', 'number',
-		'dropdown', 'select', 'combobox', 'segmented', 'radio',
-		'checkbox', 'switch', 'toggle',
-		'slider', 'step_slider', 'range_slider', 'stepper', 'rating',
-		'textarea'
+		'input',
+		'textbox',
+		'search',
+		'search_bar',
+		'file_picker',
+		'date_picker',
+		'time_picker',
+		'number',
+		'dropdown',
+		'select',
+		'combobox',
+		'segmented',
+		'radio',
+		'checkbox',
+		'switch',
+		'toggle',
+		'slider',
+		'step_slider',
+		'range_slider',
+		'stepper',
+		'rating',
+		'textarea',
 	] {
 		return false
 	}
@@ -1210,4 +1227,3 @@ pub fn (win &SimpleWindow) control(name string) &ControlEntry {
 	}
 	return ptr
 }
-

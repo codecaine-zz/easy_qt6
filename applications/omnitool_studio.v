@@ -46,10 +46,10 @@ fn discover_tool(name string, fallback_paths []string, desc string) ToolInfo {
 
 	if path == '' {
 		return ToolInfo{
-			name: name
-			bin_path: ''
+			name:        name
+			bin_path:    ''
 			version_str: 'Not Found'
-			is_ready: false
+			is_ready:    false
 			description: desc
 		}
 	}
@@ -69,10 +69,10 @@ fn discover_tool(name string, fallback_paths []string, desc string) ToolInfo {
 	}
 
 	return ToolInfo{
-		name: name
-		bin_path: path
+		name:        name
+		bin_path:    path
 		version_str: ver
-		is_ready: true
+		is_ready:    true
 		description: desc
 	}
 }
@@ -163,15 +163,15 @@ fn main() {
 	}
 
 	mut state := &OmniState{
-		tools: tools_map
-		active_mode: '1. [Synergy Pipeline] Search -> Replace -> Diff (fd + sd + rg)'
-		active_dir: os.getwd()
+		tools:             tools_map
+		active_mode:       '1. [Synergy Pipeline] Search -> Replace -> Diff (fd + sd + rg)'
+		active_dir:        os.getwd()
 		is_process_active: false
-		active_pid: 0
-		total_ops: 0
-		last_op_status: 'Idle'
-		last_op_ts: 'Ready'
-		last_cli_command: ''
+		active_pid:        0
+		total_ops:         0
+		last_op_status:    'Idle'
+		last_op_ts:        'Ready'
+		last_cli_command:  ''
 	}
 
 	// -------------------------------------------------------------
@@ -591,7 +591,11 @@ fn main() {
 			out += 'Search Pattern:   "${primary}"\n'
 			out += 'Replacement:      "${secondary}"\n'
 			out += 'Matching Files:   ${matching_files.len} files identified\n'
-			out += 'Execution Mode:   ${if is_dry { 'DRY RUN (Preview Only - No Disk Changes)' } else { 'APPLIED IN-PLACE' }}\n'
+			out += 'Execution Mode:   ${if is_dry {
+				'DRY RUN (Preview Only - No Disk Changes)'
+			} else {
+				'APPLIED IN-PLACE'
+			}}\n'
 			out += '----------------------------------------------------------------------\n\n'
 
 			mut replaced_count := 0
@@ -604,8 +608,7 @@ fn main() {
 				out += '[File: ${rel_path}]\n'
 
 				// Sample preview using rg
-				preview_res := simplegui.exec_safe(rg_bin, ['-n', '--color=never', primary,
-					file_path])
+				preview_res := simplegui.exec_safe(rg_bin, ['-n', '--color=never', primary, file_path])
 				for line in preview_res.output.trim_space().split_into_lines() {
 					if line.trim_space() != '' {
 						out += '  - Current: ${line}\n'
@@ -777,7 +780,11 @@ fn main() {
 			out += 'Target Workspace: ${ws}\n'
 			out += 'Search Pattern:   "${primary}"\n'
 			out += 'Discovered Items: ${targets.len}\n'
-			out += 'Execution Mode:   ${if is_dry { 'DRY RUN PREVIEW (Graveyard Safe)' } else { 'BURIED TO GRAVEYARD' }}\n'
+			out += 'Execution Mode:   ${if is_dry {
+				'DRY RUN PREVIEW (Graveyard Safe)'
+			} else {
+				'BURIED TO GRAVEYARD'
+			}}\n'
 			out += '----------------------------------------------------------------------\n\n'
 
 			if targets.len == 0 {

@@ -68,13 +68,12 @@ fn main() {
 			win.textarea_insert_text('txt_log', '\nBattery: ${pct}%')
 			win.textarea_scroll_to_end('txt_log')
 		})
-
 	}, fn [mut win] () {
 		// Right Pane: Text Area & Dialogs
 		win.add_label('lbl_txt', 'Text Area APIs').font_size(16).bold(true)
-		
+
 		win.add_textarea('txt_log', 'This is a rich text area.').width(400).height(200)
-		
+
 		win.begin_row('row_txt')
 		win.add_button('btn_insert', 'Insert Text')
 		win.add_button('btn_clear', 'Clear Text')
@@ -126,14 +125,13 @@ fn main() {
 
 		win.add_separator()
 		win.add_label('lbl_adv', 'Advanced Native Views (New!)').font_size(16).bold(true)
-		
-		win.add_pdf_view('pdf1', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf') 
-		win.add_avplayer_view('vid1', 'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8') 
-		
+
+		win.add_pdf_view('pdf1', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
+		win.add_avplayer_view('vid1', 'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8')
+
 		win.add_mtk_view('mtk1')
 		win.add_map_view('map1')
 		win.add_column_browser('browser1')
-
 	})
 
 	// Configure the split view divider

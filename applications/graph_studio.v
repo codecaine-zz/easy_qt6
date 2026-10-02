@@ -219,22 +219,22 @@ fn parse_graph(text string) GraphData {
 				w_start := to_part.index('[') or { -1 }
 				w_end := to_part.index(']') or { -1 }
 				if w_start >= 0 && w_end > w_start {
-					prop := to_part[w_start + 1 .. w_end].trim_space()
+					prop := to_part[w_start + 1..w_end].trim_space()
 					if prop.contains('=') {
 						weight_str := prop.split('=')[1].trim_space()
 						weight = weight_str.f64()
 					} else {
 						weight = prop.f64()
 					}
-					to_part = to_part[0 .. w_start].trim_space()
+					to_part = to_part[0..w_start].trim_space()
 				}
 			}
 
 			to_node := to_part.trim_space()
 			if from_node != '' && to_node != '' {
 				g.edges << GraphEdge{
-					from: from_node
-					to: to_node
+					from:   from_node
+					to:     to_node
 					weight: if weight > 0 { weight } else { 1.0 }
 				}
 				node_set[from_node] = true
@@ -245,8 +245,8 @@ fn parse_graph(text string) GraphData {
 			from_node := parts[0].trim_space()
 			to_node := parts[1].trim_space()
 			if from_node != '' && to_node != '' {
-				g.edges << GraphEdge{from: from_node, to: to_node, weight: 1.0}
-				g.edges << GraphEdge{from: to_node, to: from_node, weight: 1.0}
+				g.edges << GraphEdge{ from: from_node, to: to_node, weight: 1.0 }
+				g.edges << GraphEdge{ from: to_node, to: from_node, weight: 1.0 }
 				node_set[from_node] = true
 				node_set[to_node] = true
 			}
@@ -272,7 +272,11 @@ fn analyze_graph(g GraphData) string {
 	lines << ' GRAPH PROPERTIES:'
 	lines << '   • Total Nodes (|V|)  : ${g.nodes.len}'
 	lines << '   • Total Edges (|E|)  : ${g.edges.len}'
-	density := if g.nodes.len > 1 { f64(g.edges.len) / f64(g.nodes.len * (g.nodes.len - 1)) } else { 0.0 }
+	density := if g.nodes.len > 1 {
+		f64(g.edges.len) / f64(g.nodes.len * (g.nodes.len - 1))
+	} else {
+		0.0
+	}
 	lines << '   • Graph Density      : ${density:.4f}'
 	lines << '------------------------------------------------------------------------'
 	lines << ' NODE DEGREE CENTRALITY METRICS:'
@@ -350,16 +354,16 @@ fn analyze_graph(g GraphData) string {
 
 struct AppState {
 mut:
-	active_tab      string
-	func_type       FuncType
-	x_min           f64
-	x_max           f64
-	p1              f64
-	p2              f64
-	samples_count   int
-	last_x_vals     []f64
-	last_y_vals     []f64
-	history_ledger  []string
+	active_tab     string
+	func_type      FuncType
+	x_min          f64
+	x_max          f64
+	p1             f64
+	p2             f64
+	samples_count  int
+	last_x_vals    []f64
+	last_y_vals    []f64
+	history_ledger []string
 }
 
 fn main() {
@@ -371,15 +375,15 @@ fn main() {
 	win.set_padding(14)
 
 	mut state := &AppState{
-		active_tab: '📈 Function Plotter'
-		func_type: .fn_sin
-		x_min: -10.0
-		x_max: 10.0
-		p1: 1.0
-		p2: 1.0
-		samples_count: 100
-		last_x_vals: []f64{}
-		last_y_vals: []f64{}
+		active_tab:     '📈 Function Plotter'
+		func_type:      .fn_sin
+		x_min:          -10.0
+		x_max:          10.0
+		p1:             1.0
+		p2:             1.0
+		samples_count:  100
+		last_x_vals:    []f64{}
+		last_y_vals:    []f64{}
 		history_ledger: []string{}
 	}
 
@@ -406,7 +410,7 @@ fn main() {
 		'🕸️ Network Graph Topology',
 		'🍩 Category & Proportion Charts',
 		'📚 Curve Preset Gallery',
-		'📜 Plot Ledger'
+		'📜 Plot Ledger',
 	])
 
 	// -------------------------------------------------------------
@@ -442,7 +446,7 @@ fn main() {
 		'Square Root: f(x) = √(x)',
 		'Natural Logarithm: f(x) = ln(x)',
 		'Absolute Value: f(x) = |x|',
-		'Tangent: f(x) = tan(x)'
+		'Tangent: f(x) = tan(x)',
 	], 'Sine Wave: f(x) = sin(k · x)')
 	win.set_control_width('dd_func_model', 330)
 
@@ -625,19 +629,33 @@ fn main() {
 	// -------------------------------------------------------------
 	run_function_plot := fn [mut state, append_ledger] (mut w simplegui.SimpleWindow) {
 		choice := w.get('dd_func_model')
-		if choice.contains('Sine') { state.func_type = .fn_sin }
-		else if choice.contains('Cosine') { state.func_type = .fn_cos }
-		else if choice.contains('Sinc') { state.func_type = .fn_sinc }
-		else if choice.contains('Gaussian Bell') { state.func_type = .fn_gaussian }
-		else if choice.contains('Damped') { state.func_type = .fn_damped_wave }
-		else if choice.contains('Sigmoid') { state.func_type = .fn_sigmoid }
-		else if choice.contains('Beat') { state.func_type = .fn_beats }
-		else if choice.contains('Polynomial') { state.func_type = .fn_poly }
-		else if choice.contains('Exponential') { state.func_type = .fn_exp }
-		else if choice.contains('Square Root') { state.func_type = .fn_sqrt }
-		else if choice.contains('Logarithm') { state.func_type = .fn_log }
-		else if choice.contains('Absolute') { state.func_type = .fn_abs }
-		else { state.func_type = .fn_tan }
+		if choice.contains('Sine') {
+			state.func_type = .fn_sin
+		} else if choice.contains('Cosine') {
+			state.func_type = .fn_cos
+		} else if choice.contains('Sinc') {
+			state.func_type = .fn_sinc
+		} else if choice.contains('Gaussian Bell') {
+			state.func_type = .fn_gaussian
+		} else if choice.contains('Damped') {
+			state.func_type = .fn_damped_wave
+		} else if choice.contains('Sigmoid') {
+			state.func_type = .fn_sigmoid
+		} else if choice.contains('Beat') {
+			state.func_type = .fn_beats
+		} else if choice.contains('Polynomial') {
+			state.func_type = .fn_poly
+		} else if choice.contains('Exponential') {
+			state.func_type = .fn_exp
+		} else if choice.contains('Square Root') {
+			state.func_type = .fn_sqrt
+		} else if choice.contains('Logarithm') {
+			state.func_type = .fn_log
+		} else if choice.contains('Absolute') {
+			state.func_type = .fn_abs
+		} else {
+			state.func_type = .fn_tan
+		}
 
 		state.x_min = w.get('txt_xmin').f64()
 		state.x_max = w.get('txt_xmax').f64()

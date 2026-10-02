@@ -52,11 +52,13 @@ fn run_probe_audio(mut w simplegui.SimpleWindow, audio_path string) {
 	go fn [mut w, ffprobe_bin, audio_path] () {
 		t0 := time.ticks()
 		res := simplegui.exec_safe(ffprobe_bin, [
-			'-v', 'quiet',
-			'-print_format', 'json',
+			'-v',
+			'quiet',
+			'-print_format',
+			'json',
 			'-show_format',
 			'-show_streams',
-			audio_path
+			audio_path,
 		])
 		elapsed_ms := time.ticks() - t0
 
@@ -104,7 +106,7 @@ fn main() {
 
 	// File Selection Bar
 	win.begin_group_box('grp_file_scope', '📁 Target Audio File (MP3, FLAC, M4A, AAC, WAV, OGG, AIFF)')
-	
+
 	win.begin_row('row_file_bar')
 	win.add_label('lbl_audio_file', 'Audio File:')
 	win.add_input('txt_audio_path', '')
@@ -120,7 +122,7 @@ fn main() {
 
 	// Tag Fields Editor
 	win.begin_group_box('grp_tags_editor', '🏷️ Audio Tag & Metadata Fields')
-	
+
 	win.begin_row('row_tags_1')
 	win.add_label('lbl_title', 'Track Title:')
 	win.add_input('txt_title', '')
@@ -150,7 +152,7 @@ fn main() {
 		'Soundtrack / OST',
 		'Podcast',
 		'Audiobook',
-		'Other / Custom'
+		'Other / Custom',
 	], 'Electronic')
 	win.set_control_width('dd_genre', 180)
 
@@ -334,7 +336,8 @@ fn main() {
 				save_file += '.jpg'
 			}
 			ffmpeg_bin := get_ffmpeg_bin()
-			res := simplegui.exec_safe(ffmpeg_bin, ['-y', '-i', path, '-an', '-vcodec', 'copy', save_file])
+			res := simplegui.exec_safe(ffmpeg_bin, ['-y', '-i', path, '-an', '-vcodec', 'copy',
+				save_file])
 			if res.exit_code == 0 && os.exists(save_file) {
 				w.toast('Cover art extracted to ' + os.file_name(save_file))
 				w.append_console('audio_console', '🖼️ Album cover art saved: ${save_file}\n', 4)
@@ -360,7 +363,8 @@ fn main() {
 		w.set_status('Clearing tags...')
 
 		go fn [mut w, ffmpeg_bin, tmp_out, path] () {
-			res := simplegui.exec_safe(ffmpeg_bin, ['-y', '-i', path, '-map_metadata', '-1', '-codec', 'copy', tmp_out])
+			res := simplegui.exec_safe(ffmpeg_bin, ['-y', '-i', path, '-map_metadata', '-1', '-codec',
+				'copy', tmp_out])
 			w.run_on_main_thread(fn [res, tmp_out, path] (mut win_main simplegui.SimpleWindow) {
 				if res.exit_code == 0 && os.exists(tmp_out) {
 					os.rm(path) or {}

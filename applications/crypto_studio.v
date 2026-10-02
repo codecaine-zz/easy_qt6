@@ -33,7 +33,7 @@ fn main() {
 
 	// Input Text / Secret Key Bar
 	win.begin_group_box('grp_input_scope', '🎯 Input Text, File or Secret Key Specification')
-	
+
 	win.begin_row('row_input_bar')
 	win.add_label('lbl_secret', 'Secret Key (HMAC):')
 	win.add_input('txt_secret_key', 'my-super-secret-key')
@@ -50,7 +50,7 @@ fn main() {
 
 	// Actions Execution Bar
 	win.begin_group_box('grp_crypto_actions', '⚡ Cryptographic Operations & Algorithms')
-	
+
 	win.begin_row('row_actions_btns')
 	win.add_button('btn_calc_all_hashes', '▶ Compute All Hashes (MD5..SHA512)')
 	win.add_button('btn_calc_hmac', '🔑 Compute HMAC-SHA256')
@@ -65,7 +65,7 @@ fn main() {
 
 	// Dual Pane: Input Text & Computed Hashes / Output Report
 	win.begin_row('row_dual_pane')
-	
+
 	win.begin_group_box('grp_input_text', '📥 Input Data Stream / JWT Token')
 	win.add_textarea('txt_crypto_input', 'Hello, SimpleGUI! Ultra-fast native macOS GUI applications in V.')
 	win.set_control_height('txt_crypto_input', 320)

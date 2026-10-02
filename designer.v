@@ -74,166 +74,166 @@ fn write_single_control_v_code(mut sb strings.Builder, c ControlSpec) {
 	clean_text := c.text.replace("'", "\\'")
 	match c.control_type {
 		'button' {
-			sb.write_string('\twin.add_button(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_button('${c.id}', '${clean_text}')\n")
 		}
 		'label' {
-			sb.write_string('\twin.add_label(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_label('${c.id}', '${clean_text}')\n")
 		}
 		'input' {
-			sb.write_string('\twin.add_input(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_input('${c.id}', '${clean_text}')\n")
 		}
 		'password' {
-			sb.write_string('\twin.add_password(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_password('${c.id}', '${clean_text}')\n")
 		}
 		'textarea' {
-			sb.write_string('\twin.add_textarea(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_textarea('${c.id}', '${clean_text}')\n")
 		}
 		'checkbox' {
 			chk := if c.checked { 'true' } else { 'false' }
-			sb.write_string('\twin.add_checkbox(\'${c.id}\', \'${clean_text}\', ${chk})\n')
+			sb.write_string("\twin.add_checkbox('${c.id}', '${clean_text}', ${chk})\n")
 		}
 		'switch' {
 			chk := if c.checked { 'true' } else { 'false' }
-			sb.write_string('\twin.add_switch(\'${c.id}\', \'${clean_text}\', ${chk})\n')
+			sb.write_string("\twin.add_switch('${c.id}', '${clean_text}', ${chk})\n")
 		}
 		'slider' {
-			sb.write_string('\twin.add_slider(\'${c.id}\', ${c.value})\n')
+			sb.write_string("\twin.add_slider('${c.id}', ${c.value})\n")
 		}
 		'mode' {
-			sb.write_string('\twin.add_mode_control(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_mode_control('${c.id}', '${clean_text}')\n")
 		}
 		'number' {
-			sb.write_string('\twin.add_number(\'${c.id}\', ${c.value})\n')
+			sb.write_string("\twin.add_number('${c.id}', ${c.value})\n")
 		}
 		'date' {
-			sb.write_string('\twin.add_date_picker(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_date_picker('${c.id}', '${clean_text}')\n")
 		}
 		'color' {
-			sb.write_string('\twin.add_color_well(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_color_well('${c.id}', '${clean_text}')\n")
 		}
 		'progress' {
-			sb.write_string('\twin.add_progress_indicator(\'${c.id}\', ${c.value})\n')
+			sb.write_string("\twin.add_progress_indicator('${c.id}', ${c.value})\n")
 		}
 		'image' {
-			sb.write_string('\twin.add_image(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_image('${c.id}', '${clean_text}')\n")
 		}
 		'table' {
-			sb.write_string('\twin.add_table(\'${c.id}\', [\'ID\', \'Item Name\', \'Status\'])\n')
+			sb.write_string("\twin.add_table('${c.id}', ['ID', 'Item Name', 'Status'])\n")
 		}
 		'panel' {
-			sb.write_string('\twin.add_heading(\'${clean_text}\')\n')
+			sb.write_string("\twin.add_heading('${clean_text}')\n")
 		}
 		'radio' {
 			chk := if c.checked { 'true' } else { 'false' }
-			sb.write_string('\twin.add_radio(\'${c.id}\', \'${clean_text}\', ${chk})\n')
+			sb.write_string("\twin.add_radio('${c.id}', '${clean_text}', ${chk})\n")
 		}
 		'divider' {
 			sb.write_string('\twin.add_vertical_spacer(6)\n')
 		}
 		'badge' {
-			sb.write_string('\twin.add_label(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_label('${c.id}', '${clean_text}')\n")
 		}
 		'search' {
-			sb.write_string('\twin.add_input(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_input('${c.id}', '${clean_text}')\n")
 		}
 		// Integrated Form Controls (Label + Input/Control)
 		'form_field' {
-			sb.write_string('\twin.add_form_field(\'${clean_text}\', \'${c.id}\', \'Sample Text\')\n')
+			sb.write_string("\twin.add_form_field('${clean_text}', '${c.id}', 'Sample Text')\n")
 		}
 		'form_textarea' {
-			sb.write_string('\twin.add_form_textarea(\'${clean_text}\', \'${c.id}\', \'Multi-line content...\')\n')
+			sb.write_string("\twin.add_form_textarea('${clean_text}', '${c.id}', 'Multi-line content...')\n")
 		}
 		'form_password' {
-			sb.write_string('\twin.add_form_password(\'${clean_text}\', \'${c.id}\', \'secret123\')\n')
+			sb.write_string("\twin.add_form_password('${clean_text}', '${c.id}', 'secret123')\n")
 		}
 		'form_number' {
-			sb.write_string('\twin.add_form_number(\'${clean_text}\', \'${c.id}\', ${c.value})\n')
+			sb.write_string("\twin.add_form_number('${clean_text}', '${c.id}', ${c.value})\n")
 		}
 		'form_slider' {
-			sb.write_string('\twin.add_form_slider(\'${clean_text}\', \'${c.id}\', ${c.value})\n')
+			sb.write_string("\twin.add_form_slider('${clean_text}', '${c.id}', ${c.value})\n")
 		}
 		'form_dropdown' {
-			sb.write_string('\twin.add_form_dropdown(\'${clean_text}\', \'${c.id}\', [\'Option 1\', \'Option 2\', \'Option 3\'], \'Option 1\')\n')
+			sb.write_string("\twin.add_form_dropdown('${clean_text}', '${c.id}', ['Option 1', 'Option 2', 'Option 3'], 'Option 1')\n")
 		}
 		'form_date' {
-			sb.write_string('\twin.add_form_date_picker(\'${clean_text}\', \'${c.id}\', \'2026-07-22\')\n')
+			sb.write_string("\twin.add_form_date_picker('${clean_text}', '${c.id}', '2026-07-22')\n")
 		}
 		'form_progress' {
-			sb.write_string('\twin.add_form_progress(\'${clean_text}\', \'${c.id}\', ${c.value})\n')
+			sb.write_string("\twin.add_form_progress('${clean_text}', '${c.id}', ${c.value})\n")
 		}
 		'form_switch' {
 			chk := if c.checked { 'true' } else { 'false' }
-			sb.write_string('\twin.add_form_switch(\'${clean_text}\', \'${c.id}\', \'Enable\', ${chk})\n')
+			sb.write_string("\twin.add_form_switch('${clean_text}', '${c.id}', 'Enable', ${chk})\n")
 		}
 		'form_link' {
-			sb.write_string('\twin.add_form_link(\'${clean_text}\', \'${c.id}\', \'View Guide\', \'https://github.com\')\n')
+			sb.write_string("\twin.add_form_link('${clean_text}', '${c.id}', 'View Guide', 'https://github.com')\n")
 		}
 		// Demo Controls & Widgets
 		'rating' {
-			sb.write_string('\twin.add_rating(\'${c.id}\', ${c.value / 20})\n')
+			sb.write_string("\twin.add_rating('${c.id}', ${c.value / 20})\n")
 		}
 		'stepper' {
-			sb.write_string('\twin.add_stepper(\'${c.id}\', 0, 100, 1, ${c.value})\n')
+			sb.write_string("\twin.add_stepper('${c.id}', 0, 100, 1, ${c.value})\n")
 		}
 		'tag' {
-			sb.write_string('\twin.add_token_field(\'${c.id}\', \'vlang,gui,simplegui\')\n')
+			sb.write_string("\twin.add_token_field('${c.id}', 'vlang,gui,simplegui')\n")
 		}
 		'path' {
-			sb.write_string('\twin.add_path_control(\'${c.id}\', \'/Users/developer/Projects/vlang_simplegui\')\n')
+			sb.write_string("\twin.add_path_control('${c.id}', '/Users/developer/Projects/vlang_simplegui')\n")
 		}
 		'drop_zone' {
-			sb.write_string('\twin.add_drop_zone(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_drop_zone('${c.id}', '${clean_text}')\n")
 		}
 		'circular_progress' {
-			sb.write_string('\twin.add_circular_progress(\'${c.id}\', ${c.value}, 0, 100)\n')
+			sb.write_string("\twin.add_circular_progress('${c.id}', ${c.value}, 0, 100)\n")
 		}
 		'metric_meter' {
-			sb.write_string('\twin.add_metric_meter(\'${c.id}\', \'${clean_text}\', ${c.value}, 0, 100, \'%\')\n')
+			sb.write_string("\twin.add_metric_meter('${c.id}', '${clean_text}', ${c.value}, 0, 100, '%')\n")
 		}
 		'status_indicator' {
-			sb.write_string('\twin.add_status_indicator(\'${c.id}\', \'${clean_text}\', \'online\')\n')
+			sb.write_string("\twin.add_status_indicator('${c.id}', '${clean_text}', 'online')\n")
 		}
 		'metric_card' {
 			sb.write_string('\twin.add_metric_card(\'${c.id}\', \'${clean_text}\', \'$48.2K\', \'+12%\', \'vs previous month\')\n')
 		}
 		'alert_banner' {
-			sb.write_string('\twin.add_alert_banner(\'${c.id}\', \'${clean_text}\', \'System update completed successfully.\', \'info\')\n')
+			sb.write_string("\twin.add_alert_banner('${c.id}', '${clean_text}', 'System update completed successfully.', 'info')\n")
 		}
 		'code_view' {
 			sb.write_string('\twin.add_code_view(\'${c.id}\', \'v\', \'fn main() { println("Hello SimpleGUI") }\', 100)\n')
 		}
 		else {
-			sb.write_string('\twin.add_button(\'${c.id}\', \'${clean_text}\')\n')
+			sb.write_string("\twin.add_button('${c.id}', '${clean_text}')\n")
 		}
 	}
 
 	if c.width > 0 {
-		sb.write_string('\twin.set_control_width(\'${c.id}\', ${c.width})\n')
+		sb.write_string("\twin.set_control_width('${c.id}', ${c.width})\n")
 	}
 	if c.height > 0 {
-		sb.write_string('\twin.set_control_height(\'${c.id}\', ${c.height})\n')
+		sb.write_string("\twin.set_control_height('${c.id}', ${c.height})\n")
 	}
 	if c.font_size > 0 && c.font_size != 13 {
-		sb.write_string('\twin.set_control_font_size(\'${c.id}\', ${c.font_size})\n')
+		sb.write_string("\twin.set_control_font_size('${c.id}', ${c.font_size})\n")
 	}
 	if c.font_color.len > 0 && c.font_color != '#ffffff' {
-		sb.write_string('\twin.set_control_font_color(\'${c.id}\', \'${c.font_color}\')\n')
+		sb.write_string("\twin.set_control_font_color('${c.id}', '${c.font_color}')\n")
 	}
 	if c.background_color.len > 0 && c.background_color != '#1e293b' {
-		sb.write_string('\twin.set_control_background_color(\'${c.id}\', \'${c.background_color}\')\n')
+		sb.write_string("\twin.set_control_background_color('${c.id}', '${c.background_color}')\n")
 	}
 	if !c.enabled {
-		sb.write_string('\twin.set_control_enabled(\'${c.id}\', false)\n')
+		sb.write_string("\twin.set_control_enabled('${c.id}', false)\n")
 	}
 	if !c.visible {
-		sb.write_string('\twin.set_control_visible(\'${c.id}\', false)\n')
+		sb.write_string("\twin.set_control_visible('${c.id}', false)\n")
 	}
 	if c.tooltip.len > 0 {
 		clean_tooltip := c.tooltip.replace("'", "\\'")
-		sb.write_string('\twin.set_tooltip(\'${c.id}\', \'${clean_tooltip}\')\n')
+		sb.write_string("\twin.set_tooltip('${c.id}', '${clean_tooltip}')\n")
 	}
 	if c.cursor.len > 0 && c.cursor != 'default' {
-		sb.write_string('\twin.set_control_cursor(\'${c.id}\', \'${c.cursor}\')\n')
+		sb.write_string("\twin.set_control_cursor('${c.id}', '${c.cursor}')\n")
 	}
 }
 
@@ -242,9 +242,9 @@ pub fn generate_v_code(spec FormSpec) string {
 	mut sb := strings.new_builder(2048)
 	sb.write_string('module main\n\nimport simplegui\n\nfn main() {\n')
 	sb.write_string('\t// Create main application window\n')
-	sb.write_string('\tmut win := simplegui.new_simple_window(\'${spec.title}\', ${spec.width}, ${spec.height})\n')
-	sb.write_string('\twin.set_background_color(\'${spec.background_color}\')\n')
-	sb.write_string('\t\t.set_font_color(\'${spec.font_color}\')\n')
+	sb.write_string("\tmut win := simplegui.new_simple_window('${spec.title}', ${spec.width}, ${spec.height})\n")
+	sb.write_string("\twin.set_background_color('${spec.background_color}')\n")
+	sb.write_string("\t\t.set_font_color('${spec.font_color}')\n")
 	sb.write_string('\t\t.set_padding(${spec.padding})\n')
 	sb.write_string('\t\t.set_spacing(${spec.spacing})\n\n')
 
@@ -308,12 +308,12 @@ pub fn generate_v_code(spec FormSpec) string {
 			sb.write_string("\twin.begin_row('panel_headers_row')\n")
 			for p in panels {
 				clean_text := p.text.replace("'", "\\'")
-				sb.write_string('\twin.add_heading(\'📦 ${clean_text}\')\n')
+				sb.write_string("\twin.add_heading('📦 ${clean_text}')\n")
 			}
 			sb.write_string('\twin.end_row()\n')
 		} else {
 			clean_text := panels[0].text.replace("'", "\\'")
-			sb.write_string('\twin.add_heading(\'📦 ${clean_text}\')\n')
+			sb.write_string("\twin.add_heading('📦 ${clean_text}')\n")
 		}
 	}
 
@@ -331,14 +331,14 @@ pub fn generate_v_code(spec FormSpec) string {
 				}
 			}
 
-			sb.write_string('\twin.begin_row(\'row_${r_idx + 1}\')\n')
+			sb.write_string("\twin.begin_row('row_${r_idx + 1}')\n")
 			if col1.len > 0 {
 				for c in col1 {
 					write_single_control_v_code(mut sb, c)
 				}
 			} else {
 				spacer_idx++
-				sb.write_string('\twin.add_label(\'spc_${spacer_idx}\', \'\')\n')
+				sb.write_string("\twin.add_label('spc_${spacer_idx}', '')\n")
 			}
 
 			if col2.len > 0 {
@@ -347,13 +347,13 @@ pub fn generate_v_code(spec FormSpec) string {
 				}
 			} else {
 				spacer_idx++
-				sb.write_string('\twin.add_label(\'spc_${spacer_idx}\', \'\')\n')
+				sb.write_string("\twin.add_label('spc_${spacer_idx}', '')\n")
 			}
 			sb.write_string('\twin.end_row()\n')
 		} else {
 			is_multi := row.len > 1
 			if is_multi {
-				sb.write_string('\twin.begin_row(\'row_${r_idx + 1}\')\n')
+				sb.write_string("\twin.begin_row('row_${r_idx + 1}')\n")
 			}
 			for c in row {
 				write_single_control_v_code(mut sb, c)
@@ -374,27 +374,27 @@ pub fn generate_v_code(spec FormSpec) string {
 			h_clean := handler_name.trim_space()
 			match event_type {
 				'onClick' {
-					sb.write_string('\twin.on_click(\'${c.id}\', ${h_clean})\n')
+					sb.write_string("\twin.on_click('${c.id}', ${h_clean})\n")
 					handlers_to_generate[h_clean] = 'onClick for control `${c.id}`'
 				}
 				'onChange' {
-					sb.write_string('\twin.on_change(\'${c.id}\', ${h_clean})\n')
+					sb.write_string("\twin.on_change('${c.id}', ${h_clean})\n")
 					handlers_to_generate[h_clean] = 'onChange for control `${c.id}`'
 				}
 				'onHover', 'onMouseEnter' {
-					sb.write_string('\twin.on_hover(\'${c.id}\', ${h_clean})\n')
+					sb.write_string("\twin.on_hover('${c.id}', ${h_clean})\n")
 					handlers_to_generate[h_clean] = 'onHover for control `${c.id}`'
 				}
 				'onHoverExit', 'onMouseLeave' {
-					sb.write_string('\twin.on_hover_exit(\'${c.id}\', ${h_clean})\n')
+					sb.write_string("\twin.on_hover_exit('${c.id}', ${h_clean})\n")
 					handlers_to_generate[h_clean] = 'onHoverExit for control `${c.id}`'
 				}
 				'onDoubleClick' {
-					sb.write_string('\twin.add_context_menu_item(\'${c.id}\', \'Double Click\', ${h_clean})\n')
+					sb.write_string("\twin.add_context_menu_item('${c.id}', 'Double Click', ${h_clean})\n")
 					handlers_to_generate[h_clean] = 'onDoubleClick for control `${c.id}`'
 				}
 				else {
-					sb.write_string('\twin.on_change(\'${c.id}\', ${h_clean})\n')
+					sb.write_string("\twin.on_change('${c.id}', ${h_clean})\n")
 					handlers_to_generate[h_clean] = '${event_type} for control `${c.id}`'
 				}
 			}
@@ -416,14 +416,14 @@ pub fn generate_v_code(spec FormSpec) string {
 				|| desc.starts_with('onHoverExit') {
 				sb.write_string('// Handler: ${desc}\n')
 				sb.write_string('fn ${handler_name}(mut win simplegui.SimpleWindow) {\n')
-				sb.write_string('\twin.set_status(\'Event triggered: ${handler_name}\')\n')
-				sb.write_string('\twin.toast(\'${handler_name} executed successfully!\')\n')
+				sb.write_string("\twin.set_status('Event triggered: ${handler_name}')\n")
+				sb.write_string("\twin.toast('${handler_name} executed successfully!')\n")
 				sb.write_string('\t// TODO: Implement custom Delphi/VB event logic\n')
 				sb.write_string('}\n\n')
 			} else {
 				sb.write_string('// Handler: ${desc}\n')
 				sb.write_string('fn ${handler_name}(mut win simplegui.SimpleWindow, value string) {\n')
-				sb.write_string('\twin.set_status(\'Event triggered: ${handler_name} (Value: \${value})\')\n')
+				sb.write_string("\twin.set_status('Event triggered: ${handler_name} (Value: \${value})')\n")
 				sb.write_string('\t// TODO: Implement custom Delphi/VB event logic\n')
 				sb.write_string('}\n\n')
 			}

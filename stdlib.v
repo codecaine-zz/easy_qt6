@@ -106,9 +106,9 @@ pub:
 fn build_simple_http_response(url string, res http.Response) SimpleHttpResponse {
 	return SimpleHttpResponse{
 		status_code: int(res.status_code)
-		body: res.body
+		body:        res.body
 		raw_headers: res.header.str()
-		url: url
+		url:         url
 	}
 }
 
@@ -117,9 +117,9 @@ fn http_request_once(method http.Method, url string, data string, headers map[st
 		return error('url cannot be empty')
 	}
 	mut req := http.Request{
-		url: url
+		url:    url
 		method: method
-		data: data
+		data:   data
 	}
 	if user_agent.len > 0 {
 		req.header.set(http.CommonHeader.user_agent, user_agent)
@@ -747,7 +747,7 @@ pub type SimpleWSMessageCallback = fn (msg string)
 
 pub struct SimpleWSClient {
 pub mut:
-	client        &websocket.Client = unsafe { nil }
+	client        &websocket.Client       = unsafe { nil }
 	on_message_cb SimpleWSMessageCallback = unsafe { nil }
 }
 
@@ -770,7 +770,7 @@ pub fn websocket_client(url string, on_msg SimpleWSMessageCallback) ?&SimpleWSCl
 	mut client := websocket.new_client(url) or { return none }
 
 	mut ws := &SimpleWSClient{
-		client: client
+		client:        client
 		on_message_cb: on_msg
 	}
 
@@ -970,37 +970,47 @@ pub fn (win &SimpleWindow) term_color(text string, style string) string {
 // SimpleStack provides a high-level, generic LIFO (Last In First Out) stack.
 pub struct SimpleStack[T] {
 mut:
-	s datatypes.Stack[T]
+	items []T
 }
 
 // push pushes an item onto the top of the stack.
 pub fn (mut ss SimpleStack[T]) push(item T) {
-	ss.s.push(item)
+	ss.items << item
 }
 
 // pop removes and returns the item on top of the stack, or errors if empty.
 pub fn (mut ss SimpleStack[T]) pop() !T {
-	return ss.s.pop()
+	if ss.items.len == 0 {
+		return error('Stack is empty')
+	}
+	item := ss.items.last()
+	ss.items.delete(ss.items.len - 1)
+	return item
 }
 
 // peek returns the top item of the stack without removing it, or errors if empty.
 pub fn (ss &SimpleStack[T]) peek() !T {
-	return ss.s.peek()
+	if ss.items.len == 0 {
+		return error('Stack is empty')
+	}
+	return ss.items.last()
 }
 
 // len returns the number of elements currently stored in the stack.
 pub fn (ss &SimpleStack[T]) len() int {
-	return ss.s.len()
+	return ss.items.len
 }
 
 // is_empty returns true if the stack contains no elements.
 pub fn (ss &SimpleStack[T]) is_empty() bool {
-	return ss.s.is_empty()
+	return ss.items.len == 0
 }
 
 // new_stack instantiates a new generic SimpleStack.
 pub fn new_stack[T]() SimpleStack[T] {
-	return SimpleStack[T]{}
+	return SimpleStack[T]{
+		items: []T{}
+	}
 }
 
 // SimpleQueue provides a high-level, generic FIFO (First In First Out) queue.
@@ -1461,10 +1471,10 @@ pub fn (win &SimpleWindow) html_parse(content string) SimpleHTMLDocument {
 // Supported corpora: 'lorem' (default), 'poe', 'darwin', 'bard'.
 pub fn lorem_generate(corpus_name string, paragraphs int, sentences int, words int) string {
 	return lorem.generate(lorem.LoremCfg{
-		corpus_name: corpus_name
-		paragraphs: paragraphs
+		corpus_name:             corpus_name
+		paragraphs:              paragraphs
 		sentences_per_paragraph: sentences
-		words_per_sentence: words
+		words_per_sentence:      words
 	})
 }
 
@@ -1996,7 +2006,7 @@ pub:
 pub fn crypto_ed25519_generate_key() !SimpleEd25519KeyPair {
 	pub_k, priv_k := ed25519.generate_key()!
 	return SimpleEd25519KeyPair{
-		pub_key: pub_k
+		pub_key:  pub_k
 		priv_key: priv_k
 	}
 }
@@ -2643,11 +2653,11 @@ pub fn url_parse(raw_url string) SimpleURL {
 		}
 	}
 	return SimpleURL{
-		scheme: u.scheme
-		host: u.hostname()
-		port: u.port()
-		path: u.path
-		query: query_map
+		scheme:   u.scheme
+		host:     u.hostname()
+		port:     u.port()
+		path:     u.path
+		query:    query_map
 		fragment: u.fragment
 	}
 }
@@ -2661,9 +2671,9 @@ pub fn (win &SimpleWindow) url_parse(raw_url string) SimpleURL {
 pub fn url_build(scheme string, host string, path string, query_params map[string]string) string {
 	su := SimpleURL{
 		scheme: scheme
-		host: host
-		path: path
-		query: query_params
+		host:   host
+		path:   path
+		query:  query_params
 	}
 	return su.build_url()
 }

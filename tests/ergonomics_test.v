@@ -765,8 +765,7 @@ fn test_new_ergonomic_features() {
 
 	assert win.get_table_row_where('scores', 0, 'Grace') == ['Grace', '25']
 	assert win.get_table_row_where('scores', 0, 'Nobody') == []string{}
-	assert win.get_table_rows_where('scores', 1, '25') == [['Grace', '25'],
-		['Linus', '25']]
+	assert win.get_table_rows_where('scores', 1, '25') == [['Grace', '25'], ['Linus', '25']]
 	assert win.get_table_column_sum('scores', 1) == 60.0
 	assert win.get_table_column_average('scores', 1) == 20.0
 
@@ -783,8 +782,7 @@ fn test_new_ergonomic_features() {
 	win.save_table_to_json('scores', table_json_path) or { assert false, err.msg() }
 	win.clear_table('scores')
 	win.load_table_from_json('scores', table_json_path) or { assert false, err.msg() }
-	assert win.get_table_rows('scores') == [['Ada', '10'], ['Grace', '25'],
-		['Linus', '25']]
+	assert win.get_table_rows('scores') == [['Ada', '10'], ['Grace', '25'], ['Linus', '25']]
 
 	os.rm(list_json_path) or {}
 	os.rm(table_json_path) or {}
@@ -1178,7 +1176,7 @@ fn test_ergonomic_window_apis() {
 
 fn test_recommended_storage_and_app_state() {
 	mut win := simplegui.new_simple_window('Storage Studio Test App', 500, 400)
-	
+
 	// Test app name deduction
 	app_name := win.get_app_name()
 	assert app_name.len > 0

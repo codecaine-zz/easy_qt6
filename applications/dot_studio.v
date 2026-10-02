@@ -97,7 +97,7 @@ fn main() {
 
 	// Diagram Configuration & Presets Bar
 	win.begin_group_box('grp_diagram_config', '🎯 Diagram Templates & Layout Engine Specification')
-	
+
 	win.begin_row('row_presets_bar')
 	win.add_label('lbl_presets', 'Diagram Template:')
 	win.add_dropdown('dd_dot_presets', [
@@ -107,7 +107,7 @@ fn main() {
 		'4. Database Entity-Relationship (ER Diagram)',
 		'5. Network Infrastructure Topology (Circular Circo)',
 		'6. Binary Search Tree / AST Hierarchy',
-		'7. User Authentication & JWT Flowchart'
+		'7. User Authentication & JWT Flowchart',
 	], '1. SimpleGUI Microservice Architecture (DAG)')
 	win.set_control_width('dd_dot_presets', 380)
 
@@ -118,7 +118,7 @@ fn main() {
 		'fdp (Force-Directed Graph Placement)',
 		'sfdp (Large Scale Force-Directed)',
 		'circo (Circular Ring Placement)',
-		'twopi (Radial Concentric Layout)'
+		'twopi (Radial Concentric Layout)',
 	], 'dot (Hierarchical Directed Graphs)')
 	win.set_control_width('dd_layout_engine', 260)
 	win.end_row()
@@ -138,7 +138,7 @@ fn main() {
 
 	// Dual Pane: DOT Code Editor & SVG Output / Text Representation
 	win.begin_row('row_dual_pane')
-	
+
 	win.begin_group_box('grp_dot_code', '📝 Graphviz DOT Source Code')
 	win.add_textarea('txt_dot_code', sample_dot_architecture)
 	win.set_control_height('txt_dot_code', 320)
@@ -265,7 +265,7 @@ fn main() {
     Resource_API -> Client [label="5. Return JSON Payload"];
 }')
 		}
-		w.toast('Loaded diagram template: ${selected.split("(")[0]}')
+		w.toast('Loaded diagram template: ${selected.split('(')[0]}')
 	})
 
 	// Render Diagram Action

@@ -36,7 +36,7 @@ fn get_installed_voices() []VoiceInfo {
 			VoiceInfo{ name: 'Daniel', lang: 'en_GB', description: 'Hello! My name is Daniel.' },
 			VoiceInfo{ name: 'Karen', lang: 'en_AU', description: 'Hello! My name is Karen.' },
 			VoiceInfo{ name: 'Fred', lang: 'en_US', description: 'I sure like being inside this fancy computer.' },
-			VoiceInfo{ name: 'Victoria', lang: 'en_US', description: 'Isn\'t it nice to have a computer that will talk to you?' },
+			VoiceInfo{ name: 'Victoria', lang: 'en_US', description: "Isn't it nice to have a computer that will talk to you?" },
 			VoiceInfo{ name: 'Zarvox', lang: 'en_US', description: 'That is not a bug; it is an undocumented feature.' },
 			VoiceInfo{ name: 'Trinoids', lang: 'en_US', description: 'We cannot be defeated.' },
 			VoiceInfo{ name: 'Whisper', lang: 'en_US', description: 'Psssssst! I can speak in a whisper.' },
@@ -48,11 +48,11 @@ fn get_installed_voices() []VoiceInfo {
 	for l in lines {
 		trimmed := l.trim_space()
 		if trimmed == '' { continue }
-		
+
 		// Format: "Name                lang_code    # Description"
 		parts := trimmed.split('#')
 		desc := if parts.len > 1 { parts[1].trim_space() } else { '' }
-		
+
 		left := parts[0].trim_space()
 		tokens := left.split(' ')
 		if tokens.len >= 2 {
@@ -64,8 +64,8 @@ fn get_installed_voices() []VoiceInfo {
 			}
 			if name != '' && lang != '' {
 				list << VoiceInfo{
-					name: name
-					lang: lang
+					name:        name
+					lang:        lang
 					description: desc
 				}
 			}
@@ -78,85 +78,85 @@ fn get_installed_voices() []VoiceInfo {
 fn get_speech_recipes() []SpeechRecipe {
 	return [
 		SpeechRecipe{
-			title: '🎙️ Professional Studio Narration'
-			category: 'Voiceover'
-			voice: 'Samantha'
-			rate: '175'
-			script: 'Welcome to the future of native desktop applications. SimpleGUI delivers fast, beginner-friendly Cocoa user interfaces with compiled performance.'
+			title:       '🎙️ Professional Studio Narration'
+			category:    'Voiceover'
+			voice:       'Samantha'
+			rate:        '175'
+			script:      'Welcome to the future of native desktop applications. SimpleGUI delivers fast, beginner-friendly Cocoa user interfaces with compiled performance.'
 			description: 'Clear, engaging, professional voiceover ideal for product walkthroughs and tutorials.'
 		},
 		SpeechRecipe{
-			title: '🤖 Sci-Fi Cybernetic Robot'
-			category: 'Novelty'
-			voice: 'Zarvox'
-			rate: '160'
-			script: 'System diagnostic complete. Neural pathways operational. Quantum processing cores running at maximum efficiency. All systems nominal.'
+			title:       '🤖 Sci-Fi Cybernetic Robot'
+			category:    'Novelty'
+			voice:       'Zarvox'
+			rate:        '160'
+			script:      'System diagnostic complete. Neural pathways operational. Quantum processing cores running at maximum efficiency. All systems nominal.'
 			description: 'Iconic mechanical synthesized robot cadence for games and sci-fi audio effects.'
 		},
 		SpeechRecipe{
-			title: '📣 Airport & Transit Station Announcement'
-			category: 'Broadcast'
-			voice: 'Daniel'
-			rate: '155'
-			script: 'Attention passengers on Flight 842 to London Heathrow. Immediate boarding is now commencing at Gate B22. Please have your boarding pass and passport ready.'
+			title:       '📣 Airport & Transit Station Announcement'
+			category:    'Broadcast'
+			voice:       'Daniel'
+			rate:        '155'
+			script:      'Attention passengers on Flight 842 to London Heathrow. Immediate boarding is now commencing at Gate B22. Please have your boarding pass and passport ready.'
 			description: 'Formal, deliberate public address announcement.'
 		},
 		SpeechRecipe{
-			title: '🚨 Emergency Public Safety Alert'
-			category: 'Alert'
-			voice: 'Alex'
-			rate: '190'
-			script: 'Emergency alert. Severe weather warning issued for your immediate region. Seek shelter inside a sturdy building immediately. Do not stay near windows.'
+			title:       '🚨 Emergency Public Safety Alert'
+			category:    'Alert'
+			voice:       'Alex'
+			rate:        '190'
+			script:      'Emergency alert. Severe weather warning issued for your immediate region. Seek shelter inside a sturdy building immediately. Do not stay near windows.'
 			description: 'High-priority emergency broadcast alert.'
 		},
 		SpeechRecipe{
-			title: '📚 Classic Audiobook Storyteller'
-			category: 'Narration'
-			voice: 'Karen'
-			rate: '165'
-			script: 'It was a bright cold day in April, and the clocks were striking thirteen. Winston Smith, his chin nuzzled into his breast in an effort to escape the vile wind, slipped quickly through the glass doors.'
+			title:       '📚 Classic Audiobook Storyteller'
+			category:    'Narration'
+			voice:       'Karen'
+			rate:        '165'
+			script:      'It was a bright cold day in April, and the clocks were striking thirteen. Winston Smith, his chin nuzzled into his breast in an effort to escape the vile wind, slipped quickly through the glass doors.'
 			description: 'Smooth, measured pacing tailored for literature and long-form storytelling.'
 		},
 		SpeechRecipe{
-			title: '🎧 Podcast Episode Intro & Hook'
-			category: 'Media'
-			voice: 'Samantha'
-			rate: '185'
-			script: 'What is up, everyone! Welcome back to Episode 42 of The Developer Horizon. Today, we are tearing down modern desktop frameworks and building lightning fast GUI apps in V.'
+			title:       '🎧 Podcast Episode Intro & Hook'
+			category:    'Media'
+			voice:       'Samantha'
+			rate:        '185'
+			script:      'What is up, everyone! Welcome back to Episode 42 of The Developer Horizon. Today, we are tearing down modern desktop frameworks and building lightning fast GUI apps in V.'
 			description: 'Dynamic, upbeat pacing for podcast openers and media content.'
 		},
 		SpeechRecipe{
-			title: '🤫 Calm Whisper & Meditation'
-			category: 'Novelty'
-			voice: 'Whisper'
-			rate: '130'
-			script: 'Take a deep breath in... hold it for three seconds... and slowly exhale. Let go of all tension and relax your mind.'
+			title:       '🤫 Calm Whisper & Meditation'
+			category:    'Novelty'
+			voice:       'Whisper'
+			rate:        '130'
+			script:      'Take a deep breath in... hold it for three seconds... and slowly exhale. Let go of all tension and relax your mind.'
 			description: 'Soft whisper voice ideal for ambient soundscapes and sleep guides.'
 		},
 		SpeechRecipe{
-			title: '⏱️ Rocket Launch Countdown (10 to 1)'
-			category: 'Broadcast'
-			voice: 'Alex'
-			rate: '140'
-			script: 'Ten... Nine... Eight... Seven... Six... Five... Four... Three... Two... One... Liftoff! We have liftoff!'
+			title:       '⏱️ Rocket Launch Countdown (10 to 1)'
+			category:    'Broadcast'
+			voice:       'Alex'
+			rate:        '140'
+			script:      'Ten... Nine... Eight... Seven... Six... Five... Four... Three... Two... One... Liftoff! We have liftoff!'
 			description: 'Dramatic second-by-second countdown.'
 		},
 		SpeechRecipe{
-			title: '💻 Terminal Build Finished Chime'
-			category: 'Developer'
-			voice: 'Victoria'
-			rate: '180'
-			script: 'Build succeeded! Zero errors, zero warnings. All test suites passed in 3.4 seconds.'
+			title:       '💻 Terminal Build Finished Chime'
+			category:    'Developer'
+			voice:       'Victoria'
+			rate:        '180'
+			script:      'Build succeeded! Zero errors, zero warnings. All test suites passed in 3.4 seconds.'
 			description: 'Quick developer workstation build chime notification.'
 		},
 		SpeechRecipe{
-			title: '🎭 Retro Arcade Computer'
-			category: 'Novelty'
-			voice: 'Trinoids'
-			rate: '150'
-			script: 'Insert coin to continue. Player one ready. High score recorded in mainframe memory.'
+			title:       '🎭 Retro Arcade Computer'
+			category:    'Novelty'
+			voice:       'Trinoids'
+			rate:        '150'
+			script:      'Insert coin to continue. Player one ready. High score recorded in mainframe memory.'
 			description: 'Nostalgic 80s arcade synthesized speech.'
-		}
+		},
 	]
 }
 
@@ -385,7 +385,7 @@ fn main() {
 				w.set('txt_script', r.script)
 				w.set('txt_rate', r.rate)
 				w.set('lbl_recipe_desc', 'ℹ️ ' + r.description)
-				
+
 				// Select voice in dropdown
 				for v in all_voices {
 					if v.name == r.voice {
@@ -457,7 +457,7 @@ fn main() {
 				w.set('txt_script', r.script)
 				w.set('txt_rate', r.rate)
 				w.set('lbl_recipe_desc', 'ℹ️ ' + r.description)
-				
+
 				for v in all_voices {
 					if v.name == r.voice {
 						desc := if v.description != '' { ' — "${v.description}"' } else { '' }
@@ -525,9 +525,13 @@ fn main() {
 		fmt_sel := w.get('dd_format')
 
 		mut ext := '.m4a'
-		if fmt_sel.contains('aiff') { ext = '.aiff' }
-		else if fmt_sel.contains('wav') { ext = '.wav' }
-		else if fmt_sel.contains('caf') { ext = '.caf' }
+		if fmt_sel.contains('aiff') {
+			ext = '.aiff'
+		} else if fmt_sel.contains('wav') {
+			ext = '.wav'
+		} else if fmt_sel.contains('caf') {
+			ext = '.caf'
+		}
 
 		mut final_out := out_path
 		if !final_out.ends_with(ext) {

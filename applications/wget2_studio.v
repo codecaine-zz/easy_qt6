@@ -57,7 +57,7 @@ fn main() {
 	// Target URL & Destination Configuration
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_target_box', '🎯 Target URL & Destination Location')
-	
+
 	win.begin_row('row_target_url')
 	win.add_label('lbl_url', 'Target URL:')
 	win.add_input('txt_url', 'https://proof.ovh.net/files/100Mb.dat')
@@ -80,7 +80,7 @@ fn main() {
 	// Download Task Presets & Modes
 	// -------------------------------------------------------------
 	win.begin_group_box('grp_presets_box', '⚙️ Download Task Presets & Crawling Modes')
-	
+
 	win.begin_row('row_presets')
 	win.add_label('lbl_preset', 'Download Preset:')
 	win.add_dropdown('dd_preset', [
@@ -89,7 +89,7 @@ fn main() {
 		'📑 Recursive Asset Scraper (PDFs, Docs, ZIPs)',
 		'🖼️ Image Gallery Scraper (JPG, PNG, WebP, SVG)',
 		'🔄 Resume Interrupted Download (--continue)',
-		'🕵️ Stealth Browser Crawl (Chrome UA + HTTP/2)'
+		'🕵️ Stealth Browser Crawl (Chrome UA + HTTP/2)',
 	], '⚡ Turbo Multi-Threaded File Download (Max Speed)')
 	win.set_control_width('dd_preset', 400)
 
@@ -121,7 +121,7 @@ fn main() {
 		'Chrome macOS',
 		'Safari macOS',
 		'Firefox macOS',
-		'iPhone Mobile'
+		'iPhone Mobile',
 	], 'Chrome macOS')
 	win.set_control_width('dd_ua', 130)
 	win.end_row()
@@ -287,7 +287,11 @@ fn main() {
 		mut raw_args := []string{}
 
 		// Save Directory
-		real_dest := if dest_dir.starts_with('~') { dest_dir.replace('~', os.home_dir()) } else { dest_dir }
+		real_dest := if dest_dir.starts_with('~') {
+			dest_dir.replace('~', os.home_dir())
+		} else {
+			dest_dir
+		}
 		if !os.exists(real_dest) {
 			os.mkdir_all(real_dest) or {}
 		}

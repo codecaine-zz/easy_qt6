@@ -18,13 +18,13 @@ mut:
 
 struct AppState {
 mut:
-	precision      int
-	angle_unit     string
-	struct_mode    string
-	base_mode      string
-	history        []CalculationHistoryItem
-	active_tab     string
-	last_result    string
+	precision   int
+	angle_unit  string
+	struct_mode string
+	base_mode   string
+	history     []CalculationHistoryItem
+	active_tab  string
+	last_result string
 }
 
 // -------------------------------------------------------------
@@ -103,12 +103,12 @@ fn main() {
 	win.set_padding(14)
 
 	mut state := &AppState{
-		precision: 12
-		angle_unit: 'rad'
+		precision:   12
+		angle_unit:  'rad'
 		struct_mode: 'exact'
-		base_mode: 'Decimal (10)'
-		history: []CalculationHistoryItem{}
-		active_tab: '🧮 Calculator & Scratchpad'
+		base_mode:   'Decimal (10)'
+		history:     []CalculationHistoryItem{}
+		active_tab:  '🧮 Calculator & Scratchpad'
 		last_result: '0'
 	}
 
@@ -119,7 +119,8 @@ fn main() {
 	win.add_heading('🧮 Qalc Studio Pro — Symbolic Math & Unit Converter')
 
 	win.add_label('lbl_prec', '  Precision:')
-	win.add_dropdown('dd_precision', ['10 digits', '12 digits', '20 digits', '30 digits', '50 digits', '100 digits'], '12 digits')
+	win.add_dropdown('dd_precision', ['10 digits', '12 digits', '20 digits', '30 digits', '50 digits',
+		'100 digits'], '12 digits')
 	win.set_control_width('dd_precision', 110)
 
 	win.add_label('lbl_angle', '  Angle:')
@@ -142,7 +143,7 @@ fn main() {
 		'💱 Unit & Currency Converter',
 		'🔢 Matrices & Linear Algebra',
 		'📚 Formula & Preset Recipes',
-		'📜 Calculation History'
+		'📜 Calculation History',
 	])
 
 	// -------------------------------------------------------------
@@ -334,7 +335,7 @@ fn main() {
 	win.add_button('btn_rec_rel', '⚛️ Einstein: E = m*c^2')
 	win.add_button('btn_rec_quad', '🎯 Quadratic: 2*x^2 + 5*x - 3 = 0')
 	win.add_button('btn_rec_grav', '🪐 Earth Gravity on 70kg')
-	win.add_button('btn_rec_coul', '⚡ Coulomb\'s Law')
+	win.add_button('btn_rec_coul', "⚡ Coulomb's Law")
 	win.end_row()
 
 	win.begin_row('row_rec_2')
@@ -413,7 +414,13 @@ fn main() {
 		// Parse precision
 		prec_text := w.get('dd_precision')
 		prec_num := prec_text.all_before(' ').int()
-		angle_val := if w.get('dd_angle').contains('deg') { 'deg' } else if w.get('dd_angle').contains('gra') { 'gra' } else { 'rad' }
+		angle_val := if w.get('dd_angle').contains('deg') {
+			'deg'
+		} else if w.get('dd_angle').contains('gra') {
+			'gra'
+		} else {
+			'rad'
+		}
 
 		terse, _ := run_qalc(clean, prec_num, angle_val, 'dec', 'off')
 		if terse != '' {
@@ -422,10 +429,10 @@ fn main() {
 
 			// Record history item
 			item := CalculationHistoryItem{
-				timestamp: time.now().format_ss()
+				timestamp:  time.now().format_ss()
 				expression: clean
-				result: terse
-				mode: mode_label
+				result:     terse
+				mode:       mode_label
 			}
 			state.history << item
 			update_history_view(mut w)
@@ -488,27 +495,67 @@ fn main() {
 	})
 
 	// Keypad Buttons
-	win.on_click('btn_k_pi', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'pi') })
-	win.on_click('btn_k_e', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'e') })
-	win.on_click('btn_k_sqrt', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'sqrt(') })
-	win.on_click('btn_k_pow', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + '^') })
-	win.on_click('btn_k_sin', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'sin(') })
-	win.on_click('btn_k_cos', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'cos(') })
-	win.on_click('btn_k_tan', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'tan(') })
-	win.on_click('btn_k_ln', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'ln(') })
-	win.on_click('btn_k_log', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'log(') })
-	win.on_click('btn_k_fact', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + '!') })
+	win.on_click('btn_k_pi', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'pi')
+	})
+	win.on_click('btn_k_e', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'e')
+	})
+	win.on_click('btn_k_sqrt', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'sqrt(')
+	})
+	win.on_click('btn_k_pow', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + '^')
+	})
+	win.on_click('btn_k_sin', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'sin(')
+	})
+	win.on_click('btn_k_cos', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'cos(')
+	})
+	win.on_click('btn_k_tan', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'tan(')
+	})
+	win.on_click('btn_k_ln', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'ln(')
+	})
+	win.on_click('btn_k_log', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'log(')
+	})
+	win.on_click('btn_k_fact', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + '!')
+	})
 
-	win.on_click('btn_k_asin', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'asin(') })
-	win.on_click('btn_k_acos', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'acos(') })
-	win.on_click('btn_k_atan', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'atan(') })
-	win.on_click('btn_k_abs', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + 'abs(') })
-	win.on_click('btn_k_diff', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', 'diff(x^3)') })
-	win.on_click('btn_k_integ', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', 'integrate(x^2)') })
-	win.on_click('btn_k_solve', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', 'solve(2*x + 5 = 15, x)') })
-	win.on_click('btn_k_sum', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', 'sum(x, x, 1, 100)') })
-	win.on_click('btn_k_deg', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' to deg') })
-	win.on_click('btn_k_rad', fn (mut w simplegui.SimpleWindow) { w.set('txt_calc_input', w.get('txt_calc_input') + ' to rad') })
+	win.on_click('btn_k_asin', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'asin(')
+	})
+	win.on_click('btn_k_acos', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'acos(')
+	})
+	win.on_click('btn_k_atan', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'atan(')
+	})
+	win.on_click('btn_k_abs', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + 'abs(')
+	})
+	win.on_click('btn_k_diff', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', 'diff(x^3)')
+	})
+	win.on_click('btn_k_integ', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', 'integrate(x^2)')
+	})
+	win.on_click('btn_k_solve', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', 'solve(2*x + 5 = 15, x)')
+	})
+	win.on_click('btn_k_sum', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', 'sum(x, x, 1, 100)')
+	})
+	win.on_click('btn_k_deg', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' to deg')
+	})
+	win.on_click('btn_k_rad', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_calc_input', w.get('txt_calc_input') + ' to rad')
+	})
 
 	// Scratchpad Execution
 	win.on_click('btn_eval_scratch', fn [eval_expr_fn] (mut w simplegui.SimpleWindow) {
@@ -619,14 +666,38 @@ fn main() {
 	})
 
 	// Unit Presets
-	win.on_click('btn_up_usd_eur', fn (mut w simplegui.SimpleWindow) { w.set('txt_unit_from', 'USD'); w.set('txt_unit_to', 'EUR') })
-	win.on_click('btn_up_usd_gbp', fn (mut w simplegui.SimpleWindow) { w.set('txt_unit_from', 'USD'); w.set('txt_unit_to', 'GBP') })
-	win.on_click('btn_up_usd_jpy', fn (mut w simplegui.SimpleWindow) { w.set('txt_unit_from', 'USD'); w.set('txt_unit_to', 'JPY') })
-	win.on_click('btn_up_usd_btc', fn (mut w simplegui.SimpleWindow) { w.set('txt_unit_from', 'USD'); w.set('txt_unit_to', 'BTC') })
-	win.on_click('btn_up_mph_kmh', fn (mut w simplegui.SimpleWindow) { w.set('txt_unit_from', 'mph'); w.set('txt_unit_to', 'km/h') })
-	win.on_click('btn_up_c_f', fn (mut w simplegui.SimpleWindow) { w.set('txt_unit_from', 'degC'); w.set('txt_unit_to', 'degF') })
-	win.on_click('btn_up_gb_mb', fn (mut w simplegui.SimpleWindow) { w.set('txt_unit_from', 'GB'); w.set('txt_unit_to', 'MiB') })
-	win.on_click('btn_up_kg_lbs', fn (mut w simplegui.SimpleWindow) { w.set('txt_unit_from', 'kg'); w.set('txt_unit_to', 'lbs') })
+	win.on_click('btn_up_usd_eur', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_unit_from', 'USD')
+		w.set('txt_unit_to', 'EUR')
+	})
+	win.on_click('btn_up_usd_gbp', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_unit_from', 'USD')
+		w.set('txt_unit_to', 'GBP')
+	})
+	win.on_click('btn_up_usd_jpy', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_unit_from', 'USD')
+		w.set('txt_unit_to', 'JPY')
+	})
+	win.on_click('btn_up_usd_btc', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_unit_from', 'USD')
+		w.set('txt_unit_to', 'BTC')
+	})
+	win.on_click('btn_up_mph_kmh', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_unit_from', 'mph')
+		w.set('txt_unit_to', 'km/h')
+	})
+	win.on_click('btn_up_c_f', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_unit_from', 'degC')
+		w.set('txt_unit_to', 'degF')
+	})
+	win.on_click('btn_up_gb_mb', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_unit_from', 'GB')
+		w.set('txt_unit_to', 'MiB')
+	})
+	win.on_click('btn_up_kg_lbs', fn (mut w simplegui.SimpleWindow) {
+		w.set('txt_unit_from', 'kg')
+		w.set('txt_unit_to', 'lbs')
+	})
 
 	// -------------------------------------------------------------
 	// Tab 5: Matrix Actions

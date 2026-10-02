@@ -2,7 +2,7 @@ module main
 
 import simplegui
 import os
-import json
+import json2
 import time
 
 // -------------------------------------------------------------
@@ -54,31 +54,31 @@ pub mut:
 
 struct AppState {
 mut:
-	selected_provider  string
-	public_ipv4        string
-	public_ipv6        string
-	active_ip          string
-	hostname           string
-	city               string
-	region             string
-	country            string
-	country_code       string
-	loc_coords         string
-	isp_org            string
-	asn                string
-	timezone           string
-	postal_code        string
-	raw_json           string
-	active_tab         string
-	local_interface    string
-	local_ipv4         string
-	local_netmask      string
-	local_broadcast    string
-	local_mac          string
-	local_gateway      string
-	local_dns          string
-	target_query       string
-	is_refreshing      bool
+	selected_provider string
+	public_ipv4       string
+	public_ipv6       string
+	active_ip         string
+	hostname          string
+	city              string
+	region            string
+	country           string
+	country_code      string
+	loc_coords        string
+	isp_org           string
+	asn               string
+	timezone          string
+	postal_code       string
+	raw_json          string
+	active_tab        string
+	local_interface   string
+	local_ipv4        string
+	local_netmask     string
+	local_broadcast   string
+	local_mac         string
+	local_gateway     string
+	local_dns         string
+	target_query      string
+	is_refreshing     bool
 }
 
 // -------------------------------------------------------------
@@ -211,30 +211,30 @@ fn main() {
 
 	mut state := &AppState{
 		selected_provider: 'ifconfig.me & ipinfo.io'
-		public_ipv4: 'Resolving...'
-		public_ipv6: 'Resolving...'
-		active_ip: 'Resolving...'
-		hostname: 'Resolving...'
-		city: 'Resolving...'
-		region: 'Resolving...'
-		country: 'Resolving...'
-		country_code: 'US'
-		loc_coords: '0.00, 0.00'
-		isp_org: 'Resolving...'
-		asn: 'Resolving...'
-		timezone: 'Resolving...'
-		postal_code: 'Resolving...'
-		raw_json: '{\n  "status": "fetching network telemetry..."\n}'
-		active_tab: '🌐 Public IP & Geolocation'
-		local_interface: 'en0'
-		local_ipv4: 'Detecting...'
-		local_netmask: '255.255.255.0'
-		local_broadcast: 'Unknown'
-		local_mac: 'Unknown'
-		local_gateway: 'Unknown'
-		local_dns: 'Unknown'
-		target_query: '8.8.8.8'
-		is_refreshing: false
+		public_ipv4:       'Resolving...'
+		public_ipv6:       'Resolving...'
+		active_ip:         'Resolving...'
+		hostname:          'Resolving...'
+		city:              'Resolving...'
+		region:            'Resolving...'
+		country:           'Resolving...'
+		country_code:      'US'
+		loc_coords:        '0.00, 0.00'
+		isp_org:           'Resolving...'
+		asn:               'Resolving...'
+		timezone:          'Resolving...'
+		postal_code:       'Resolving...'
+		raw_json:          '{\n  "status": "fetching network telemetry..."\n}'
+		active_tab:        '🌐 Public IP & Geolocation'
+		local_interface:   'en0'
+		local_ipv4:        'Detecting...'
+		local_netmask:     '255.255.255.0'
+		local_broadcast:   'Unknown'
+		local_mac:         'Unknown'
+		local_gateway:     'Unknown'
+		local_dns:         'Unknown'
+		target_query:      '8.8.8.8'
+		is_refreshing:     false
 	}
 
 	// -------------------------------------------------------------
@@ -251,7 +251,7 @@ fn main() {
 		'ip-api.com (Extended)',
 		'icanhazip.com (Raw IP)',
 		'ifconfig.co (Fast JSON)',
-		'api64.ipify.org (Dual-Stack)'
+		'api64.ipify.org (Dual-Stack)',
 	], 'ifconfig.me & ipinfo.io')
 	win.set_control_width('dd_provider', 190)
 
@@ -271,7 +271,7 @@ fn main() {
 		'🔍 Target IP / Domain Inspector',
 		'💻 Local Network & Adapters',
 		'⚡ Latency & DNS Benchmark',
-		'📑 Raw JSON & Curl Studio'
+		'📑 Raw JSON & Curl Studio',
 	])
 
 	// -------------------------------------------------------------
@@ -438,9 +438,17 @@ fn main() {
 
 		// 2. Update Top Highlights Bar
 		w.set('lbl_sum_ipv4', '🟢 IPv4: ' + state.public_ipv4)
-		w.set('lbl_sum_ipv6', '🟣 IPv6: ' + (if state.public_ipv6.len > 24 { state.public_ipv6[..24] + '...' } else { state.public_ipv6 }))
+		w.set('lbl_sum_ipv6', '🟣 IPv6: ' + (if state.public_ipv6.len > 24 {
+			state.public_ipv6[..24] + '...'
+		} else {
+			state.public_ipv6
+		}))
 		w.set('lbl_sum_location', '📍 Location: ${state.city}, ${state.country}')
-		w.set('lbl_sum_isp', '🏢 ISP: ' + (if state.isp_org.len > 22 { state.isp_org[..22] + '...' } else { state.isp_org }))
+		w.set('lbl_sum_isp', '🏢 ISP: ' + (if state.isp_org.len > 22 {
+			state.isp_org[..22] + '...'
+		} else {
+			state.isp_org
+		}))
 		w.set('lbl_sum_local', '💻 LAN: ' + state.local_ipv4)
 
 		// 3. Update Detailed Geolocation Report
@@ -514,13 +522,21 @@ fn main() {
 
 			// 3. Fetch Rich Geolocation JSON from ipinfo.io
 			raw_ipinfo := fetch_curl_url('ipinfo.io', false, false)
-			state.raw_json = if raw_ipinfo != '' { raw_ipinfo } else { '{\n  "error": "No response"\n}' }
+			state.raw_json = if raw_ipinfo != '' {
+				raw_ipinfo
+			} else {
+				'{\n  "error": "No response"\n}'
+			}
 
 			if raw_ipinfo != '' {
-				info := json.decode(IPInfoResponse, raw_ipinfo) or { IPInfoResponse{} }
+				info := json2.decode[IPInfoResponse](raw_ipinfo) or { IPInfoResponse{} }
 				if info.ip != '' {
 					state.active_ip = info.ip
-					state.hostname = if info.hostname != '' { info.hostname } else { 'None / Direct' }
+					state.hostname = if info.hostname != '' {
+						info.hostname
+					} else {
+						'None / Direct'
+					}
 					state.city = if info.city != '' { info.city } else { 'Unknown' }
 					state.region = if info.region != '' { info.region } else { 'Unknown' }
 					state.country = if info.country != '' { info.country } else { 'Unknown' }
@@ -670,7 +686,7 @@ fn main() {
 		out << '========================================================================'
 
 		if res.exit_code == 0 && res.output != '' {
-			geo := json.decode(IPApiResponse, res.output) or { IPApiResponse{} }
+			geo := json2.decode[IPApiResponse](res.output) or { IPApiResponse{} }
 			if geo.status == 'success' {
 				flag := country_code_to_flag(geo.country_code)
 				out << 'IP / Resolved Query : ' + geo.query
@@ -787,7 +803,7 @@ fn main() {
 			'9.9.9.9 (Quad9 DNS)',
 			'208.67.222.222 (OpenDNS)',
 			'github.com (GitHub)',
-			'apple.com (Apple)'
+			'apple.com (Apple)',
 		]
 
 		mut out := []string{}
@@ -899,7 +915,8 @@ fn main() {
 	win.on_click('btn_minify_raw_json', fn (mut w simplegui.SimpleWindow) {
 		j := w.get('txt_raw_json').trim_space()
 		if j == '' { return }
-		res := simplegui.exec_safe_stdin('python3', ['-c', 'import sys, json; print(json.dumps(json.loads(sys.stdin.read()), separators=(",", ":")))'], j)
+		res := simplegui.exec_safe_stdin('python3', ['-c',
+			'import sys, json; print(json.dumps(json.loads(sys.stdin.read()), separators=(",", ":")))'], j)
 		if res.exit_code == 0 && res.output.trim_space() != '' {
 			w.set('txt_raw_json', res.output.trim_space())
 			w.toast('Minified JSON to single line!')

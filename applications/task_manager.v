@@ -48,19 +48,19 @@ fn get_all_processes() []ProcessItem {
 			state := tokens[4]
 			user := tokens[5]
 			full_cmd := tokens[6..].join(' ')
-			
+
 			// Extract clean short executable name
 			raw_bin := tokens[6]
 			comm := os.file_name(raw_bin)
 
 			items << ProcessItem{
-				pid: pid
-				cpu_pct: cpu
-				mem_pct: mem
-				rss_kb: rss
-				state: state
-				user: user
-				comm: if comm != '' { comm } else { raw_bin }
+				pid:      pid
+				cpu_pct:  cpu
+				mem_pct:  mem
+				rss_kb:   rss
+				state:    state
+				user:     user
+				comm:     if comm != '' { comm } else { raw_bin }
 				full_cmd: full_cmd
 			}
 		}
@@ -131,7 +131,7 @@ fn main() {
 		'High CPU (> 2.0%)',
 		'High Memory (> 100 MB)',
 		'My User Processes',
-		'System Daemons (root)'
+		'System Daemons (root)',
 	], 'All Processes')
 	win.set_control_width('dd_filter', 180)
 
@@ -140,7 +140,7 @@ fn main() {
 		'CPU % (Highest First)',
 		'Memory (Highest First)',
 		'PID (Ascending)',
-		'Process Name (A-Z)'
+		'Process Name (A-Z)',
 	], 'CPU % (Highest First)')
 	win.set_control_width('dd_sort', 180)
 
@@ -251,7 +251,7 @@ fn main() {
 				format_rss_mb(p.rss_kb),
 				p.state,
 				p.user,
-				p.full_cmd
+				p.full_cmd,
 			]
 		}
 
@@ -397,7 +397,7 @@ fn main() {
 
 		go fn [mut w, pid, name, path] () {
 			res := simplegui.exec_safe('lsof', ['-nP', '-p', pid])
-			
+
 			mut details_text := '📌 Process: ${name} (PID: ${pid})\n'
 			details_text += '📁 Executable: ${path}\n'
 			details_text += '─────────────────────────────────────────────────────────────────────────────\n'

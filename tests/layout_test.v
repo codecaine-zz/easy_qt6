@@ -234,8 +234,8 @@ fn test_group_box_options_border_and_caption() {
 	// Group with config struct
 	win.group_config('grp_3', simplegui.GroupConfig{ title: 'Config Title', border: true },
 		fn (mut w simplegui.SimpleWindow) {
-		w.add_label('lbl_3', 'Label Text')
-	})
+			w.add_label('lbl_3', 'Label Text')
+		})
 	assert win.has_control('grp_3') == true
 	assert win.has_control('lbl_3') == true
 

@@ -193,26 +193,26 @@ fn compile_app(t Task, cached_icns_path string) TaskResult {
 		if res.exit_code == 0 && os.exists(out_bin) {
 			sz := os.file_size(out_bin)
 			return TaskResult{
-				index: t.index
-				total: t.total
+				index:        t.index
+				total:        t.total
 				display_name: t.display_name
-				out_target: out_bin
-				success: true
-				elapsed_ms: elapsed.milliseconds()
-				size_mb: f64(sz) / 1024.0 / 1024.0
-				err_msg: ''
+				out_target:   out_bin
+				success:      true
+				elapsed_ms:   elapsed.milliseconds()
+				size_mb:      f64(sz) / 1024.0 / 1024.0
+				err_msg:      ''
 			}
 		}
 
 		return TaskResult{
-			index: t.index
-			total: t.total
+			index:        t.index
+			total:        t.total
 			display_name: t.display_name
-			out_target: out_bin
-			success: false
-			elapsed_ms: elapsed.milliseconds()
-			size_mb: 0.0
-			err_msg: res.output.trim_space()
+			out_target:   out_bin
+			success:      false
+			elapsed_ms:   elapsed.milliseconds()
+			size_mb:      0.0
+			err_msg:      res.output.trim_space()
 		}
 	}
 
@@ -228,14 +228,14 @@ fn compile_app(t Task, cached_icns_path string) TaskResult {
 
 	os.mkdir_all(macos_dir) or {
 		return TaskResult{
-			index: t.index
-			total: t.total
+			index:        t.index
+			total:        t.total
 			display_name: t.display_name
-			out_target: app_bundle
-			success: false
-			elapsed_ms: 0
-			size_mb: 0.0
-			err_msg: 'Failed to create MacOS directory: ${err}'
+			out_target:   app_bundle
+			success:      false
+			elapsed_ms:   0
+			size_mb:      0.0
+			err_msg:      'Failed to create MacOS directory: ${err}'
 		}
 	}
 	os.mkdir_all(resources_dir) or {}
@@ -299,14 +299,14 @@ fn compile_app(t Task, cached_icns_path string) TaskResult {
 	if res.exit_code != 0 || !os.exists(target_bin) {
 		elapsed := time.since(t0)
 		return TaskResult{
-			index: t.index
-			total: t.total
+			index:        t.index
+			total:        t.total
 			display_name: t.display_name
-			out_target: app_bundle
-			success: false
-			elapsed_ms: elapsed.milliseconds()
-			size_mb: 0.0
-			err_msg: res.output.trim_space()
+			out_target:   app_bundle
+			success:      false
+			elapsed_ms:   elapsed.milliseconds()
+			size_mb:      0.0
+			err_msg:      res.output.trim_space()
 		}
 	}
 
@@ -320,14 +320,14 @@ fn compile_app(t Task, cached_icns_path string) TaskResult {
 	sz := os.file_size(target_bin)
 
 	return TaskResult{
-		index: t.index
-		total: t.total
+		index:        t.index
+		total:        t.total
 		display_name: t.display_name
-		out_target: app_bundle
-		success: true
-		elapsed_ms: elapsed.milliseconds()
-		size_mb: f64(sz) / 1024.0 / 1024.0
-		err_msg: ''
+		out_target:   app_bundle
+		success:      true
+		elapsed_ms:   elapsed.milliseconds()
+		size_mb:      f64(sz) / 1024.0 / 1024.0
+		err_msg:      ''
 	}
 }
 
@@ -397,7 +397,11 @@ fn main() {
 
 	cwd := os.getwd()
 	app_dir := os.join_path(cwd, 'applications')
-	out_dir := if os.is_abs_path(out_dir_arg) { out_dir_arg } else { os.join_path(cwd, out_dir_arg) }
+	out_dir := if os.is_abs_path(out_dir_arg) {
+		out_dir_arg
+	} else {
+		os.join_path(cwd, out_dir_arg)
+	}
 	icon_cache_dir := os.join_path(out_dir, '.icon_cache')
 
 	os.mkdir_all(out_dir) or {
@@ -463,16 +467,16 @@ fn main() {
 		}
 
 		tasks << Task{
-			index: idx + 1
-			total: app_files.len
-			app_id: raw_id
-			src_path: os.join_path('applications', f)
-			out_dir: out_dir
+			index:        idx + 1
+			total:        app_files.len
+			app_id:       raw_id
+			src_path:     os.join_path('applications', f)
+			out_dir:      out_dir
 			display_name: config.display_name
-			icon_file: config.icon_file
-			bundle_id: config.bundle_id
-			is_prod: is_prod
-			bin_only: bin_only
+			icon_file:    config.icon_file
+			bundle_id:    config.bundle_id
+			is_prod:      is_prod
+			bin_only:     bin_only
 		}
 	}
 

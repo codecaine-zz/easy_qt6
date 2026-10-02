@@ -31,7 +31,11 @@ fn main() {
 	if out_file.len == 0 {
 		// Extract name from URL
 		parts := url.split('/')
-		out_file = if parts.len > 0 && parts.last().len > 0 { parts.last() } else { 'downloaded_file' }
+		out_file = if parts.len > 0 && parts.last().len > 0 {
+			parts.last()
+		} else {
+			'downloaded_file'
+		}
 	}
 
 	app.info('Downloading ${url} -> ${out_file}...')

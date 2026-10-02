@@ -27,11 +27,11 @@ fn main() {
 
 	props := {
 		'First Name': 'John'
-		'Last Name': 'Doe'
-		'Email': 'john.doe@example.com'
-		'Phone': '555-1234'
+		'Last Name':  'Doe'
+		'Email':      'john.doe@example.com'
+		'Phone':      '555-1234'
 	}
-	
+
 	win.add_property_grid('user_form', props)
 
 	win.add_button('btn_get_props', 'Print Form Values to Console')

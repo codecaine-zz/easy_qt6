@@ -174,7 +174,7 @@ fn on_export_clicked(mut win simplegui.SimpleWindow) {
 	encoded_spec := json2.encode(spec)
 	win.alert('Enterprise Spec Exported',
 		'KPI specs serialized successfully to JSON!\n\nPayload:\n' + encoded_spec +
-		'\n\nThis payload can be published directly to enterprise analytics APIs.')
+			'\n\nThis payload can be published directly to enterprise analytics APIs.')
 	win.toast('JSON Specs Compiled')
 }
 

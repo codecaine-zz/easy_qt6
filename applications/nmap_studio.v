@@ -50,7 +50,7 @@ fn main() {
 
 	// Target & Scan Profile Scope
 	win.begin_group_box('grp_target', '🎯 Target Specification & Scan Profiles')
-	
+
 	win.begin_row('row_target_input')
 	win.add_label('lbl_target', 'Target Host / CIDR:')
 	win.add_input('txt_target', 'scanme.nmap.org')
@@ -69,7 +69,7 @@ fn main() {
 		'5. Vulnerability Assessment (--script vuln)',
 		'6. SSL / TLS Certificate Check (--script ssl-cert)',
 		'7. Full 65,535 Ports Scan (-p-)',
-		'8. Fast SYN / TCP Connect Scan (-sT -T4)'
+		'8. Fast SYN / TCP Connect Scan (-sT -T4)',
 	], '2. Standard Service Version Scan (-sV)')
 	win.set_control_width('dd_scan_profile', 260)
 	win.end_row()
@@ -195,7 +195,7 @@ fn main() {
 
 		args << target
 
-		w.append_console('nmap_console', '▶ Launching Nmap: nmap ${args.join(" ")}\n', 1)
+		w.append_console('nmap_console', '▶ Launching Nmap: nmap ${args.join(' ')}\n', 1)
 		w.set_status('Scanning target ${target} in background...')
 		w.toast('⚡ Port scan started...')
 

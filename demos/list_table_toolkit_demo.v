@@ -28,8 +28,8 @@ fn main() {
 	// ------------------------------------------------------------------
 	win.group('grp_contacts', 'Contacts — Live Search, Sort & Reorder', fn (mut w simplegui.SimpleWindow) {
 		w.add_search_field('contact_search', 'Type to filter contacts...')
-		w.add_list_box('contacts', ['Grace Hopper', 'Ada Lovelace', 'Alan Turing',
-			'Katherine Johnson', 'Dennis Ritchie', 'Margaret Hamilton'])
+		w.add_list_box('contacts', ['Grace Hopper', 'Ada Lovelace', 'Alan Turing', 'Katherine Johnson',
+			'Dennis Ritchie', 'Margaret Hamilton'])
 		// One call wires the search field to the list (case-insensitive)
 		w.bind_search_to_list('contact_search', 'contacts')
 		w.add_action_row({

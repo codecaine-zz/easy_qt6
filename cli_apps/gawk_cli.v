@@ -65,7 +65,7 @@ fn run_interactive(mut app simplecli.SimpleCli) {
 			println(out)
 		}
 		'Count Total Number of Lines (NR)' {
-			out, _ := app.exec("echo '${sample}' | ${cmd} 'END {print NR, \"lines\"}'")
+			out, _ := app.exec('echo \'${sample}\' | ${cmd} \'END {print NR, "lines"}\'')
 			println(out)
 		}
 		else {
