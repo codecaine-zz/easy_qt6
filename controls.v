@@ -1048,7 +1048,7 @@ pub fn (win &SimpleWindow) add_pull_down(name string, title string, items []stri
 	}
 	unsafe {
 		mut w := &SimpleWindow(win)
-		w.upsert_control(real_name, 'pulldown', title, '', false, 0)
+		w.upsert_control(real_name, 'pulldown', title, title, false, 0)
 	}
 	if win.window_info != unsafe { nil } {
 		mut c_items := []&u8{}
@@ -1323,6 +1323,10 @@ pub fn (win &SimpleWindow) get_value(name string) string {
 		} else if kind in ['number', 'slider', 'vertical_slider', 'progress', 'levelindicator',
 			'stepper', 'knob'] {
 			return win.controls[idx].number.str()
+		} else if kind == 'link' {
+			return win.controls[idx].label
+		} else if kind in ['button', 'helpbutton', 'imagebutton', 'pulldown'] && win.controls[idx].label != '' {
+			return win.controls[idx].label
 		}
 	}
 	if win.window_info != unsafe { nil } {
@@ -5099,6 +5103,14 @@ pub fn (win &SimpleWindow) feedback_mood(selected_mood int) &SimpleWindow {
 
 // set_feedback_mood sets the active mood rating (1 to 5).
 pub fn (win &SimpleWindow) set_feedback_mood(name string, selected_mood int) &SimpleWindow {
+	idx := win.find_control(name)
+	if idx >= 0 {
+		unsafe {
+			mut w := &SimpleWindow(win)
+			w.controls[idx].value = selected_mood.str()
+			w.controls[idx].number = selected_mood
+		}
+	}
 	if win.window_info != unsafe { nil } {
 		C.window_set_feedback_mood(win.window_info, name.str, selected_mood)
 	}
@@ -5109,6 +5121,10 @@ pub fn (win &SimpleWindow) set_feedback_mood(name string, selected_mood int) &Si
 pub fn (win &SimpleWindow) get_feedback_mood(name string) int {
 	if win.window_info != unsafe { nil } {
 		return C.window_get_feedback_mood(win.window_info, name.str)
+	}
+	idx := win.find_control(name)
+	if idx >= 0 {
+		return win.controls[idx].number
 	}
 	return 0
 }
@@ -5193,6 +5209,10 @@ pub fn (win &SimpleWindow) get_date_range_start(name string) string {
 			return unsafe { cstring_to_vstring(res) }
 		}
 	}
+	idx := win.find_control(name)
+	if idx >= 0 {
+		return win.controls[idx].label
+	}
 	return ''
 }
 
@@ -5204,11 +5224,23 @@ pub fn (win &SimpleWindow) get_date_range_end(name string) string {
 			return unsafe { cstring_to_vstring(res) }
 		}
 	}
+	idx := win.find_control(name)
+	if idx >= 0 {
+		return win.controls[idx].value
+	}
 	return ''
 }
 
 // set_date_range sets start and end dates (YYYY-MM-DD).
 pub fn (win &SimpleWindow) set_date_range(name string, start_date string, end_date string) &SimpleWindow {
+	idx := win.find_control(name)
+	if idx >= 0 {
+		unsafe {
+			mut w := &SimpleWindow(win)
+			w.controls[idx].label = start_date
+			w.controls[idx].value = end_date
+		}
+	}
 	if win.window_info != unsafe { nil } {
 		C.window_set_date_range(win.window_info, name.str, start_date.str, end_date.str)
 	}
@@ -5496,6 +5528,13 @@ pub fn (win &SimpleWindow) prev_gallery_image(name string) &SimpleWindow {
 
 // set_gallery_index jumps an image gallery directly to a target slide index.
 pub fn (win &SimpleWindow) set_gallery_index(name string, index int) &SimpleWindow {
+	idx := win.find_control(name)
+	if idx >= 0 {
+		unsafe {
+			mut w := &SimpleWindow(win)
+			w.controls[idx].number = index
+		}
+	}
 	if win.window_info != unsafe { nil } {
 		C.window_set_gallery_index(win.window_info, name.str, index)
 	}
@@ -5506,6 +5545,10 @@ pub fn (win &SimpleWindow) set_gallery_index(name string, index int) &SimpleWind
 pub fn (win &SimpleWindow) get_gallery_index(name string) int {
 	if win.window_info != unsafe { nil } {
 		return C.window_get_gallery_index(win.window_info, name.str)
+	}
+	idx := win.find_control(name)
+	if idx >= 0 {
+		return win.controls[idx].number
 	}
 	return 0
 }

@@ -120,6 +120,8 @@ mut:
 	table_column_selection       map[string]bool
 	grid_rows                    map[string][][]string
 	grid_headers                 map[string][]string
+	grid_selected_rows           map[string]int
+	grid_selected_columns        map[string]int
 	on_close_requested_fn        CloseRequestedCallback = unsafe { nil }
 pub mut:
 	ws_client       voidptr = unsafe { nil }

@@ -210,9 +210,26 @@ pub fn (win &SimpleWindow) click(name string) bool {
 	return win.dispatch_event(name, 'click', '')
 }
 
+@[export: 'vlang_is_window_valid']
+fn vlang_is_window_valid(win_ptr voidptr) bool {
+	if win_ptr == unsafe { nil } {
+		return false
+	}
+	reg := get_window_registry()
+	for _, w in reg.windows {
+		if voidptr(w) == win_ptr {
+			return true
+		}
+	}
+	return false
+}
+
 // Cocoa event dispatcher to V
 @[export: 'vlang_dispatch_event']
 fn vlang_dispatch_event(win_ptr voidptr, name_str &u8, event_str &u8, value_str &u8) {
+	if win_ptr == unsafe { nil } || !vlang_is_window_valid(win_ptr) {
+		return
+	}
 	mut win := unsafe { &SimpleWindow(win_ptr) }
 	name := unsafe { name_str.vstring() }
 	event := unsafe { event_str.vstring() }
@@ -240,7 +257,7 @@ fn vlang_dispatch_event(win_ptr voidptr, name_str &u8, event_str &u8, value_str 
 
 @[export: 'vlang_dispatch_close_requested']
 fn vlang_dispatch_close_requested(win_ptr voidptr) bool {
-	if win_ptr == unsafe { nil } {
+	if win_ptr == unsafe { nil } || !vlang_is_window_valid(win_ptr) {
 		return true
 	}
 	mut win := unsafe { &SimpleWindow(win_ptr) }

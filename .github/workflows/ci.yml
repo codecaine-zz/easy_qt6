@@ -23,7 +23,7 @@ jobs:
           find . -name "*.v" -not -path "./v*" -not -path "*/.git/*" | while read -r f; do
             v fmt -w "$f"
           done
-          if [ -n "$(git status --porcelain)" ]; then
+          if [ -n "$(git status --porcelain -uno)" ]; then
             echo "Formatting differences detected. Auto-formatting code..."
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"

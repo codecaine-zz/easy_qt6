@@ -115,7 +115,7 @@ fn test_collection_view_selection_can_be_set_and_read_via_generic_value_api() {
 }
 
 fn test_method_chaining() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 
 	win.add_input('first', 'Ada')
 		.add_input('second', 'Lovelace')
@@ -129,7 +129,7 @@ fn test_method_chaining() {
 }
 
 fn test_additional_shorthand_controls_are_available() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 
 	win.slider(42)
 		.color_well('#ff00aa')
@@ -161,7 +161,7 @@ fn test_additional_shorthand_controls_are_available() {
 }
 
 fn test_native_macos_control_wrappers_are_available() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 	win.add_dropdown('priority', ['Low', 'Medium', 'High'], 'Medium')
 	win.add_segmented_control('analysis_mode', ['Simple', 'Advanced', 'Expert'], 'Advanced')
 	win.add_radio_group('role', ['Viewer', 'Editor', 'Admin'], 'Editor')
@@ -212,7 +212,7 @@ fn test_native_macos_control_wrappers_are_available() {
 }
 
 fn test_collection_view_selection_is_read_writeable() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 	win.add_collection_view('grid_collection', 120, 120)
 	win.set_collection_items('grid_collection', ['Alpha', 'Beta', 'Gamma'])
 
@@ -224,7 +224,7 @@ fn test_collection_view_selection_is_read_writeable() {
 }
 
 fn test_auto_naming() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 
 	win.add_label('', 'Hello')
 		.add_input('', 'World')
@@ -235,17 +235,18 @@ fn test_auto_naming() {
 }
 
 fn test_debug_mode() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 	win.set_debug_mode(true)
 	assert win.get_debug_mode() == true
 
 	win.add_input('username', 'Ada')
 	win.dispatch_event('username', 'change', 'Grace')
 	assert win.get_status().contains('[DEBUG] change on "username"')
+	win.set_debug_mode(false)
 }
 
 fn test_last_control_chaining_modifiers() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 
 	win.add_input('username', 'Ada')
 		.width(200)
@@ -264,7 +265,7 @@ fn test_last_control_chaining_modifiers() {
 }
 
 fn test_validation_clear_errors() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 	win.add_input('username', 'Ada')
 
 	win.set_error('username', 'Required')
@@ -276,7 +277,7 @@ fn test_validation_clear_errors() {
 }
 
 fn test_dirty_state_tracking() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 	win.add_input('username', 'Ada')
 	win.add_checkbox('agree', 'Agree to terms', false)
 	win.add_number('age', 25)
@@ -309,7 +310,7 @@ fn test_dirty_state_tracking() {
 }
 
 fn test_shorthand_get_set() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 	win.add_input('username', 'Ada')
 	assert win.get('username') == 'Ada'
 	win.set('username', 'Grace')
@@ -317,7 +318,7 @@ fn test_shorthand_get_set() {
 }
 
 fn test_clear_error_individually() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 	win.add_input('username', 'Ada')
 	win.add_input('email', 'ada@example.com')
 
@@ -333,7 +334,7 @@ fn test_clear_error_individually() {
 }
 
 fn test_reflection_table_loading_and_styles() {
-	mut win := simplegui.new_simple_window('Test Window', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 	win.add_table('projects', ['ID', 'Name', 'Active'])
 
 	items_list := [
@@ -649,7 +650,7 @@ fn test_table_sort_move_and_csv_roundtrip() {
 }
 
 fn test_rad_improvements() {
-	mut win := simplegui.new_simple_window('RAD Test', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Menu Builder & Context Menu Builder
 	mut menu_called := [false]
@@ -716,7 +717,7 @@ fn test_rad_improvements() {
 }
 
 fn test_macos_native_controls() {
-	mut win := simplegui.new_simple_window('macOS native controls test', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Link / Hyperlink controls
 	win.add_link('docs_link', 'Read API Docs', 'https://github.com/codecaine/vlang_simplegui')
@@ -758,7 +759,7 @@ fn test_macos_native_controls() {
 }
 
 fn test_extra_native_controls() {
-	mut win := simplegui.new_simple_window('extra native controls test', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Standalone stepper (NSStepper)
 	win.add_stepper('qty_stepper', 0, 50, 5, 10)
@@ -806,7 +807,7 @@ fn test_extra_native_controls() {
 }
 
 fn test_native_macos_ui_additions() {
-	mut win := simplegui.new_simple_window('macOS UI additions test', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Toolbar APIs
 	win.add_toolbar_item('save_btn', 'Save', 'Save document', 'square.and.arrow.down')
@@ -825,7 +826,7 @@ fn test_native_macos_ui_additions() {
 }
 
 fn test_developer_controls() {
-	mut win := simplegui.new_simple_window('Developer Controls Test', 100, 100)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Console Control APIs
 	win.add_console('my_console', 150)
@@ -1140,7 +1141,7 @@ fn test_production_ready_stdlib_apis() {
 }
 
 fn test_additional_new_controls() {
-	mut win := simplegui.new_simple_window('New Controls Test', 200, 200)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Gauge
 	win.add_gauge('cpu_gauge', 'CPU Load', 45, 0, 100, '%')
@@ -1185,7 +1186,7 @@ fn test_additional_new_controls() {
 }
 
 fn test_even_more_new_controls() {
-	mut win := simplegui.new_simple_window('Even More Controls Test', 200, 200)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Timeline
 	win.add_timeline('flow_timeline', 150)
@@ -1228,7 +1229,7 @@ fn test_even_more_new_controls() {
 }
 
 fn test_high_utility_controls() {
-	mut win := simplegui.new_simple_window('Test Utility Controls Suite', 800, 600)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Alert Banner
 
@@ -1267,7 +1268,7 @@ fn test_high_utility_controls() {
 }
 
 fn test_new_interactive_widgets() {
-	mut win := simplegui.new_simple_window('New Interactive Widgets Test', 800, 600)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Badge Button
 	win.add_badge_button('badge_btn', 'Notifications', 3, '#ff0000')
@@ -1309,7 +1310,7 @@ fn test_key_shortcut_normalization_and_handling() {
 	assert simplegui.normalize_key_shortcut('Shift+Cmd+P') == 'cmd+shift+p'
 	assert simplegui.normalize_key_shortcut('⌘P') == 'cmd+p'
 
-	mut win := simplegui.new_simple_window('Shortcut Test', 200, 200)
+	mut win := simplegui.SimpleWindow{}
 	win.add_label('status_lbl', 'initial')
 
 	// Register with unicode symbols
@@ -1494,7 +1495,7 @@ fn test_workflow_text_and_data_extras() {
 }
 
 fn test_new_macos_native_controls() {
-	mut win := simplegui.new_simple_window('Native macOS Controls Test', 600, 400)
+	mut win := simplegui.SimpleWindow{}
 
 	// NSBrowser
 	win.add_browser_view('col_browser', 200)
@@ -1518,7 +1519,7 @@ fn test_new_macos_native_controls() {
 }
 
 fn test_modern_productivity_and_analytics_controls() {
-	mut win := simplegui.new_simple_window('Modern Controls Test', 800, 600)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Activity Rings
 	win.add_activity_rings('rings1', [0.75, 0.50, 0.90], ['#ff3b30', '#34c759', '#007aff'], 140)
@@ -1571,7 +1572,7 @@ fn test_modern_productivity_and_analytics_controls() {
 }
 
 fn test_simple_gg_ideals_super_controls() {
-	mut win := simplegui.new_simple_window('Super Controls Test', 900, 700)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Donut Chart / Radial Gauge
 	win.add_donut_chart('cpu_donut', 'CPU Load', 74.5)
@@ -1598,7 +1599,7 @@ fn test_simple_gg_ideals_super_controls() {
 }
 
 fn test_simple_gg_ideals_image_and_media_controls() {
-	mut win := simplegui.new_simple_window('Media Controls Test', 900, 700)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. User Profile Card
 	win.add_user_profile_card('prof_ada', '', 'Ada Lovelace', '@ada', 'Systems Architect', 'Pioneer of computing algorithms.', true, '[Connect]')
@@ -1638,7 +1639,7 @@ fn test_simple_gg_ideals_image_and_media_controls() {
 }
 
 fn test_simple_gg_ideals_ui_suite_and_ergonomics() {
-	mut win := simplegui.new_simple_window('UI Suite Test', 900, 700)
+	mut win := simplegui.SimpleWindow{}
 
 	// 1. Activity Contribution Heatmap
 	mut matrix := [][]int{len: 7, init: []int{len: 26, init: 0}}

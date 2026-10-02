@@ -1251,6 +1251,8 @@ pub fn new_simple_window(title string, width int, height int) &SimpleWindow {
 	win.table_column_selection = map[string]bool{}
 	win.grid_rows = map[string][][]string{}
 	win.grid_headers = map[string][]string{}
+	win.grid_selected_rows = map[string]int{}
+	win.grid_selected_columns = map[string]int{}
 	win.state_store = map[string]string{}
 	win.state_listeners = map[string][]StringEventCallback{}
 	win.auto_save_state = true
@@ -1490,6 +1492,9 @@ pub fn (win &SimpleWindow) grid_get_selected_row(name string) int {
 	if win.window_info != unsafe { nil } {
 		return C.window_grid_get_selected_row(win.window_info, name.str)
 	}
+	if name in win.grid_selected_rows {
+		return win.grid_selected_rows[name]
+	}
 	return -1
 }
 
@@ -1497,6 +1502,9 @@ pub fn (win &SimpleWindow) grid_get_selected_row(name string) int {
 pub fn (win &SimpleWindow) grid_get_selected_column(name string) int {
 	if win.window_info != unsafe { nil } {
 		return C.window_grid_get_selected_column(win.window_info, name.str)
+	}
+	if name in win.grid_selected_columns {
+		return win.grid_selected_columns[name]
 	}
 	return -1
 }
@@ -1588,6 +1596,7 @@ pub fn (mut win SimpleWindow) grid_set_column(name string, col_idx int, values [
 
 // grid_set_selected_column selects the given column programmatically.
 pub fn (mut win SimpleWindow) grid_set_selected_column(name string, col_idx int) &SimpleWindow {
+	win.grid_selected_columns[name] = col_idx
 	if win.window_info != unsafe { nil } {
 		C.window_grid_set_selected_column(win.window_info, name.str, col_idx)
 	}
@@ -1926,6 +1935,10 @@ pub fn (win &SimpleWindow) grid_autosize_columns(name string) &SimpleWindow {
 
 // grid_set_selected_row sets the selected row index programmatically.
 pub fn (win &SimpleWindow) grid_set_selected_row(name string, row_idx int) &SimpleWindow {
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.grid_selected_rows[name] = row_idx
+	}
 	if win.window_info != unsafe { nil } {
 		C.window_grid_set_selected_row(win.window_info, name.str, row_idx)
 	}
@@ -2349,6 +2362,7 @@ pub fn (win &SimpleWindow) close() &SimpleWindow {
 	if win.auto_save_state {
 		win.save_app_form_state_or()
 	}
+	sys_unregister_window(win.title)
 	if win.window_info != unsafe { nil } {
 		C.window_close(win.window_info)
 	}

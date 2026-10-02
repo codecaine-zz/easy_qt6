@@ -173,6 +173,7 @@ static NSVisualEffectMaterial materialFromString(NSString *materialStr);
 
 extern BOOL vlang_dispatch_event(void *win_ptr, const char *name, const char *event, const char *value);
 extern BOOL vlang_dispatch_close_requested(void *win_ptr);
+extern BOOL vlang_is_window_valid(void *win_ptr);
 
 @implementation FlippedStackView
 - (BOOL)isFlipped {
@@ -4817,9 +4818,18 @@ static void applyStyleToView(NSView *view, NSColor *backgroundColor, NSColor *fo
   }
 }
 
+// NSWindowDelegate Window Lifecycle
+- (void)windowWillClose:(NSNotification *)notification {
+  self.win_ptr = NULL;
+}
+
 // NSWindowDelegate Window Resized
 - (void)windowDidResize:(NSNotification *)notification {
   if (self.win_ptr && self.window) {
+    if (!vlang_is_window_valid(self.win_ptr)) {
+      self.win_ptr = NULL;
+      return;
+    }
     NSRect frame = [self.window contentRectForFrameRect:self.window.frame];
     NSString *sizeStr = [NSString stringWithFormat:@"%.0fx%.0f", frame.size.width, frame.size.height];
     vlang_dispatch_event(self.win_ptr, "window", "resize", [sizeStr UTF8String]);
@@ -4828,24 +4838,40 @@ static void applyStyleToView(NSView *view, NSColor *backgroundColor, NSColor *fo
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
   if (self.win_ptr) {
+    if (!vlang_is_window_valid(self.win_ptr)) {
+      self.win_ptr = NULL;
+      return;
+    }
     vlang_dispatch_event(self.win_ptr, "window", "window_focus", "");
   }
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification {
   if (self.win_ptr) {
+    if (!vlang_is_window_valid(self.win_ptr)) {
+      self.win_ptr = NULL;
+      return;
+    }
     vlang_dispatch_event(self.win_ptr, "window", "window_blur", "");
   }
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification {
   if (self.win_ptr) {
+    if (!vlang_is_window_valid(self.win_ptr)) {
+      self.win_ptr = NULL;
+      return;
+    }
     vlang_dispatch_event(self.win_ptr, "window", "window_minimize", "");
   }
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification {
   if (self.win_ptr) {
+    if (!vlang_is_window_valid(self.win_ptr)) {
+      self.win_ptr = NULL;
+      return;
+    }
     vlang_dispatch_event(self.win_ptr, "window", "window_restore", "");
   }
 }
@@ -14759,9 +14785,16 @@ void window_set_maximizable(main__WindowInfo *info, int enabled) {
 }
 
 void window_close(main__WindowInfo *info) {
+  if (!info) return;
   AppDelegate *delegate = (AppDelegate *)info->app_delegate;
   void (^runBlock)(void) = ^{
-    [delegate.window close];
+    if (delegate) {
+      delegate.win_ptr = NULL;
+      if (delegate.window) {
+        [delegate.window setDelegate:nil];
+        [delegate.window close];
+      }
+    }
   };
   if ([NSThread isMainThread]) {
     runBlock();
