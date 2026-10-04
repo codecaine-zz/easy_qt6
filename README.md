@@ -1,5 +1,7 @@
 # EasyQt6
 
+[![CMake Build Matrix](https://github.com/codecaine-zz/easy_qt6/actions/workflows/cmake.yml/badge.svg)](https://github.com/codecaine-zz/easy_qt6/actions/workflows/cmake.yml)
+
 EasyQt6 is a modern, lightweight, and zero-boilerplate C++ wrapper around Qt6. It is designed to be as straightforward to use as Visual Basic or Delphi - allowing rapid UI development without touching raw Qt classes, macros, or memory management.
 
 ## Features
