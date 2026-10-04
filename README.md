@@ -55,6 +55,16 @@ Check the full [API Reference](docs/API_REFERENCE.md) to see all supported layou
 
 ## Building
 
+### Dependencies (macOS)
+
+Before building, you must install the Qt6 framework and the required build tools using Homebrew:
+
+```bash
+brew install qt cmake ninja
+```
+
+### Compile
+
 ```bash
 # Generate the build system
 cmake -S cpp -B cpp/build -G Ninja
