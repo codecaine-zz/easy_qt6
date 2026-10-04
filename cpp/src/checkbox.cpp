@@ -1,49 +1,46 @@
 #include "simplegui/checkbox.h"
+#include "detail/common.h"
+
 #include <QCheckBox>
-#include <QString>
-#include <QPointer>
 
 namespace simplegui {
 
 struct Checkbox::Impl {
-    QPointer<QCheckBox> qcheckbox;
-    Impl(const std::string& text, bool checked) {
-        qcheckbox = new QCheckBox(QString::fromStdString(text));
-        qcheckbox->setChecked(checked);
+    QPointer<QCheckBox> box;
+    Impl(const std::string& text, bool checked) : box(new QCheckBox(detail::qs(text))) {
+        box->setChecked(checked);
     }
-    ~Impl() { if (qcheckbox && !qcheckbox->parent()) delete qcheckbox; }
+    ~Impl() { detail::delete_if_orphan(box); }
 };
 
-Checkbox::Checkbox(const std::string& text, bool checked)
-    : pimpl(std::make_shared<Impl>(text, checked)) {}
+Checkbox::Checkbox(const std::string& text, bool checked) : pimpl(std::make_shared<Impl>(text, checked)) {}
 
 Checkbox::~Checkbox() = default;
 
 bool Checkbox::is_checked() const {
-    if (pimpl->qcheckbox) {
-        return pimpl->qcheckbox->isChecked();
-    }
-    return false;
+    return pimpl->box && pimpl->box->isChecked();
 }
 
 void Checkbox::set_checked(bool checked) {
-    if (pimpl->qcheckbox) {
-        pimpl->qcheckbox->setChecked(checked);
-    }
+    if (pimpl->box) pimpl->box->setChecked(checked);
+}
+
+void Checkbox::set_text(const std::string& text) {
+    if (pimpl->box) pimpl->box->setText(detail::qs(text));
+}
+
+std::string Checkbox::get_text() const {
+    return pimpl->box ? detail::ss(pimpl->box->text()) : std::string();
 }
 
 EventConnection Checkbox::on_change(std::function<void(bool)> handler) {
-    if (pimpl->qcheckbox) {
-        auto conn = QObject::connect(pimpl->qcheckbox.data(), &QCheckBox::toggled, [handler](bool checked) {
-            handler(checked);
-        });
-        return EventConnection([conn]() { QObject::disconnect(conn); });
-    }
-    return EventConnection();
+    if (!pimpl->box || !handler) return {};
+    return detail::wrap(QObject::connect(pimpl->box.data(), &QCheckBox::toggled,
+                                         [handler = std::move(handler)](bool checked) { handler(checked); }));
 }
 
 QWidget* Checkbox::get_qwidget() const {
-    return pimpl->qcheckbox.data();
+    return pimpl->box.data();
 }
 
-}
+}  // namespace simplegui

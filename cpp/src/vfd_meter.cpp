@@ -1,10 +1,12 @@
 #include "simplegui/vfd_meter.h"
+#include "detail/common.h"
 #include <QWidget>
 #include <QPainter>
 #include <QPointer>
 #include <algorithm>
 
 namespace simplegui {
+namespace {
 
 class VfdMeterWidget : public QWidget {
 public:
@@ -115,17 +117,19 @@ protected:
     }
 };
 
+}  // namespace
+
 struct VfdMeter::Impl {
     QPointer<VfdMeterWidget> widget;
     Impl(int segment_count, bool vertical) {
         widget = new VfdMeterWidget();
-        widget->segment_count = segment_count;
+        widget->segment_count = std::max(3, segment_count);
         widget->is_vertical = vertical;
         if (!vertical) {
             widget->setMinimumSize(120, 24);
         }
     }
-    ~Impl() { if (widget && !widget->parent()) delete widget; }
+    ~Impl() { detail::delete_if_orphan(widget); }
 };
 
 VfdMeter::VfdMeter(int segment_count, bool vertical)
@@ -135,7 +139,7 @@ VfdMeter::~VfdMeter() = default;
 
 void VfdMeter::set_value(double percentage) {
     if (pimpl->widget) {
-        pimpl->widget->percentage = percentage;
+        pimpl->widget->percentage = std::clamp(percentage, 0.0, 100.0);
         pimpl->widget->update();
     }
 }

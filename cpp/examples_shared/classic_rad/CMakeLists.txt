@@ -1,0 +1,2 @@
+add_executable(example_classic_rad main.cpp)
+target_link_libraries(example_classic_rad PRIVATE simplegui)

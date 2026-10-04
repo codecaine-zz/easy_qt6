@@ -1,4 +1,5 @@
 #include "simplegui/pie_chart.h"
+#include "detail/common.h"
 #include <QWidget>
 #include <QPainter>
 #include <QPointer>
@@ -6,6 +7,7 @@
 #include <cmath>
 
 namespace simplegui {
+namespace {
 
 class PieChartWidget : public QWidget {
 public:
@@ -113,13 +115,10 @@ protected:
                     // Label & percentage
                     p.setPen(QColor("#e2e8f0"));
                     double pct = (total > 0) ? (s.value / total * 100.0) : 0.0;
-                    char buf[64];
-                    if (draw_percentages) {
-                        snprintf(buf, sizeof(buf), "%s (%.1f%%)", s.label.c_str(), pct);
-                    } else {
-                        snprintf(buf, sizeof(buf), "%s", s.label.c_str());
-                    }
-                    p.drawText(QRect(leg_left + 18, item_y, leg_w - 18, 16), Qt::AlignLeft | Qt::AlignVCenter, QString::fromUtf8(buf));
+                    QString text = QString::fromStdString(s.label);
+                    if (draw_percentages) text += QStringLiteral(" (%1%)").arg(pct, 0, 'f', 1);
+                    p.drawText(QRect(leg_left + 18, item_y, leg_w - 18, 16), Qt::AlignLeft | Qt::AlignVCenter,
+                               p.fontMetrics().elidedText(text, Qt::ElideRight, leg_w - 18));
 
                     item_y += 22;
                 }
@@ -128,8 +127,11 @@ protected:
     }
 };
 
+}  // namespace
+
 struct PieChart::Impl {
     QPointer<PieChartWidget> widget;
+    ~Impl() { detail::delete_if_orphan(widget); }
 };
 
 PieChart::PieChart(const std::string& title)

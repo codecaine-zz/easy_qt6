@@ -1,4 +1,5 @@
 #include "simplegui/donut_chart.h"
+#include "detail/common.h"
 #include <QWidget>
 #include <QPainter>
 #include <QPainterPath>
@@ -6,6 +7,7 @@
 #include <numeric>
 
 namespace simplegui {
+namespace {
 
 class DonutWidget : public QWidget {
 public:
@@ -93,8 +95,11 @@ protected:
     }
 };
 
+}  // namespace
+
 struct DonutChart::Impl {
     QPointer<DonutWidget> widget;
+    ~Impl() { detail::delete_if_orphan(widget); }
 };
 
 DonutChart::DonutChart(const std::string& center_title, const std::string& center_subtitle)

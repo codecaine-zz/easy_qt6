@@ -1,21 +1,24 @@
 #include "simplegui/activity_heatmap.h"
-#include <QWidget>
+#include "detail/common.h"
+
 #include <QPainter>
-#include <QPointer>
+#include <QWidget>
+
 #include <algorithm>
 
 namespace simplegui {
+namespace {
 
 class HeatmapWidget : public QWidget {
 public:
-    int weeks = 16;
-    int days = 7;
-    std::vector<std::vector<int>> matrix;
-    QColor base_color = QColor("#10b981");
+    int weeks;
+    int days;
+    std::vector<std::vector<int>> matrix;  // always exactly weeks x days
+    QColor base_color = QColor(0x10, 0xb9, 0x81);
 
-    explicit HeatmapWidget(QWidget* parent = nullptr) : QWidget(parent) {
+    HeatmapWidget(int w, int d) : weeks(std::clamp(w, 1, 520)), days(std::clamp(d, 1, 31)) {
         setMinimumSize(220, 100);
-        matrix.resize(weeks, std::vector<int>(days, 0));
+        matrix.assign(static_cast<size_t>(weeks), std::vector<int>(static_cast<size_t>(days), 0));
     }
 
 protected:
@@ -23,68 +26,44 @@ protected:
         QPainter p(this);
         p.setRenderHint(QPainter::Antialiasing);
 
-        int w = width();
-        int h = height();
-
-        p.fillRect(rect(), QColor("#121215"));
-        p.setPen(QPen(QColor("#27272a"), 1));
+        p.fillRect(rect(), QColor(0x12, 0x12, 0x15));
+        p.setPen(QPen(QColor(0x27, 0x27, 0x2a), 1));
         p.drawRoundedRect(rect().adjusted(0, 0, -1, -1), 6, 6);
 
-        int margin = 10;
-        int gap = 3;
-        int avail_w = w - 2 * margin;
-        int avail_h = h - 2 * margin;
+        const int margin = 10;
+        const int gap = 3;
+        const double tile_w = static_cast<double>(width() - 2 * margin - (weeks - 1) * gap) / weeks;
+        const double tile_h = static_cast<double>(height() - 2 * margin - (days - 1) * gap) / days;
+        const double tile = std::max(1.0, std::min(tile_w, tile_h));
 
-        double tile_w = static_cast<double>(avail_w - (weeks - 1) * gap) / weeks;
-        double tile_h = static_cast<double>(avail_h - (days - 1) * gap) / days;
-        double tile_size = std::min(tile_w, tile_h);
-
+        static const int alpha_for_level[] = {0, 60, 120, 190, 255};
         p.setPen(Qt::NoPen);
-
         for (int week = 0; week < weeks; ++week) {
             for (int day = 0; day < days; ++day) {
-                double x = margin + week * (tile_size + gap);
-                double y = margin + day * (tile_size + gap);
-                QRectF r(x, y, tile_size, tile_size);
-
-                int val = 0;
-                if (week < static_cast<int>(matrix.size()) && day < static_cast<int>(matrix[week].size())) {
-                    val = std::clamp(matrix[week][day], 0, 4);
-                }
-
-                QColor cell_color;
-                if (val == 0) {
-                    cell_color = QColor("#1e1e24");
-                } else if (val == 1) {
-                    cell_color = base_color;
-                    cell_color.setAlpha(60);
-                } else if (val == 2) {
-                    cell_color = base_color;
-                    cell_color.setAlpha(120);
-                } else if (val == 3) {
-                    cell_color = base_color;
-                    cell_color.setAlpha(190);
+                const int level = std::clamp(matrix[static_cast<size_t>(week)][static_cast<size_t>(day)], 0, 4);
+                QColor c = base_color;
+                if (level == 0) {
+                    c = QColor(0x1e, 0x1e, 0x24);
                 } else {
-                    cell_color = base_color;
-                    cell_color.setAlpha(255);
+                    c.setAlpha(alpha_for_level[level]);
                 }
-
-                p.setBrush(cell_color);
-                p.drawRoundedRect(r, 2, 2);
+                p.setBrush(c);
+                p.drawRoundedRect(QRectF(margin + week * (tile + gap), margin + day * (tile + gap), tile, tile), 2, 2);
             }
         }
     }
 };
 
+}  // namespace
+
 struct ActivityHeatmap::Impl {
     QPointer<HeatmapWidget> widget;
-    Impl(int weeks, int days) {
-        widget = new HeatmapWidget();
-        widget->weeks = weeks;
-        widget->days = days;
-        widget->matrix.resize(weeks, std::vector<int>(days, 0));
+    Impl(int weeks, int days) : widget(new HeatmapWidget(weeks, days)) {}
+    ~Impl() { detail::delete_if_orphan(widget); }
+
+    bool in_range(int week, int day) const {
+        return widget && week >= 0 && day >= 0 && week < widget->weeks && day < widget->days;
     }
-    ~Impl() { if (widget && !widget->parent()) delete widget; }
 };
 
 ActivityHeatmap::ActivityHeatmap(int weeks, int days)
@@ -93,30 +72,38 @@ ActivityHeatmap::ActivityHeatmap(int weeks, int days)
 ActivityHeatmap::~ActivityHeatmap() = default;
 
 void ActivityHeatmap::set_data(const std::vector<std::vector<int>>& matrix) {
-    if (pimpl->widget) {
-        pimpl->widget->matrix = matrix;
-        pimpl->widget->update();
+    auto* w = pimpl->widget.data();
+    if (!w) return;
+    for (int week = 0; week < w->weeks; ++week) {
+        for (int day = 0; day < w->days; ++day) {
+            const bool present = week < static_cast<int>(matrix.size()) &&
+                                 day < static_cast<int>(matrix[static_cast<size_t>(week)].size());
+            w->matrix[static_cast<size_t>(week)][static_cast<size_t>(day)] =
+                present ? std::clamp(matrix[static_cast<size_t>(week)][static_cast<size_t>(day)], 0, 4) : 0;
+        }
     }
+    w->update();
 }
 
 void ActivityHeatmap::set_cell(int week, int day, int intensity) {
-    if (pimpl->widget) {
-        if (week >= 0 && week < pimpl->widget->weeks && day >= 0 && day < pimpl->widget->days) {
-            pimpl->widget->matrix[week][day] = intensity;
-            pimpl->widget->update();
-        }
-    }
+    if (!pimpl->in_range(week, day)) return;
+    pimpl->widget->matrix[static_cast<size_t>(week)][static_cast<size_t>(day)] = std::clamp(intensity, 0, 4);
+    pimpl->widget->update();
 }
 
-void ActivityHeatmap::set_color_scale(const std::string& base_hex) {
-    if (pimpl->widget) {
-        pimpl->widget->base_color = QColor(QString::fromStdString(base_hex));
-        pimpl->widget->update();
-    }
+int ActivityHeatmap::get_cell(int week, int day) const {
+    if (!pimpl->in_range(week, day)) return 0;
+    return pimpl->widget->matrix[static_cast<size_t>(week)][static_cast<size_t>(day)];
 }
 
-QWidget* ActivityHeatmap::get_qwidget() const {
-    return pimpl->widget.data();
+void ActivityHeatmap::clear() { set_data({}); }
+
+void ActivityHeatmap::set_color_scale(const std::string& base_color) {
+    if (!pimpl->widget) return;
+    pimpl->widget->base_color = detail::parse_color(base_color, pimpl->widget->base_color);
+    pimpl->widget->update();
 }
 
-}
+QWidget* ActivityHeatmap::get_qwidget() const { return pimpl->widget.data(); }
+
+}  // namespace simplegui

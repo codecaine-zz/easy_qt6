@@ -1,58 +1,45 @@
 #include "simplegui/status_pill.h"
+#include "detail/common.h"
+
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPointer>
-#include <QString>
 
 namespace simplegui {
 
 struct StatusPill::Impl {
-    QPointer<QFrame> frame;
-    QLabel* dot;
-    QLabel* text_label;
+    QPointer<QFrame> frame = new QFrame();
+    QPointer<QLabel> dot;
+    QPointer<QLabel> text_label;
+    QColor color = QColor(0x10, 0xb9, 0x81);
 
-    Impl(const std::string& text, const std::string& dot_color) {
-        frame = new QFrame();
-        frame->setStyleSheet(
-            "QFrame {"
-            "  background-color: #1a1a1e;"
-            "  border: 1px solid #27272a;"
-            "  border-radius: 12px;"
-            "  padding: 3px 10px;"
-            "}"
-        );
-        frame->setFixedHeight(26);
+    ~Impl() { detail::delete_if_orphan(frame); }
 
-        QHBoxLayout* layout = new QHBoxLayout(frame);
-        layout->setContentsMargins(6, 2, 8, 2);
-        layout->setSpacing(6);
-
-        dot = new QLabel();
-        dot->setFixedSize(8, 8);
-        update_dot(dot_color);
-
-        text_label = new QLabel(QString::fromStdString(text));
-        text_label->setStyleSheet("color: #e2e8f0; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; border: none; background: transparent;");
-
-        layout->addWidget(dot);
-        layout->addWidget(text_label);
-    }
-    ~Impl() { if (frame && !frame->parent()) delete frame; }
-
-    void update_dot(const std::string& color) {
-        if (dot) {
-            dot->setStyleSheet(QString(
-                "background-color: %1;"
-                "border-radius: 4px;"
-                "border: none;"
-            ).arg(QString::fromStdString(color)));
-        }
+    void apply_color() {
+        if (dot) dot->setStyleSheet(QStringLiteral("background-color: %1; border-radius: 4px;").arg(color.name()));
     }
 };
 
-StatusPill::StatusPill(const std::string& text, const std::string& dot_color)
-    : pimpl(std::make_shared<Impl>(text, dot_color)) {}
+StatusPill::StatusPill(const std::string& text, const std::string& dot_color) : pimpl(std::make_shared<Impl>()) {
+    QFrame* frame = pimpl->frame;
+    frame->setProperty("sg_role", QStringLiteral("status_pill"));
+    detail::set_base_style(frame, QStringLiteral(
+        "QFrame[sg_role=\"status_pill\"] { background-color: #1a1a1e; border: 1px solid #27272a; border-radius: 12px; }"));
+    frame->setFixedHeight(26);
+
+    auto* layout = new QHBoxLayout(frame);
+    layout->setContentsMargins(10, 2, 10, 2);
+    layout->setSpacing(6);
+
+    pimpl->dot = new QLabel(frame);
+    pimpl->dot->setFixedSize(8, 8);
+    pimpl->text_label = detail::plain_label(text, frame);
+    pimpl->text_label->setStyleSheet(QStringLiteral(
+        "color: #e2e8f0; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; background: transparent;"));
+    layout->addWidget(pimpl->dot);
+    layout->addWidget(pimpl->text_label);
+    set_color(dot_color);
+}
 
 StatusPill::~StatusPill() = default;
 
@@ -62,17 +49,18 @@ void StatusPill::set_status(const std::string& text, const std::string& dot_colo
 }
 
 void StatusPill::set_text(const std::string& text) {
-    if (pimpl->text_label) {
-        pimpl->text_label->setText(QString::fromStdString(text));
-    }
+    if (pimpl->text_label) pimpl->text_label->setText(detail::qs(text));
 }
 
 void StatusPill::set_color(const std::string& dot_color) {
-    pimpl->update_dot(dot_color);
+    pimpl->color = detail::parse_color(dot_color, pimpl->color);
+    pimpl->apply_color();
 }
 
-QWidget* StatusPill::get_qwidget() const {
-    return pimpl->frame.data();
+std::string StatusPill::text() const {
+    return pimpl->text_label ? detail::ss(pimpl->text_label->text()) : std::string();
 }
 
-}
+QWidget* StatusPill::get_qwidget() const { return pimpl->frame.data(); }
+
+}  // namespace simplegui

@@ -1,17 +1,17 @@
 #include "simplegui/number_input.h"
+#include "detail/common.h"
+
 #include <QSpinBox>
-#include <QPointer>
 
 namespace simplegui {
 
 struct NumberInput::Impl {
-    QPointer<QSpinBox> qspin;
-    Impl(int min_val, int max_val, int initial_val) {
-        qspin = new QSpinBox();
-        qspin->setRange(min_val, max_val);
-        qspin->setValue(initial_val);
+    QPointer<QSpinBox> spin;
+    Impl(int min_val, int max_val, int initial_val) : spin(new QSpinBox()) {
+        spin->setRange(std::min(min_val, max_val), std::max(min_val, max_val));
+        spin->setValue(initial_val);
     }
-    ~Impl() { if (qspin && !qspin->parent()) delete qspin; }
+    ~Impl() { detail::delete_if_orphan(spin); }
 };
 
 NumberInput::NumberInput(int min_val, int max_val, int initial_val)
@@ -20,26 +20,33 @@ NumberInput::NumberInput(int min_val, int max_val, int initial_val)
 NumberInput::~NumberInput() = default;
 
 int NumberInput::get_value() const {
-    if (pimpl->qspin) return pimpl->qspin->value();
-    return 0;
+    return pimpl->spin ? pimpl->spin->value() : 0;
 }
 
 void NumberInput::set_value(int value) {
-    if (pimpl->qspin) pimpl->qspin->setValue(value);
+    if (pimpl->spin) pimpl->spin->setValue(value);
+}
+
+void NumberInput::set_range(int min_val, int max_val) {
+    if (pimpl->spin) pimpl->spin->setRange(std::min(min_val, max_val), std::max(min_val, max_val));
+}
+
+void NumberInput::set_step(int step) {
+    if (pimpl->spin && step > 0) pimpl->spin->setSingleStep(step);
+}
+
+void NumberInput::set_suffix(const std::string& suffix) {
+    if (pimpl->spin) pimpl->spin->setSuffix(detail::qs(suffix));
 }
 
 EventConnection NumberInput::on_change(std::function<void(int)> handler) {
-    if (pimpl->qspin) {
-        auto conn = QObject::connect(pimpl->qspin.data(), &QSpinBox::valueChanged, [handler](int value) {
-            handler(value);
-        });
-        return EventConnection([conn]() { QObject::disconnect(conn); });
-    }
-    return EventConnection();
+    if (!pimpl->spin || !handler) return {};
+    return detail::wrap(QObject::connect(pimpl->spin.data(), &QSpinBox::valueChanged,
+                                         [handler = std::move(handler)](int value) { handler(value); }));
 }
 
 QWidget* NumberInput::get_qwidget() const {
-    return pimpl->qspin.data();
+    return pimpl->spin.data();
 }
 
-}
+}  // namespace simplegui

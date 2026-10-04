@@ -1,58 +1,68 @@
 #include "simplegui/combo_box.h"
+#include "detail/common.h"
+
 #include <QComboBox>
-#include <QString>
-#include <QPointer>
+#include <QLineEdit>
 
 namespace simplegui {
 
 struct ComboBox::Impl {
-    QPointer<QComboBox> qcombo;
-    Impl(const std::vector<std::string>& items) {
-        qcombo = new QComboBox();
-        qcombo->setEditable(true); // Editable combo box
-        for (const auto& item : items) {
-            qcombo->addItem(QString::fromStdString(item));
-        }
+    QPointer<QComboBox> combo;
+    explicit Impl(const std::vector<std::string>& items) : combo(new QComboBox()) {
+        combo->setEditable(true);
+        combo->setInsertPolicy(QComboBox::NoInsert);  // typing doesn't silently grow the list
+        for (const auto& item : items) combo->addItem(detail::qs(item));
     }
-    ~Impl() { if (qcombo && !qcombo->parent()) delete qcombo; }
+    ~Impl() { detail::delete_if_orphan(combo); }
 };
 
-ComboBox::ComboBox(const std::vector<std::string>& items)
-    : pimpl(std::make_shared<Impl>(items)) {}
+ComboBox::ComboBox(const std::vector<std::string>& items) : pimpl(std::make_shared<Impl>(items)) {}
 
 ComboBox::~ComboBox() = default;
 
 void ComboBox::add_item(const std::string& item) {
-    if (pimpl->qcombo) {
-        pimpl->qcombo->addItem(QString::fromStdString(item));
-    }
+    if (pimpl->combo) pimpl->combo->addItem(detail::qs(item));
+}
+
+void ComboBox::set_items(const std::vector<std::string>& items) {
+    if (!pimpl->combo) return;
+    pimpl->combo->clear();
+    for (const auto& item : items) pimpl->combo->addItem(detail::qs(item));
+}
+
+std::vector<std::string> ComboBox::items() const {
+    std::vector<std::string> result;
+    if (!pimpl->combo) return result;
+    for (int i = 0; i < pimpl->combo->count(); ++i) result.push_back(detail::ss(pimpl->combo->itemText(i)));
+    return result;
+}
+
+void ComboBox::clear() {
+    if (pimpl->combo) pimpl->combo->clear();
 }
 
 std::string ComboBox::get_text() const {
-    if (pimpl->qcombo) {
-        return pimpl->qcombo->currentText().toStdString();
-    }
-    return "";
+    return pimpl->combo ? detail::ss(pimpl->combo->currentText()) : std::string();
 }
 
 void ComboBox::set_text(const std::string& text) {
-    if (pimpl->qcombo) {
-        pimpl->qcombo->setCurrentText(QString::fromStdString(text));
-    }
+    if (pimpl->combo) pimpl->combo->setCurrentText(detail::qs(text));
+}
+
+void ComboBox::set_placeholder(const std::string& placeholder) {
+    if (pimpl->combo && pimpl->combo->lineEdit()) pimpl->combo->lineEdit()->setPlaceholderText(detail::qs(placeholder));
 }
 
 EventConnection ComboBox::on_change(std::function<void(const std::string&)> handler) {
-    if (pimpl->qcombo) {
-        auto conn = QObject::connect(pimpl->qcombo.data(), &QComboBox::currentTextChanged, [handler](const QString& text) {
-            handler(text.toStdString());
-        });
-        return EventConnection([conn]() { QObject::disconnect(conn); });
-    }
-    return EventConnection();
+    if (!pimpl->combo || !handler) return {};
+    return detail::wrap(QObject::connect(pimpl->combo.data(), &QComboBox::currentTextChanged,
+                                         [handler = std::move(handler)](const QString& text) {
+                                             handler(detail::ss(text));
+                                         }));
 }
 
 QWidget* ComboBox::get_qwidget() const {
-    return pimpl->qcombo.data();
+    return pimpl->combo.data();
 }
 
-}
+}  // namespace simplegui

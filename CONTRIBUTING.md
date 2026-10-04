@@ -1,78 +1,65 @@
-# Contributing to SimpleGUI
+# Contributing to EasyQt6
 
-Thank you for your interest in contributing to **SimpleGUI**! We welcome contributions from developers of all skill levels.
+Thanks for helping! Contributions of every size are welcome. Please be kind and patient with
+everyone in the community.
 
-## Code of Conduct
+## Prerequisites
 
-Please treat all community members with respect, patience, and kindness.
+- A C++17 compiler (Clang, GCC, or MSVC 2022)
+- CMake 3.16+ (Ninja recommended)
+- Qt 6 with the **Widgets** and **WebEngineWidgets** modules
 
-## Development Workflow
+## Repository layout
 
-### 1. Prerequisites
-- Install the [V Programming Language](https://vlang.io) (`v` version 0.4.x or later).
-- macOS with Xcode Command Line Tools installed (`xcode-select --install`).
+| Path | Contents |
+|---|---|
+| `cpp/include/simplegui/` | Public headers — the API users see |
+| `cpp/src/` | Implementations (`.cpp`) and private helpers in `cpp/src/detail/` |
+| `cpp/examples_shared/` | Cross-platform examples |
+| `cpp/examples_macos/`, `cpp/examples_linux/`, `cpp/examples_windows/` | Platform-styled examples |
+| `cpp/tests/` | Headless smoke tests run by `ctest` |
+| `cpp/tools/screenshot_generator/` | Renders the images in `screenshots/` |
+| `docs/API_REFERENCE.md` | The complete user guide |
 
-### 2. Repository Structure
+## Build and test
 
-The codebase is organized into focused directories:
-
-- `./`: Core native GUI framework module (`controls.v`, `window.v`, `window.m`, `window.h`, `dialogs.v`, etc.).
-- `scripts/`: Packaging and build scripts (`build.vsh`, `build_demos.vsh`, `capture_demos.vsh`).
-- `tools/`: Standalone applications and tools (`ui_designer.v`, `vlang_simple_gui_previewer.v`).
-- `tests/`: Modular test suites testing each component domain.
-- `docs/`: Framework documentation and textbooks (`API.md`).
-- `demos/`: Showcase applications and UI examples (`demos/main.v`).
-
-### 3. Building and Testing
-
-Run the test suite across all modular test files:
 ```bash
-v test .
+cmake -S cpp -B cpp/build -G Ninja -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Wshadow"
+cmake --build cpp/build
+ctest --test-dir cpp/build --output-on-failure
 ```
 
-To run tests in the `tests/` directory specifically:
+New code must build **without warnings** and all tests must pass.
+
+To refresh screenshots:
+
 ```bash
-VJOBS=1 v test tests/
+./cpp/build/tools/screenshot_generator/screenshot_generator screenshots
 ```
 
-To verify that every GUI button has exactly one click handler and that CLI flags
-do not shadow built-in help/version options:
-```bash
-v test tests/application_audit_test.v
-```
+## Design rules
 
-To run the SimpleCLI parser and utility tests:
-```bash
-v test simplecli/
-```
+1. **No Qt types in public headers.** Use the PIMPL pattern: declare `struct Impl;` in the
+   header and keep `QPointer`/`QWidget` members in the `.cpp` file. The only exception is the
+   existing `get_qwidget()` escape hatch.
+2. **Events return `EventConnection`.** Use the helpers in `cpp/src/detail/common.h`
+   (`detail::wrap`, `detail::make_event`, `detail::add_handler`, `detail::fire`).
+3. **Never capture `this` in Qt callbacks.** Capture a `std::weak_ptr<Impl>` instead, so a
+   callback can't run after the control is destroyed.
+4. **Plain text and safe colors.** Show user text with `Qt::PlainText`, and parse colors with
+   `detail::parse_color` before putting them in a style sheet.
+5. **Bounds-check everything.** Out-of-range indexes and unknown ids should be ignored (or
+   return `false`), never crash.
+6. **Beginner-friendly names.** Prefer `set_x` / `get_x` / `on_event`, add a short comment to
+   every public function, and document it in `docs/API_REFERENCE.md`.
+7. **Portable code.** Target macOS, Linux, Windows x64 and Windows ARM64. Avoid compiler
+   extensions such as `M_PI`, and use `QChar`/`QString::fromUcs4` for non-ASCII characters
+   in string literals.
 
-To build and run the main entry point:
-```bash
-v run demos/main.v
-```
+## Pull requests
 
-### 4. Code Formatting
-
-All V code in the repository must be formatted using `v fmt`:
-```bash
-v fmt -w .
-```
-
-Verify formatting before submitting a pull request:
-```bash
-v fmt -verify .
-```
-
-### 5. API Design Principles
-
-- **No Breaking Changes**: Maintain full backwards compatibility for public API signatures.
-- **Pythonic / Delphi Ergonomics**: Keep function signatures simple, intuitive, and developer-friendly.
-- **Debug Gating**: Gate debug `println` calls behind `$if debug { ... }`.
-- **String Interpolation**: Prefer V string interpolation `${var}` over string concatenation.
-
-## Submitting Pull Requests
-
-1. Fork the repository and create a feature branch (`git checkout -b feature/my-feature`).
-2. Ensure `VJOBS=1 v test .`, `v test tests/application_audit_test.v`, and `v fmt -verify .` succeed.
-3. Commit your changes with clear, descriptive commit messages.
-4. Push to your fork and submit a Pull Request to `main`.
+- Keep each PR focused on one change.
+- Update `docs/API_REFERENCE.md` and `CHANGELOG.md` for any user-visible change.
+- Add or extend a test in `cpp/tests/` when fixing a bug.
+- Don't commit build output (`cpp/build/`, `*_autogen/`, binaries).
+- Use LF line endings (enforced by `.gitattributes`).

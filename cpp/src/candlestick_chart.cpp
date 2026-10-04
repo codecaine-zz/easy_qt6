@@ -1,4 +1,5 @@
 #include "simplegui/candlestick_chart.h"
+#include "detail/common.h"
 #include <QWidget>
 #include <QPainter>
 #include <QPointer>
@@ -6,6 +7,7 @@
 #include <cmath>
 
 namespace simplegui {
+namespace {
 
 class CandlestickWidget : public QWidget {
 public:
@@ -132,8 +134,11 @@ protected:
     }
 };
 
+}  // namespace
+
 struct CandlestickChart::Impl {
     QPointer<CandlestickWidget> widget;
+    ~Impl() { detail::delete_if_orphan(widget); }
 };
 
 CandlestickChart::CandlestickChart(const std::string& title)

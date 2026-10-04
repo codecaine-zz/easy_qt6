@@ -8,12 +8,14 @@ namespace simplegui {
 
 struct CandleData {
     std::string label; // e.g. "09:30", "Mon", "10-01"
-    double open;
-    double high;
-    double low;
-    double close;
+    double open = 0.0;
+    double high = 0.0;
+    double low = 0.0;
+    double close = 0.0;
 };
 
+// A stock-market style chart. Each candle shows open, high, low and close prices.
+// Green candles closed higher than they opened, red candles closed lower.
 class CandlestickChart : public Control {
 public:
     explicit CandlestickChart(const std::string& title = "");
@@ -25,6 +27,7 @@ public:
 
     void set_title(const std::string& title);
     void show_grid(bool show);
+    void set_show_grid(bool show) { show_grid(show); }  // same as show_grid()
 
     QWidget* get_qwidget() const override;
 

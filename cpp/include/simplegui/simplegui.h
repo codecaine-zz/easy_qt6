@@ -1,9 +1,12 @@
 #pragma once
+// One include for everything:  #include "simplegui/simplegui.h"
 
 #include "simplegui/application.h"
 #include "simplegui/window.h"
 #include "simplegui/control.h"
 #include "simplegui/event_connection.h"
+#include "simplegui/timer.h"
+#include "simplegui/dialogs.h"
 
 // Layouts
 #include "simplegui/vbox.h"
@@ -21,6 +24,7 @@
 #include "simplegui/password_input.h"
 #include "simplegui/search_field.h"
 #include "simplegui/textarea.h"
+#include "simplegui/list_box.h"
 #include "simplegui/checkbox.h"
 #include "simplegui/radio.h"
 #include "simplegui/dropdown.h"
@@ -67,3 +71,16 @@
 #include "simplegui/canvas.h"
 #include "simplegui/radar_chart.h"
 #include "simplegui/candlestick_chart.h"
+
+// Futuristic controls
+#include "simplegui/toggle_switch.h"
+#include "simplegui/radial_gauge.h"
+#include "simplegui/neon_button.h"
+#include "simplegui/led_indicator.h"
+#include "simplegui/radar_scope.h"
+#include "simplegui/terminal_view.h"
+#include "simplegui/segmented_control.h"
+#include "simplegui/glass_panel.h"
+
+// Familiar names (Edit, Memo, CheckBox, TrackBar, ...)
+#include "simplegui/aliases.h"

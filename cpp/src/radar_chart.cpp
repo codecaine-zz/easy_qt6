@@ -1,4 +1,5 @@
 #include "simplegui/radar_chart.h"
+#include "detail/common.h"
 #include <QWidget>
 #include <QPainter>
 #include <QPainterPath>
@@ -6,6 +7,7 @@
 #include <cmath>
 
 namespace simplegui {
+namespace {
 
 class RadarChartWidget : public QWidget {
 public:
@@ -158,8 +160,11 @@ protected:
     }
 };
 
+}  // namespace
+
 struct RadarChart::Impl {
     QPointer<RadarChartWidget> widget;
+    ~Impl() { detail::delete_if_orphan(widget); }
 };
 
 RadarChart::RadarChart(const std::string& title)
@@ -182,6 +187,13 @@ void RadarChart::set_dimensions(const std::vector<std::string>& labels) {
 void RadarChart::add_dataset(const std::string& name, const std::vector<double>& values, const std::string& color_hex) {
     if (pimpl->widget) {
         pimpl->widget->datasets.push_back({name, values, color_hex});
+        pimpl->widget->update();
+    }
+}
+
+void RadarChart::set_datasets(const std::vector<RadarDataset>& datasets) {
+    if (pimpl->widget) {
+        pimpl->widget->datasets = datasets;
         pimpl->widget->update();
     }
 }

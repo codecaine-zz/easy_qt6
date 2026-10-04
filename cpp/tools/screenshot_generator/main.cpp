@@ -1,6 +1,4 @@
-#include <QApplication>
 #include <QDir>
-#include <QWidget>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -24,7 +22,7 @@ std::shared_ptr<simplegui::Control> make_apple_window(
     auto titlebar = std::make_shared<simplegui::HBox>();
     titlebar->set_margins(14, 10, 14, 10);
     titlebar->set_spacing(8);
-    titlebar->get_qwidget()->setObjectName("apple_titlebar");
+    titlebar->set_name("apple_titlebar");
     titlebar->set_style("QWidget#apple_titlebar { background-color: #1a1d26; border-bottom: 1px solid #282c37; }");
 
     // Traffic Lights
@@ -1299,6 +1297,116 @@ int main(int argc, char* argv[]) {
         root->add_child(bot_row);
 
         capture_apple("example_analytics_dashboard", "Enterprise Cloud Analytics", root, 960, 660);
+    }
+
+    // =========================================================================
+    // FUTURISTIC CONTROLS
+    // =========================================================================
+
+    {
+        auto box = std::make_shared<simplegui::VBox>();
+        box->set_spacing(10);
+        box->add_child(make_section_label("SYSTEMS"));
+        box->add_child(std::make_shared<simplegui::ToggleSwitch>(true, "Shields online"));
+        box->add_child(std::make_shared<simplegui::ToggleSwitch>(false, "Cloaking device"));
+        auto warp = std::make_shared<simplegui::ToggleSwitch>(true, "Warp drive");
+        warp->set_on_color("#a855f7");
+        box->add_child(warp);
+        capture_apple("toggle_switch", "ToggleSwitch", box, 360, 200);
+    }
+
+    {
+        auto row = std::make_shared<simplegui::HBox>();
+        row->set_spacing(12);
+        auto g1 = std::make_shared<simplegui::RadialGauge>("CPU", 0, 100);
+        g1->set_animated(false);
+        g1->set_units("%");
+        g1->set_value(42);
+        auto g2 = std::make_shared<simplegui::RadialGauge>("CORE TEMP", 0, 120);
+        g2->set_animated(false);
+        g2->set_units("\xC2\xB0" "C");
+        g2->set_thresholds(70, 95);
+        g2->set_value(81);
+        auto g3 = std::make_shared<simplegui::RadialGauge>("REACTOR", 0, 100);
+        g3->set_animated(false);
+        g3->set_units("%");
+        g3->set_value(97);
+        row->add_child(g1, 1);
+        row->add_child(g2, 1);
+        row->add_child(g3, 1);
+        capture_apple("radial_gauge", "RadialGauge", row, 560, 260);
+    }
+
+    {
+        auto row = std::make_shared<simplegui::HBox>();
+        row->set_spacing(12);
+        row->add_child(std::make_shared<simplegui::NeonButton>("ENGAGE"));
+        row->add_child(std::make_shared<simplegui::NeonButton>("ABORT", "#ff2d75"));
+        row->add_child(std::make_shared<simplegui::NeonButton>("SCAN", "#a3ff12"));
+        capture_apple("neon_button", "NeonButton", row, 420, 140);
+    }
+
+    {
+        auto box = std::make_shared<simplegui::VBox>();
+        box->set_spacing(8);
+        auto l1 = std::make_shared<simplegui::LedIndicator>("#22c55e", true);
+        l1->set_label("Power");
+        auto l2 = std::make_shared<simplegui::LedIndicator>("#f59e0b", true);
+        l2->set_label("Network activity");
+        auto l3 = std::make_shared<simplegui::LedIndicator>("#ef4444", false);
+        l3->set_label("Fault (off)");
+        box->add_child(l1);
+        box->add_child(l2);
+        box->add_child(l3);
+        capture_apple("led_indicator", "LedIndicator", box, 320, 180);
+    }
+
+    {
+        auto radar = std::make_shared<simplegui::RadarScope>();
+        radar->stop();
+        radar->add_blip(40, 0.6);
+        radar->add_blip(160, 0.35, "#ff2d75");
+        radar->add_blip(290, 0.8, "#facc15");
+        radar->set_min_size(240, 240);
+        capture_apple("radar_scope", "RadarScope", radar, 340, 340);
+    }
+
+    {
+        auto term = std::make_shared<simplegui::TerminalView>();
+        term->print_line("SimpleGUI terminal v1.0");
+        term->print_line("> status", "#94a3b8");
+        term->print_line("All systems nominal.");
+        term->print_line("WARNING: coolant at 18%", "#f59e0b");
+        capture_apple("terminal_view", "TerminalView", term, 480, 260);
+    }
+
+    {
+        auto box = std::make_shared<simplegui::VBox>();
+        box->set_spacing(10);
+        box->add_child(std::make_shared<simplegui::SegmentedControl>(
+            std::vector<std::string>{"Day", "Week", "Month", "Year"}, 1));
+        auto seg = std::make_shared<simplegui::SegmentedControl>(
+            std::vector<std::string>{"Low", "Medium", "High"}, 2);
+        seg->set_accent_color("#ff2d75");
+        box->add_child(seg);
+        capture_apple("segmented_control", "SegmentedControl", box, 420, 160);
+    }
+
+    {
+        auto panel = std::make_shared<simplegui::GlassPanel>("NAVIGATION");
+        panel->add_child(std::make_shared<simplegui::Label>("Heading: 271\xC2\xB0"));
+        panel->add_child(std::make_shared<simplegui::Label>("Velocity: 0.82 c"));
+        auto bar = std::make_shared<simplegui::ProgressIndicator>();
+        bar->set_value(64);
+        panel->add_child(bar);
+        capture_apple("glass_panel", "GlassPanel", panel, 360, 220);
+    }
+
+    {
+        auto list = std::make_shared<simplegui::ListBox>(
+            std::vector<std::string>{"Apples", "Bananas", "Cherries", "Dates", "Elderberries"});
+        list->set_selected_index(2);
+        capture_apple("list_box", "ListBox", list, 320, 240);
     }
 
     std::cout << "All Apple HIG production screenshots generated successfully!" << std::endl;

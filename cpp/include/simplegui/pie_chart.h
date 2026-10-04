@@ -8,10 +8,11 @@ namespace simplegui {
 
 struct PieSlice {
     std::string label;
-    double value;
+    double value = 0.0;
     std::string color_hex;
 };
 
+// A classic pie chart with an optional legend and percentages.
 class PieChart : public Control {
 public:
     explicit PieChart(const std::string& title = "");
@@ -23,7 +24,9 @@ public:
 
     void set_title(const std::string& title);
     void show_legend(bool show);
+    void set_show_legend(bool show) { show_legend(show); }  // same as show_legend()
     void show_percentages(bool show);
+    void set_show_percentages(bool show) { show_percentages(show); }  // same as show_percentages()
 
     QWidget* get_qwidget() const override;
 

@@ -1,10 +1,12 @@
 #include "simplegui/composition_bar.h"
+#include "detail/common.h"
 #include <QWidget>
 #include <QPainter>
 #include <QPointer>
 #include <numeric>
 
 namespace simplegui {
+namespace {
 
 class CompositionBarWidget : public QWidget {
 public:
@@ -51,7 +53,7 @@ protected:
             if (seg_w < 1.0) continue;
 
             QRectF r(current_x, margin, seg_w, bar_h);
-            p.fillRect(r, QColor(QString::fromStdString(s.color)));
+            p.fillRect(r, detail::parse_color(s.color, QColor(0x64, 0x74, 0x8b)));
 
             // Subtle divider line
             if (i + 1 < segments.size()) {
@@ -64,12 +66,14 @@ protected:
     }
 };
 
+}  // namespace
+
 struct CompositionBar::Impl {
     QPointer<CompositionBarWidget> widget;
     Impl() {
         widget = new CompositionBarWidget();
     }
-    ~Impl() { if (widget && !widget->parent()) delete widget; }
+    ~Impl() { detail::delete_if_orphan(widget); }
 };
 
 CompositionBar::CompositionBar() : pimpl(std::make_shared<Impl>()) {}
@@ -83,16 +87,17 @@ void CompositionBar::add_segment(const std::string& label, double value, const s
     }
 }
 
-void CompositionBar::clear_segments() {
+void CompositionBar::set_segments(const std::vector<CompositionSegment>& segments) {
     if (pimpl->widget) {
-        pimpl->widget->segments.clear();
+        pimpl->widget->segments = segments;
         pimpl->widget->update();
     }
 }
 
-void CompositionBar::set_height(int height) {
+void CompositionBar::clear_segments() {
     if (pimpl->widget) {
-        pimpl->widget->setFixedHeight(height);
+        pimpl->widget->segments.clear();
+        pimpl->widget->update();
     }
 }
 

@@ -5,6 +5,7 @@
 
 namespace simplegui {
 
+// A retro glowing segment meter (like an old hi-fi VU meter), value 0..100.
 class VfdMeter : public Control {
 public:
     explicit VfdMeter(int segment_count = 20, bool vertical = true);

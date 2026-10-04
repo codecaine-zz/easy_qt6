@@ -1,17 +1,17 @@
 #include "simplegui/slider.h"
+#include "detail/common.h"
+
 #include <QSlider>
-#include <QPointer>
 
 namespace simplegui {
 
 struct Slider::Impl {
-    QPointer<QSlider> qslider;
-    Impl(int min_val, int max_val, int initial_val) {
-        qslider = new QSlider(Qt::Horizontal);
-        qslider->setRange(min_val, max_val);
-        qslider->setValue(initial_val);
+    QPointer<QSlider> slider;
+    Impl(int min_val, int max_val, int initial_val) : slider(new QSlider(Qt::Horizontal)) {
+        slider->setRange(std::min(min_val, max_val), std::max(min_val, max_val));
+        slider->setValue(initial_val);
     }
-    ~Impl() { if (qslider && !qslider->parent()) delete qslider; }
+    ~Impl() { detail::delete_if_orphan(slider); }
 };
 
 Slider::Slider(int min_val, int max_val, int initial_val)
@@ -20,30 +20,29 @@ Slider::Slider(int min_val, int max_val, int initial_val)
 Slider::~Slider() = default;
 
 int Slider::get_value() const {
-    if (pimpl->qslider) {
-        return pimpl->qslider->value();
-    }
-    return 0;
+    return pimpl->slider ? pimpl->slider->value() : 0;
 }
 
 void Slider::set_value(int value) {
-    if (pimpl->qslider) {
-        pimpl->qslider->setValue(value);
-    }
+    if (pimpl->slider) pimpl->slider->setValue(value);
+}
+
+void Slider::set_range(int min_val, int max_val) {
+    if (pimpl->slider) pimpl->slider->setRange(std::min(min_val, max_val), std::max(min_val, max_val));
+}
+
+void Slider::set_vertical(bool vertical) {
+    if (pimpl->slider) pimpl->slider->setOrientation(vertical ? Qt::Vertical : Qt::Horizontal);
 }
 
 EventConnection Slider::on_change(std::function<void(int)> handler) {
-    if (pimpl->qslider) {
-        auto conn = QObject::connect(pimpl->qslider.data(), &QSlider::valueChanged, [handler](int value) {
-            handler(value);
-        });
-        return EventConnection([conn]() { QObject::disconnect(conn); });
-    }
-    return EventConnection();
+    if (!pimpl->slider || !handler) return {};
+    return detail::wrap(QObject::connect(pimpl->slider.data(), &QSlider::valueChanged,
+                                         [handler = std::move(handler)](int value) { handler(value); }));
 }
 
 QWidget* Slider::get_qwidget() const {
-    return pimpl->qslider.data();
+    return pimpl->slider.data();
 }
 
-}
+}  // namespace simplegui

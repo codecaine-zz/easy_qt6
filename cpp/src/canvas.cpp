@@ -1,199 +1,228 @@
 #include "simplegui/canvas.h"
-#include <QWidget>
+#include "detail/common.h"
+
+#include <QImage>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <QMouseEvent>
-#include <QPointer>
+#include <QWidget>
+
+#include <algorithm>
 
 namespace simplegui {
+namespace {
+
+// Upper bound for the backing image so huge coordinates cannot exhaust memory.
+constexpr int kMaxCanvasSide = 8192;
 
 class CanvasWidget : public QWidget {
 public:
     QPixmap buffer;
-    std::function<void(int, int)> mouse_down_handler;
-    std::function<void(int, int)> mouse_move_handler;
-    std::function<void(int, int)> mouse_up_handler;
+    QColor background = QColor(0x0f, 0x17, 0x2a);
+    std::function<void(int, int)> mouse_down;
+    std::function<void(int, int)> mouse_move;
+    std::function<void(int, int)> mouse_up;
 
-    CanvasWidget(int min_w, int min_h, QWidget* parent = nullptr) : QWidget(parent) {
+    CanvasWidget(int min_w, int min_h) {
+        min_w = std::clamp(min_w, 1, kMaxCanvasSide);
+        min_h = std::clamp(min_h, 1, kMaxCanvasSide);
         setMinimumSize(min_w, min_h);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         setMouseTracking(true);
-        init_buffer(min_w, min_h);
+        buffer = QPixmap(std::max(min_w, 100), std::max(min_h, 100));
+        buffer.fill(background);
     }
 
-    void init_buffer(int w, int h) {
-        buffer = QPixmap(qMax(w, 100), qMax(h, 100));
-        buffer.fill(QColor("#0f172a"));
-    }
-
-    void ensure_buffer_size(int w, int h) {
-        if (buffer.isNull() || buffer.width() < w || buffer.height() < h) {
-            int new_w = qMax(w, buffer.width());
-            int new_h = qMax(h, buffer.height());
-            QPixmap new_buf(new_w, new_h);
-            new_buf.fill(QColor("#0f172a"));
-            QPainter p(&new_buf);
-            p.drawPixmap(0, 0, buffer);
-            p.end();
-            buffer = new_buf;
-        }
+    // Grows the backing image (never shrinks) so drawings outside the current area are kept.
+    void ensure_size(int w, int h) {
+        w = std::clamp(w, 1, kMaxCanvasSide);
+        h = std::clamp(h, 1, kMaxCanvasSide);
+        if (buffer.width() >= w && buffer.height() >= h) return;
+        QPixmap bigger(std::max(w, buffer.width()), std::max(h, buffer.height()));
+        bigger.fill(background);
+        QPainter p(&bigger);
+        p.drawPixmap(0, 0, buffer);
+        p.end();
+        buffer = bigger;
     }
 
 protected:
     void resizeEvent(QResizeEvent* event) override {
         QWidget::resizeEvent(event);
-        ensure_buffer_size(width(), height());
+        ensure_size(width(), height());
     }
-
-    void paintEvent(QPaintEvent* event) override {
-        Q_UNUSED(event);
+    void paintEvent(QPaintEvent*) override {
         QPainter p(this);
         p.drawPixmap(0, 0, buffer);
     }
-
-    void mousePressEvent(QMouseEvent* event) override {
-        if (mouse_down_handler) {
-            mouse_down_handler(event->pos().x(), event->pos().y());
-        }
+    void mousePressEvent(QMouseEvent* e) override {
+        if (mouse_down) mouse_down(e->position().toPoint().x(), e->position().toPoint().y());
     }
-
-    void mouseMoveEvent(QMouseEvent* event) override {
-        if (mouse_move_handler) {
-            mouse_move_handler(event->pos().x(), event->pos().y());
-        }
+    void mouseMoveEvent(QMouseEvent* e) override {
+        if (mouse_move) mouse_move(e->position().toPoint().x(), e->position().toPoint().y());
     }
-
-    void mouseReleaseEvent(QMouseEvent* event) override {
-        if (mouse_up_handler) {
-            mouse_up_handler(event->pos().x(), event->pos().y());
-        }
+    void mouseReleaseEvent(QMouseEvent* e) override {
+        if (mouse_up) mouse_up(e->position().toPoint().x(), e->position().toPoint().y());
     }
 };
+
+}  // namespace
 
 struct Canvas::Impl {
     QPointer<CanvasWidget> widget;
+    detail::Event<int, int> down, move, up;
+
+    Impl(int w, int h) : widget(new CanvasWidget(w, h)) {
+        down = detail::make_event<int, int>(widget);
+        move = detail::make_event<int, int>(widget);
+        up = detail::make_event<int, int>(widget);
+    }
+    ~Impl() { detail::delete_if_orphan(widget); }
+
+    // Runs `draw` with a painter on the backing image that covers (right, bottom).
+    template <typename Fn>
+    void paint(int right, int bottom, Fn&& draw) {
+        if (!widget) return;
+        widget->ensure_size(right + 10, bottom + 10);
+        QPainter p(&widget->buffer);
+        p.setRenderHint(QPainter::Antialiasing);
+        draw(p);
+        p.end();
+        widget->update();
+    }
+
+    QColor color(const std::string& text) const { return detail::parse_color(text, Qt::white); }
 };
 
-Canvas::Canvas(int min_width, int min_height)
-    : pimpl(std::make_shared<Impl>())
-{
-    auto* w = new CanvasWidget(min_width, min_height);
-    pimpl->widget = w;
+Canvas::Canvas(int min_width, int min_height) : pimpl(std::make_shared<Impl>(min_width, min_height)) {
+    std::weak_ptr<Impl> weak = pimpl;
+    pimpl->widget->mouse_down = [weak](int x, int y) { if (auto d = weak.lock()) detail::fire(d->down, x, y); };
+    pimpl->widget->mouse_move = [weak](int x, int y) { if (auto d = weak.lock()) detail::fire(d->move, x, y); };
+    pimpl->widget->mouse_up = [weak](int x, int y) { if (auto d = weak.lock()) detail::fire(d->up, x, y); };
 }
 
 Canvas::~Canvas() = default;
 
 void Canvas::clear(const std::string& bg_color) {
-    if (pimpl->widget) {
-        pimpl->widget->buffer.fill(QColor(QString::fromStdString(bg_color)));
-        pimpl->widget->update();
-    }
+    if (!pimpl->widget) return;
+    pimpl->widget->background = detail::parse_color(bg_color, pimpl->widget->background);
+    pimpl->widget->buffer.fill(pimpl->widget->background);
+    pimpl->widget->update();
+}
+
+void Canvas::draw_point(int x, int y, const std::string& color, int size) {
+    const int s = std::max(1, size);
+    pimpl->paint(x + s, y + s, [&](QPainter& p) {
+        p.setPen(QPen(pimpl->color(color), s, Qt::SolidLine, Qt::RoundCap));
+        p.drawPoint(x, y);
+    });
 }
 
 void Canvas::draw_line(int x1, int y1, int x2, int y2, const std::string& color, int line_width) {
-    if (pimpl->widget) {
-        pimpl->widget->ensure_buffer_size(qMax(x1, x2) + 10, qMax(y1, y2) + 10);
-        QPainter p(&pimpl->widget->buffer);
-        p.setRenderHint(QPainter::Antialiasing);
-        p.setPen(QPen(QColor(QString::fromStdString(color)), line_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    pimpl->paint(std::max(x1, x2), std::max(y1, y2), [&](QPainter& p) {
+        p.setPen(QPen(pimpl->color(color), std::max(1, line_width), Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         p.drawLine(x1, y1, x2, y2);
-        p.end();
-        pimpl->widget->update();
-    }
+    });
 }
 
 void Canvas::draw_rect(int x, int y, int w, int h, const std::string& color, int line_width) {
-    if (pimpl->widget) {
-        pimpl->widget->ensure_buffer_size(x + w + 10, y + h + 10);
-        QPainter p(&pimpl->widget->buffer);
-        p.setRenderHint(QPainter::Antialiasing);
-        p.setPen(QPen(QColor(QString::fromStdString(color)), line_width));
+    pimpl->paint(x + w, y + h, [&](QPainter& p) {
+        p.setPen(QPen(pimpl->color(color), std::max(1, line_width)));
         p.setBrush(Qt::NoBrush);
         p.drawRect(x, y, w, h);
-        p.end();
-        pimpl->widget->update();
-    }
+    });
 }
 
 void Canvas::fill_rect(int x, int y, int w, int h, const std::string& color) {
-    if (pimpl->widget) {
-        pimpl->widget->ensure_buffer_size(x + w + 10, y + h + 10);
-        QPainter p(&pimpl->widget->buffer);
-        p.fillRect(QRect(x, y, w, h), QColor(QString::fromStdString(color)));
-        p.end();
-        pimpl->widget->update();
-    }
+    pimpl->paint(x + w, y + h, [&](QPainter& p) { p.fillRect(QRect(x, y, w, h), pimpl->color(color)); });
+}
+
+void Canvas::draw_rounded_rect(int x, int y, int w, int h, int radius, const std::string& color, int line_width) {
+    pimpl->paint(x + w, y + h, [&](QPainter& p) {
+        p.setPen(QPen(pimpl->color(color), std::max(1, line_width)));
+        p.setBrush(Qt::NoBrush);
+        p.drawRoundedRect(QRect(x, y, w, h), radius, radius);
+    });
+}
+
+void Canvas::fill_rounded_rect(int x, int y, int w, int h, int radius, const std::string& color) {
+    pimpl->paint(x + w, y + h, [&](QPainter& p) {
+        p.setPen(Qt::NoPen);
+        p.setBrush(pimpl->color(color));
+        p.drawRoundedRect(QRect(x, y, w, h), radius, radius);
+    });
 }
 
 void Canvas::draw_circle(int cx, int cy, int radius, const std::string& color, int line_width) {
-    if (pimpl->widget) {
-        pimpl->widget->ensure_buffer_size(cx + radius + 10, cy + radius + 10);
-        QPainter p(&pimpl->widget->buffer);
-        p.setRenderHint(QPainter::Antialiasing);
-        p.setPen(QPen(QColor(QString::fromStdString(color)), line_width));
+    pimpl->paint(cx + radius, cy + radius, [&](QPainter& p) {
+        p.setPen(QPen(pimpl->color(color), std::max(1, line_width)));
         p.setBrush(Qt::NoBrush);
         p.drawEllipse(QPoint(cx, cy), radius, radius);
-        p.end();
-        pimpl->widget->update();
-    }
+    });
 }
 
 void Canvas::fill_circle(int cx, int cy, int radius, const std::string& color) {
-    if (pimpl->widget) {
-        pimpl->widget->ensure_buffer_size(cx + radius + 10, cy + radius + 10);
-        QPainter p(&pimpl->widget->buffer);
-        p.setRenderHint(QPainter::Antialiasing);
+    pimpl->paint(cx + radius, cy + radius, [&](QPainter& p) {
         p.setPen(Qt::NoPen);
-        p.setBrush(QColor(QString::fromStdString(color)));
+        p.setBrush(pimpl->color(color));
         p.drawEllipse(QPoint(cx, cy), radius, radius);
-        p.end();
-        pimpl->widget->update();
-    }
+    });
+}
+
+void Canvas::draw_ellipse(int x, int y, int w, int h, const std::string& color, int line_width) {
+    pimpl->paint(x + w, y + h, [&](QPainter& p) {
+        p.setPen(QPen(pimpl->color(color), std::max(1, line_width)));
+        p.setBrush(Qt::NoBrush);
+        p.drawEllipse(QRect(x, y, w, h));
+    });
+}
+
+void Canvas::fill_ellipse(int x, int y, int w, int h, const std::string& color) {
+    pimpl->paint(x + w, y + h, [&](QPainter& p) {
+        p.setPen(Qt::NoPen);
+        p.setBrush(pimpl->color(color));
+        p.drawEllipse(QRect(x, y, w, h));
+    });
 }
 
 void Canvas::draw_text(int x, int y, const std::string& text, const std::string& color, int font_size) {
-    if (pimpl->widget) {
-        QPainter p(&pimpl->widget->buffer);
-        p.setRenderHint(QPainter::Antialiasing);
+    pimpl->paint(x, y, [&](QPainter& p) {
         QFont f = p.font();
-        f.setPixelSize(font_size);
+        f.setPixelSize(std::clamp(font_size, 1, 512));
         p.setFont(f);
-        p.setPen(QColor(QString::fromStdString(color)));
-        p.drawText(x, y, QString::fromStdString(text));
-        p.end();
-        pimpl->widget->update();
-    }
+        p.setPen(pimpl->color(color));
+        p.drawText(x, y, detail::qs(text));
+    });
+}
+
+bool Canvas::draw_image(int x, int y, const std::string& file_path) {
+    QImage img;
+    if (file_path.empty() || !img.load(detail::qs(file_path))) return false;
+    pimpl->paint(x + img.width(), y + img.height(), [&](QPainter& p) { p.drawImage(x, y, img); });
+    return true;
+}
+
+bool Canvas::save_to_file(const std::string& file_path) const {
+    if (!pimpl->widget || file_path.empty()) return false;
+    const QWidget* w = pimpl->widget.data();
+    return pimpl->widget->buffer.copy(0, 0, std::max(1, w->width()), std::max(1, w->height()))
+        .save(detail::qs(file_path));
 }
 
 void Canvas::repaint() {
-    if (pimpl->widget) {
-        pimpl->widget->update();
-    }
+    if (pimpl->widget) pimpl->widget->update();
 }
 
-EventConnection Canvas::on_mouse_down(std::function<void(int x, int y)> handler) {
-    pimpl->widget->mouse_down_handler = handler;
-    return EventConnection([this]() {
-        if (pimpl->widget) pimpl->widget->mouse_down_handler = nullptr;
-    });
+EventConnection Canvas::on_mouse_down(std::function<void(int, int)> handler) {
+    return detail::add_handler(pimpl->down, std::move(handler));
+}
+EventConnection Canvas::on_mouse_move(std::function<void(int, int)> handler) {
+    return detail::add_handler(pimpl->move, std::move(handler));
+}
+EventConnection Canvas::on_mouse_up(std::function<void(int, int)> handler) {
+    return detail::add_handler(pimpl->up, std::move(handler));
 }
 
-EventConnection Canvas::on_mouse_move(std::function<void(int x, int y)> handler) {
-    pimpl->widget->mouse_move_handler = handler;
-    return EventConnection([this]() {
-        if (pimpl->widget) pimpl->widget->mouse_move_handler = nullptr;
-    });
-}
+QWidget* Canvas::get_qwidget() const { return pimpl->widget.data(); }
 
-EventConnection Canvas::on_mouse_up(std::function<void(int x, int y)> handler) {
-    pimpl->widget->mouse_up_handler = handler;
-    return EventConnection([this]() {
-        if (pimpl->widget) pimpl->widget->mouse_up_handler = nullptr;
-    });
-}
-
-QWidget* Canvas::get_qwidget() const {
-    return pimpl->widget.data();
-}
-
-}
+}  // namespace simplegui

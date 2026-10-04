@@ -8,10 +8,11 @@ namespace simplegui {
 
 struct DonutSlice {
     std::string label;
-    double value;
+    double value = 0.0;
     std::string color_hex;
 };
 
+// A ring-shaped chart with a title and subtitle in the hole.
 class DonutChart : public Control {
 public:
     DonutChart(const std::string& center_title = "", const std::string& center_subtitle = "");

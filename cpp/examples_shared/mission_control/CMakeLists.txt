@@ -1,0 +1,2 @@
+add_executable(example_mission_control main.cpp)
+target_link_libraries(example_mission_control PRIVATE simplegui)

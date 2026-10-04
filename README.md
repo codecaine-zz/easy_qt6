@@ -1,126 +1,119 @@
-# EasyQt6
+# EasyQt6 (SimpleGUI)
 
 [![CMake Build Matrix](https://github.com/codecaine-zz/easy_qt6/actions/workflows/cmake.yml/badge.svg)](https://github.com/codecaine-zz/easy_qt6/actions/workflows/cmake.yml)
 
-EasyQt6 is a modern, lightweight, and zero-boilerplate C++ wrapper around Qt6. It is designed to be as straightforward to use as Visual Basic or Delphi - allowing rapid UI development without touching raw Qt classes, macros, or memory management.
+EasyQt6 is a lightweight C++ wrapper around Qt 6 Widgets. It aims to be as easy as **Visual
+Basic, Delphi, Lazarus or vlang_simplegui**: you build desktop apps without touching raw Qt
+classes, macros, or manual memory management. It runs on **macOS, Linux, Windows x64 and
+Windows ARM64**.
 
 ## Features
 
-- **Zero Boilerplate**: No `Q_OBJECT` macros, no `MOC` headaches, and no need to subclass `QMainWindow` just to put a button on the screen.
-- **PIMPL Architecture**: Your application code doesn't `#include` Qt headers. This keeps compile times blazingly fast and your namespace clean.
-- **Modern C++**: Uses `std::shared_ptr` for memory-safe UI construction and `std::function` lambdas for inline, readable event handling.
-- **Cross-Platform**: Powered by Qt6, runs seamlessly on macOS, Linux, and Windows.
+- **No boilerplate.** No `Q_OBJECT`, no moc, no subclassing `QMainWindow` to show a button.
+- **Familiar to RAD developers.** Delphi/VB-style names (`Edit`, `Memo`, `CheckBox`,
+  `TrackBar`, `StringGrid`, `PageControl`…), a control `Name` + `find<T>()` lookup, menus,
+  a status bar, `ShowMessage`/`InputBox`-style dialogs, a `Timer`, and `OnCloseQuery`.
+- **65 controls.** Standard inputs, layouts, charts, dashboard cards, web/PDF/map views,
+  and **futuristic controls**: `ToggleSwitch`, `RadialGauge`, `NeonButton`, `LedIndicator`,
+  `RadarScope`, `TerminalView`, `SegmentedControl`, `GlassPanel`.
+- **Themes.** Modern dark/light, GNOME, KDE, Ubuntu, Windows 11 Fluent, and a **neon** sci-fi theme.
+- **Safe by default.** Text is always plain text, colors are validated, links are limited to
+  http/https/mailto, and out-of-range indexes are ignored instead of crashing.
+- **Clean architecture.** PIMPL everywhere: your code never includes Qt headers. Controls are
+  `std::shared_ptr`s, and every event returns a disconnectable `EventConnection`.
 
-## Screenshots & Showcase
+## Screenshots
 
-| Enterprise Analytics & Charts Dashboard | System Telemetry Monitor (TMOG Inspired) |
+| Analytics Dashboard | System Monitor |
 | :---: | :---: |
 | ![Analytics Dashboard](screenshots/example_analytics_dashboard.png) | ![System Monitor](screenshots/example_system_monitor.png) |
 
-| Enterprise Data Explorer (Mixed Layouts) | Application Preferences (Tabs & Sliders) |
+| Futuristic: RadialGauge | Futuristic: TerminalView |
 | :---: | :---: |
-| ![Data Explorer](screenshots/example_data_explorer.png) | ![Settings Dashboard](screenshots/example_settings_dashboard.png) |
+| ![RadialGauge](screenshots/radial_gauge.png) | ![TerminalView](screenshots/terminal_view.png) |
 
-### Controls, Graphics & Layouts
+Every control has a picture in [`screenshots/`](screenshots/) and in the
+[API Reference](docs/API_REFERENCE.md).
 
-Every control and layout is captured with native Qt6 rendering in [`screenshots/`](screenshots/):
-- **Graphics & Advanced Charts**: [BarChart](screenshots/bar_chart.png), [LineChart](screenshots/line_chart.png), [PieChart](screenshots/pie_chart.png), [Canvas (2D Vector Graphics)](screenshots/canvas.png), [RadarChart](screenshots/radar_chart.png), [CandlestickChart (Financial OHLC)](screenshots/candlestick_chart.png)
-- **High-Level Composite & App Controls**: [KanbanBoard](screenshots/kanban_board.png), [UserProfileCard](screenshots/user_profile_card.png), [ProductCard](screenshots/product_card.png), [DonutChart](screenshots/donut_chart.png), [ActivityHeatmap](screenshots/activity_heatmap.png), [StatGrid](screenshots/stat_grid.png), [MediaPlayer](screenshots/media_player.png), [FeedbackMood](screenshots/feedback_mood.png), [DateRangePicker](screenshots/date_range_picker.png), [TokenField](screenshots/token_field.png), [MaskedInput](screenshots/masked_input.png), [NavRail](screenshots/nav_rail.png)
-- **TMOG Precision Telemetry**: [Sparkline Graph](screenshots/sparkline.png), [VFD Segmented Meter](screenshots/vfd_meter.png), [StatCard Readout](screenshots/stat_card.png), [CompositionBar](screenshots/composition_bar.png), [StatusPill Badge](screenshots/status_pill.png)
-- **Standard Controls**: [Button](screenshots/button.png), [Label](screenshots/label.png), [TextInput](screenshots/text_input.png), [PasswordInput](screenshots/password_input.png), [SearchField](screenshots/search_field.png), [Checkbox](screenshots/checkbox.png), [Radio](screenshots/radio.png), [Slider](screenshots/slider.png), [Dropdown](screenshots/dropdown.png), [ComboBox](screenshots/combo_box.png), [NumberInput](screenshots/number_input.png), [Knob](screenshots/knob.png), [DatePicker](screenshots/date_picker.png), [ColorWell](screenshots/color_well.png), [ProgressIndicator](screenshots/progress_indicator.png), [CircularProgress](screenshots/circular_progress.png), [Rating](screenshots/rating.png), [Breadcrumbs](screenshots/breadcrumbs.png), [Textarea](screenshots/textarea.png), [Link](screenshots/link.png)
-- **Layouts**: [VBox](screenshots/vbox.png), [HBox](screenshots/hbox.png), [Grid](screenshots/grid.png), [GroupBox](screenshots/group_box.png), [TabView](screenshots/tab_view.png), [SplitView](screenshots/split_view.png), [ScrollView](screenshots/scroll_view.png)
-
-## Quick Start
-
-See the `cpp/examples` folder for copy-paste-ready RAD templates:
-
-- `analytics_dashboard`: **Executive telemetry & data analytics dashboard** featuring `LineChart`, `BarChart`, `RadarChart`, `DonutChart`, `StatGrid`, and `DateRangePicker`.
-- `system_monitor`: **TMOG-inspired precision telemetry monitor** with live rolling `Sparkline`, glowing `VfdMeter` core levels, `StatCard` readouts, and `CompositionBar`.
-- `settings_dashboard`: **Advanced mixed layouts** combining tabs, group boxes, form rows, knobs, sliders, and bottom action bar.
-- `data_explorer`: **Advanced mixed layouts** combining breadcrumbs, search toolbar, split sidebar, data grid, and status bar.
-- `hello_world`: The absolute bare minimum to get a window on screen.
-- `login_form`: Demonstrates layouts, checkboxes, and input masking.
-- `calculator`: Demonstrates dynamic UI building with loops and grids.
-- `web_browser`: A fully functional mini browser using `QtWebEngine` in under 40 lines.
-
-### Example
+## Quick start
 
 ```cpp
-#include "simplegui/application.h"
-#include "simplegui/window.h"
-#include "simplegui/button.h"
-#include "simplegui/label.h"
-#include "simplegui/vbox.h"
+#include "simplegui/simplegui.h"
+using namespace simplegui;
 
 int main(int argc, char* argv[]) {
-    simplegui::Application app(argc, argv);
-    simplegui::Window window("My App", 400, 300);
+    Application app(argc, argv);
+    Window window("My App", 400, 200);
 
-    auto layout = std::make_shared<simplegui::VBox>();
-    auto label = std::make_shared<simplegui::Label>("Ready.");
-    auto btn = std::make_shared<simplegui::Button>("Click Me!");
+    auto label  = std::make_shared<Label>("Ready.");
+    auto button = std::make_shared<Button>("Click me");
+    button->on_click([label]() { label->set_text("You clicked the button!"); });
 
-    btn->on_click([label]() {
-        label->set_text("You clicked the button!");
-    });
+    auto column = std::make_shared<VBox>();
+    column->add_child(label);
+    column->add_child(button);
 
-    layout->add_child(label);
-    layout->add_child(btn);
-    
-    window.set_content(layout);
+    window.set_content(column);
     window.show();
-    
     return app.run();
 }
 ```
 
+Delphi / VB style works too:
+
+```cpp
+auto edit = std::make_shared<Edit>();          // same as TextInput
+edit->set_name("NameEdit");
+window.add_menu_item("File", "Greet", []() {
+    show_message("Hello " + find<Edit>("NameEdit")->get_text());
+}, "Ctrl+G");
+window.on_close([]() { return ask_yes_no("Quit?"); });
+```
+
 ## Documentation
 
-Check the full [API Reference](docs/API_REFERENCE.md) to see all supported layouts, controls, and advanced web views.
+The **[API Reference](docs/API_REFERENCE.md)** is a complete, beginner-friendly guide: install
+steps, a line-by-line first program, a Delphi/Lazarus/VB/V translation table, and every
+control, function, theme, dialog and alias.
 
 ## Building
 
-### Dependencies (macOS)
-
-Before building, you must install the Qt6 framework and the required build tools using Homebrew:
+You need a C++17 compiler, CMake 3.16+, and Qt 6 with the WebEngine module (Ninja optional).
 
 ```bash
+# macOS example
 brew install qt cmake ninja
+
+cmake -S cpp -B cpp/build -G Ninja        # add -DCMAKE_PREFIX_PATH=<Qt dir> if Qt isn't found
+cmake --build cpp/build
+ctest --test-dir cpp/build                # optional self-tests (headless)
 ```
 
-### Compile
+See the [API Reference](docs/API_REFERENCE.md#installing-and-building) for Linux and Windows.
+
+## Examples
+
+| Folder | Examples |
+|---|---|
+| [`cpp/examples_shared/`](cpp/examples_shared) | `mission_control` (futuristic dashboard), `classic_rad` (Delphi/VB-style contact book) |
+| [`cpp/examples_macos/`](cpp/examples_macos) | `hello_world`, `minimal`, `login_form`, `calculator`, `web_browser`, `settings_dashboard`, `data_explorer`, `system_monitor`, `analytics_dashboard` |
+| [`cpp/examples_linux/`](cpp/examples_linux) | `hello_world`, `calculator`, `system_monitor`, `software_center`, `terminal_config` |
+| [`cpp/examples_windows/`](cpp/examples_windows) | `hello_world`, `calculator`, `system_monitor`, `settings_dashboard` |
+
+After building, run them from `cpp/build/<folder>/<example>/`, for example:
 
 ```bash
-# Generate the build system
-cmake -S cpp -B cpp/build -G Ninja
-
-# Compile the library and all platform examples
-cmake --build cpp/build
+./cpp/build/examples_shared/mission_control/example_mission_control
+./cpp/build/examples_shared/classic_rad/example_classic_rad
+open ./cpp/build/examples_macos/calculator/example_calculator.app        # macOS app bundles
+./cpp/build/examples_linux/calculator/example_linux_calculator
+./cpp/build/examples_windows/calculator/example_win_calculator
 ```
 
-### Running Examples
+## Contributing
 
-EasyQt6 provides dedicated example suites designed natively for macOS, Linux, and Windows:
+See [CONTRIBUTING.md](CONTRIBUTING.md). Changes are listed in [CHANGELOG.md](CHANGELOG.md).
 
-#### macOS Examples (`cpp/examples_macos/`)
-- **Calculator**: `./cpp/build/examples_macos/calculator/example_calculator.app/Contents/MacOS/example_calculator`
-- **Analytics Dashboard**: `./cpp/build/examples_macos/analytics_dashboard/example_analytics_dashboard.app/Contents/MacOS/example_analytics_dashboard`
-- **Data Explorer**: `./cpp/build/examples_macos/data_explorer/example_data_explorer.app/Contents/MacOS/example_data_explorer`
-- **System Monitor**: `./cpp/build/examples_macos/system_monitor/example_system_monitor.app/Contents/MacOS/example_system_monitor`
-- **Settings Dashboard**: `./cpp/build/examples_macos/settings_dashboard/example_settings_dashboard.app/Contents/MacOS/example_settings_dashboard`
-- **Web Browser**: `./cpp/build/examples_macos/web_browser/example_web_browser.app/Contents/MacOS/example_web_browser`
-- **Login Form**: `./cpp/build/examples_macos/login_form/example_login_form.app/Contents/MacOS/example_login_form`
-- **Hello World**: `./cpp/build/examples_macos/hello_world/example_hello_world.app/Contents/MacOS/example_hello_world`
+## License
 
-#### Linux Examples (`cpp/examples_linux/`)
-- **Libadwaita System Monitor**: `./cpp/build/examples_linux/system_monitor/example_linux_system_monitor`
-- **GNOME Calculator**: `./cpp/build/examples_linux/calculator/example_linux_calculator`
-- **GNOME Software**: `./cpp/build/examples_linux/software_center/example_linux_software_center`
-- **Console Preferences**: `./cpp/build/examples_linux/terminal_config/example_linux_terminal_config`
-- **Hello GNOME**: `./cpp/build/examples_linux/hello_world/example_linux_hello_world`
-
-#### Windows Examples (`cpp/examples_windows/`)
-- **Windows 11 Task Manager**: `./cpp/build/examples_windows/system_monitor/example_win_system_monitor`
-- **Fluent Calculator**: `./cpp/build/examples_windows/calculator/example_win_calculator`
-- **WinUI 3 Settings Dashboard**: `./cpp/build/examples_windows/settings_dashboard/example_win_settings_dashboard`
-- **Hello Fluent**: `./cpp/build/examples_windows/hello_world/example_win_hello_world`
+See [LICENSE](LICENSE).

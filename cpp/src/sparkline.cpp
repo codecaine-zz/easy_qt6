@@ -1,4 +1,5 @@
 #include "simplegui/sparkline.h"
+#include "detail/common.h"
 #include <QWidget>
 #include <QPainter>
 #include <QPainterPath>
@@ -8,6 +9,7 @@
 #include <deque>
 
 namespace simplegui {
+namespace {
 
 class SparklineWidget : public QWidget {
 public:
@@ -107,13 +109,15 @@ protected:
     }
 };
 
+}  // namespace
+
 struct Sparkline::Impl {
     QPointer<SparklineWidget> widget;
     Impl(const std::string& line_color) {
         widget = new SparklineWidget();
-        widget->color = QColor(QString::fromStdString(line_color));
+        widget->color = detail::parse_color(line_color, QColor(0x06, 0xb6, 0xd4));
     }
-    ~Impl() { if (widget && !widget->parent()) delete widget; }
+    ~Impl() { detail::delete_if_orphan(widget); }
 };
 
 Sparkline::Sparkline(const std::string& line_color)
@@ -150,7 +154,7 @@ void Sparkline::clear() {
 
 void Sparkline::set_color(const std::string& hex_color) {
     if (pimpl->widget) {
-        pimpl->widget->color = QColor(QString::fromStdString(hex_color));
+        pimpl->widget->color = detail::parse_color(hex_color, pimpl->widget->color);
         pimpl->widget->update();
     }
 }
@@ -173,6 +177,9 @@ void Sparkline::set_range(double min_val, double max_val) {
 void Sparkline::set_max_samples(int max_count) {
     if (pimpl->widget) {
         pimpl->widget->max_samples = std::max(5, max_count);
+        while (static_cast<int>(pimpl->widget->samples.size()) > pimpl->widget->max_samples) {
+            pimpl->widget->samples.pop_front();
+        }
         pimpl->widget->update();
     }
 }

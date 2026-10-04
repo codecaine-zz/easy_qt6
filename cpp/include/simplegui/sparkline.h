@@ -6,6 +6,7 @@
 
 namespace simplegui {
 
+// A tiny live line graph, perfect for CPU/network usage. Call add_sample() over time.
 class Sparkline : public Control {
 public:
     explicit Sparkline(const std::string& line_color = "#06b6d4");

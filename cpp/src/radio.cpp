@@ -1,49 +1,46 @@
 #include "simplegui/radio.h"
+#include "detail/common.h"
+
 #include <QRadioButton>
-#include <QString>
-#include <QPointer>
 
 namespace simplegui {
 
 struct Radio::Impl {
-    QPointer<QRadioButton> qradio;
-    Impl(const std::string& text, bool checked) {
-        qradio = new QRadioButton(QString::fromStdString(text));
-        qradio->setChecked(checked);
+    QPointer<QRadioButton> radio;
+    Impl(const std::string& text, bool checked) : radio(new QRadioButton(detail::qs(text))) {
+        radio->setChecked(checked);
     }
-    ~Impl() { if (qradio && !qradio->parent()) delete qradio; }
+    ~Impl() { detail::delete_if_orphan(radio); }
 };
 
-Radio::Radio(const std::string& text, bool checked)
-    : pimpl(std::make_shared<Impl>(text, checked)) {}
+Radio::Radio(const std::string& text, bool checked) : pimpl(std::make_shared<Impl>(text, checked)) {}
 
 Radio::~Radio() = default;
 
 bool Radio::is_checked() const {
-    if (pimpl->qradio) {
-        return pimpl->qradio->isChecked();
-    }
-    return false;
+    return pimpl->radio && pimpl->radio->isChecked();
 }
 
 void Radio::set_checked(bool checked) {
-    if (pimpl->qradio) {
-        pimpl->qradio->setChecked(checked);
-    }
+    if (pimpl->radio) pimpl->radio->setChecked(checked);
+}
+
+void Radio::set_text(const std::string& text) {
+    if (pimpl->radio) pimpl->radio->setText(detail::qs(text));
+}
+
+std::string Radio::get_text() const {
+    return pimpl->radio ? detail::ss(pimpl->radio->text()) : std::string();
 }
 
 EventConnection Radio::on_change(std::function<void(bool)> handler) {
-    if (pimpl->qradio) {
-        auto conn = QObject::connect(pimpl->qradio.data(), &QRadioButton::toggled, [handler](bool checked) {
-            handler(checked);
-        });
-        return EventConnection([conn]() { QObject::disconnect(conn); });
-    }
-    return EventConnection();
+    if (!pimpl->radio || !handler) return {};
+    return detail::wrap(QObject::connect(pimpl->radio.data(), &QRadioButton::toggled,
+                                         [handler = std::move(handler)](bool checked) { handler(checked); }));
 }
 
 QWidget* Radio::get_qwidget() const {
-    return pimpl->qradio.data();
+    return pimpl->radio.data();
 }
 
-}
+}  // namespace simplegui

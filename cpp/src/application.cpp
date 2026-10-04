@@ -1,5 +1,6 @@
 #include "simplegui/application.h"
 #include <QApplication>
+#include <QFont>
 #include <QString>
 
 namespace simplegui {
@@ -771,8 +772,91 @@ QHeaderView::section {
 }
 )";
 
+// Futuristic "sci-fi console" look: deep navy background with cyan neon accents.
+static const char* NEON_THEME = R"(
+QWidget {
+    background-color: #05070f;
+    color: #c8f7ff;
+    font-family: "JetBrains Mono", "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+}
+QMainWindow, QDialog { background-color: #03040a; }
+QPushButton {
+    background-color: rgba(0, 229, 255, 0.08);
+    color: #00e5ff;
+    border: 1px solid #00e5ff;
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-weight: 600;
+}
+QPushButton:hover { background-color: rgba(0, 229, 255, 0.22); color: #ffffff; }
+QPushButton:pressed { background-color: rgba(0, 229, 255, 0.35); }
+QPushButton:disabled { color: #2b4a55; border-color: #1a2a33; }
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QComboBox, QDateEdit {
+    background-color: #0a0f1e;
+    color: #e0fbff;
+    border: 1px solid #1b3a4b;
+    border-radius: 4px;
+    padding: 5px 8px;
+    selection-background-color: #ff2bd6;
+}
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus, QSpinBox:focus, QComboBox:focus { border: 1px solid #00e5ff; }
+QComboBox QAbstractItemView { background-color: #0a0f1e; color: #e0fbff; selection-background-color: #00e5ff; selection-color: #05070f; }
+QCheckBox, QRadioButton { spacing: 8px; }
+QCheckBox::indicator, QRadioButton::indicator { width: 14px; height: 14px; border: 1px solid #00e5ff; background: #0a0f1e; }
+QRadioButton::indicator { border-radius: 7px; }
+QCheckBox::indicator:checked, QRadioButton::indicator:checked { background: #00e5ff; }
+QSlider::groove:horizontal { height: 4px; background: #1b3a4b; border-radius: 2px; }
+QSlider::sub-page:horizontal { background: #00e5ff; border-radius: 2px; }
+QSlider::handle:horizontal { background: #ff2bd6; width: 14px; margin: -6px 0; border-radius: 7px; }
+QProgressBar { background: #0a0f1e; border: 1px solid #1b3a4b; border-radius: 4px; text-align: center; color: #e0fbff; }
+QProgressBar::chunk { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #00e5ff, stop:1 #ff2bd6); border-radius: 3px; }
+QGroupBox { border: 1px solid #1b3a4b; border-radius: 6px; margin-top: 14px; padding-top: 8px; }
+QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 4px; color: #00e5ff; }
+QTabWidget::pane { border: 1px solid #1b3a4b; border-radius: 4px; }
+QTabBar::tab { background: #0a0f1e; color: #6c8a99; padding: 6px 14px; border: 1px solid #1b3a4b; border-bottom: none; }
+QTabBar::tab:selected { color: #00e5ff; border-color: #00e5ff; }
+QMenuBar, QMenu { background-color: #0a0f1e; color: #c8f7ff; }
+QMenu::item:selected, QMenuBar::item:selected { background-color: #00e5ff; color: #05070f; }
+QStatusBar { background: #03040a; color: #6c8a99; border-top: 1px solid #1b3a4b; }
+QScrollBar:vertical { background: #05070f; width: 10px; }
+QScrollBar::handle:vertical { background: #1b3a4b; border-radius: 5px; min-height: 24px; }
+QScrollBar::handle:vertical:hover { background: #00e5ff; }
+QToolTip { background-color: #0a0f1e; color: #00e5ff; border: 1px solid #00e5ff; }
+QHeaderView::section { background-color: #0a0f1e; color: #00e5ff; border: none; border-bottom: 1px solid #1b3a4b; padding: 6px 10px; }
+)";
+
+namespace {
+
+struct ThemeEntry {
+    const char* name;
+    const char* const* css;  // pointer to the stylesheet constant (nullptr = Qt default look)
+};
+
+// Every accepted theme name. Several names share one look so people can use the
+// word they already know ("gnome", "kde", "win11", ...).
+const ThemeEntry kThemes[] = {
+    {"dark", &MODERN_DARK_THEME},         {"modern_dark", &MODERN_DARK_THEME},
+    {"apple", &MODERN_DARK_THEME},        {"apple_dark", &MODERN_DARK_THEME},
+    {"linux", &ADWAITA_DARK_THEME},       {"adwaita", &ADWAITA_DARK_THEME},
+    {"linux_adwaita", &ADWAITA_DARK_THEME}, {"gnome", &ADWAITA_DARK_THEME},
+    {"breeze", &BREEZE_DARK_THEME},       {"kde", &BREEZE_DARK_THEME},
+    {"linux_breeze", &BREEZE_DARK_THEME},
+    {"yaru", &YARU_DARK_THEME},           {"ubuntu", &YARU_DARK_THEME},
+    {"linux_yaru", &YARU_DARK_THEME},
+    {"windows", &WINDOWS_FLUENT_THEME},   {"fluent", &WINDOWS_FLUENT_THEME},
+    {"windows_dark", &WINDOWS_FLUENT_THEME}, {"win11", &WINDOWS_FLUENT_THEME},
+    {"light", &MODERN_LIGHT_THEME},       {"modern_light", &MODERN_LIGHT_THEME},
+    {"neon", &NEON_THEME},                {"cyber", &NEON_THEME},
+    {"futuristic", &NEON_THEME},
+    {"default", nullptr},
+};
+
+}  // namespace
+
 struct Application::Impl {
     QApplication qapp;
+    std::string theme = "default";
     Impl(int& argc, char** argv) : qapp(argc, argv) {}
 };
 
@@ -785,26 +869,47 @@ int Application::run() {
     return pimpl->qapp.exec();
 }
 
-void Application::set_theme(const std::string& theme_name) {
-    if (theme_name == "dark" || theme_name == "modern_dark" || theme_name == "apple" || theme_name == "apple_dark") {
-        set_stylesheet(MODERN_DARK_THEME);
-    } else if (theme_name == "linux" || theme_name == "adwaita" || theme_name == "linux_adwaita" || theme_name == "gnome") {
-        set_stylesheet(ADWAITA_DARK_THEME);
-    } else if (theme_name == "breeze" || theme_name == "kde" || theme_name == "linux_breeze") {
-        set_stylesheet(BREEZE_DARK_THEME);
-    } else if (theme_name == "yaru" || theme_name == "ubuntu" || theme_name == "linux_yaru") {
-        set_stylesheet(YARU_DARK_THEME);
-    } else if (theme_name == "windows" || theme_name == "fluent" || theme_name == "windows_dark" || theme_name == "win11") {
-        set_stylesheet(WINDOWS_FLUENT_THEME);
-    } else if (theme_name == "light" || theme_name == "modern_light") {
-        set_stylesheet(MODERN_LIGHT_THEME);
-    } else if (theme_name == "default") {
-        set_stylesheet("");
+bool Application::set_theme(const std::string& theme_name) {
+    for (const auto& t : kThemes) {
+        if (theme_name == t.name) {
+            set_stylesheet(t.css ? *t.css : "");
+            pimpl->theme = theme_name;
+            return true;
+        }
     }
+    return false;  // unknown name: the current look is kept
+}
+
+std::string Application::theme() const { return pimpl->theme; }
+
+std::vector<std::string> Application::available_themes() {
+    std::vector<std::string> names;
+    for (const auto& t : kThemes) names.emplace_back(t.name);
+    return names;
 }
 
 void Application::set_stylesheet(const std::string& qss) {
     pimpl->qapp.setStyleSheet(QString::fromStdString(qss));
 }
 
+void Application::set_app_name(const std::string& name) {
+    QApplication::setApplicationName(QString::fromStdString(name));
+    QApplication::setApplicationDisplayName(QString::fromStdString(name));
 }
+
+void Application::set_font(const std::string& family, int point_size) {
+    QFont f = QApplication::font();
+    if (!family.empty()) f.setFamily(QString::fromStdString(family));
+    if (point_size > 0) f.setPointSize(point_size);
+    QApplication::setFont(f);
+}
+
+void Application::quit(int exit_code) {
+    if (QCoreApplication::instance()) QCoreApplication::exit(exit_code);
+}
+
+void Application::process_events() {
+    if (QCoreApplication::instance()) QCoreApplication::processEvents();
+}
+
+}  // namespace simplegui

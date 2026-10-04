@@ -55,6 +55,19 @@ add_library(simplegui
     canvas.cpp
     radar_chart.cpp
     candlestick_chart.cpp
+    timer.cpp
+    dialogs.cpp
+    list_box.cpp
+    toggle_switch.cpp
+    radial_gauge.cpp
+    neon_button.cpp
+    led_indicator.cpp
+    radar_scope.cpp
+    terminal_view.cpp
+    segmented_control.cpp
+    glass_panel.cpp
+    detail/common.h
+    detail/box_core.h
 )
 
 target_include_directories(simplegui PUBLIC
@@ -62,6 +75,14 @@ target_include_directories(simplegui PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
+# Private helpers in src/detail/ are only visible to the library itself.
+target_include_directories(simplegui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_link_libraries(simplegui PUBLIC Qt6::Widgets Qt6::WebEngineWidgets)
+
+# Source files contain UTF-8 text (symbols such as arrows and stars).
+if(MSVC)
+    target_compile_options(simplegui PRIVATE /utf-8)
+endif()
 
 add_library(simplegui::simplegui ALIAS simplegui)

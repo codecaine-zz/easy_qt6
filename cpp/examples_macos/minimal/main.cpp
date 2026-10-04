@@ -30,7 +30,6 @@
 #include "simplegui/rating.h"
 #include "simplegui/breadcrumbs.h"
 #include "simplegui/web_view.h"
-#include <QWidget>
 
 int main(int argc, char* argv[]) {
     simplegui::Application app(argc, argv);
@@ -60,7 +59,7 @@ int main(int argc, char* argv[]) {
     });
     
     checkbox->on_change([slider](bool checked) {
-        slider->get_qwidget()->setEnabled(checked);
+        slider->set_enabled(checked);
     });
 
     slider->on_change([label, progress](int value) {

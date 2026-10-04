@@ -1,4 +1,5 @@
 #include "simplegui/line_chart.h"
+#include "detail/common.h"
 #include <QWidget>
 #include <QPainter>
 #include <QPainterPath>
@@ -7,6 +8,7 @@
 #include <cmath>
 
 namespace simplegui {
+namespace {
 
 class LineChartWidget : public QWidget {
 public:
@@ -233,8 +235,11 @@ protected:
     }
 };
 
+}  // namespace
+
 struct LineChart::Impl {
     QPointer<LineChartWidget> widget;
+    ~Impl() { detail::delete_if_orphan(widget); }
 };
 
 LineChart::LineChart(const std::string& title)
@@ -261,6 +266,13 @@ void LineChart::add_series(const std::string& name,
 void LineChart::set_x_labels(const std::vector<std::string>& labels) {
     if (pimpl->widget) {
         pimpl->widget->x_labels = labels;
+        pimpl->widget->update();
+    }
+}
+
+void LineChart::set_series(const std::vector<LineSeries>& series) {
+    if (pimpl->widget) {
+        pimpl->widget->series_list = series;
         pimpl->widget->update();
     }
 }

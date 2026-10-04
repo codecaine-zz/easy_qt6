@@ -1,75 +1,74 @@
 #include "simplegui/stat_grid.h"
+#include "detail/common.h"
+
 #include <QFrame>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QLabel>
-#include <QPointer>
-#include <QString>
+#include <QVBoxLayout>
 
 namespace simplegui {
 
 struct StatGrid::Impl {
-    QPointer<QWidget> container;
-    QHBoxLayout* layout;
+    QPointer<QWidget> container = new QWidget();
+    QPointer<QHBoxLayout> layout = new QHBoxLayout(container);
 
     Impl() {
-        container = new QWidget();
-        layout = new QHBoxLayout(container);
         layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(10);
     }
-    ~Impl() { if (container && !container->parent()) delete container; }
+    ~Impl() { detail::delete_if_orphan(container); }
 
     void add_card(const StatItem& item) {
-        QFrame* card = new QFrame();
-        card->setStyleSheet(
-            "QFrame {"
-            "  background-color: #1a1a1e;"
-            "  border: 1px solid #27272a;"
-            "  border-radius: 8px;"
-            "  padding: 10px;"
-            "}"
-        );
-        QVBoxLayout* l = new QVBoxLayout(card);
-        l->setContentsMargins(10, 8, 10, 8);
+        if (!layout) return;
+        auto* card = new QFrame(container);
+        card->setProperty("sg_role", QStringLiteral("stat_tile"));
+        card->setStyleSheet(QStringLiteral(
+            "QFrame[sg_role=\"stat_tile\"] { background-color: #1a1a1e; border: 1px solid #27272a; border-radius: 8px; }"));
+        auto* l = new QVBoxLayout(card);
+        l->setContentsMargins(14, 10, 14, 10);
         l->setSpacing(4);
 
-        QLabel* t = new QLabel(QString::fromStdString(item.title));
-        t->setStyleSheet("color: #a1a1aa; font-size: 11px; font-weight: 600; text-transform: uppercase; border: none; background: transparent;");
+        QLabel* title = detail::plain_label("", card);
+        title->setText(detail::qs(item.title).toUpper());
+        title->setStyleSheet(QStringLiteral("color: #a1a1aa; font-size: 11px; font-weight: 600; background: transparent;"));
+        QLabel* value = detail::plain_label(item.value, card);
+        value->setStyleSheet(QStringLiteral("color: #f4f4f5; font-size: 20px; font-weight: bold; background: transparent;"));
+        QLabel* trend = detail::plain_label(item.trend, card);
+        trend->setStyleSheet(item.is_positive
+            ? QStringLiteral("color: #10b981; font-size: 11px; font-weight: 600; background: transparent;")
+            : QStringLiteral("color: #ef4444; font-size: 11px; font-weight: 600; background: transparent;"));
 
-        QLabel* v = new QLabel(QString::fromStdString(item.value));
-        v->setStyleSheet("color: #f4f4f5; font-size: 20px; font-weight: bold; border: none; background: transparent;");
-
-        QLabel* tr = new QLabel(QString::fromStdString(item.trend));
-        QString tr_col = item.is_positive ? "#10b981" : "#ef4444";
-        tr->setStyleSheet(QString("color: %1; font-size: 11px; font-weight: 600; border: none; background: transparent;").arg(tr_col));
-
-        l->addWidget(t);
-        l->addWidget(v);
-        l->addWidget(tr);
-
+        l->addWidget(title);
+        l->addWidget(value);
+        l->addWidget(trend);
         layout->addWidget(card);
+    }
+
+    void clear() {
+        if (!layout) return;
+        while (QLayoutItem* item = layout->takeAt(0)) {
+            if (QWidget* w = item->widget()) w->deleteLater();
+            delete item;
+        }
     }
 };
 
 StatGrid::StatGrid() : pimpl(std::make_shared<Impl>()) {}
-
 StatGrid::~StatGrid() = default;
 
 void StatGrid::add_stat(const std::string& title, const std::string& value, const std::string& trend, bool is_positive) {
     pimpl->add_card({title, value, trend, is_positive});
 }
 
-void StatGrid::clear() {
-    QLayoutItem* item;
-    while ((item = pimpl->layout->takeAt(0)) != nullptr) {
-        delete item->widget();
-        delete item;
-    }
+void StatGrid::set_stats(const std::vector<StatItem>& stats) {
+    pimpl->clear();
+    for (const auto& s : stats) pimpl->add_card(s);
 }
 
-QWidget* StatGrid::get_qwidget() const {
-    return pimpl->container.data();
-}
+void StatGrid::clear() { pimpl->clear(); }
 
-}
+int StatGrid::count() const { return pimpl->layout ? pimpl->layout->count() : 0; }
+
+QWidget* StatGrid::get_qwidget() const { return pimpl->container.data(); }
+
+}  // namespace simplegui
