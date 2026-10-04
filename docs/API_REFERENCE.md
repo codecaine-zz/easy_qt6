@@ -59,7 +59,7 @@ window.show();
 
 Layouts inherit from `Control` and manage the positioning of child elements.
 
-### `VBox`
+### [`VBox`](../screenshots/vbox.png)
 Stacks elements vertically.
 ```cpp
 auto vbox = std::make_shared<simplegui::VBox>();
@@ -67,17 +67,17 @@ vbox->add_child(label);
 vbox->add_child(button);
 ```
 
-### `HBox`
+### [`HBox`](../screenshots/hbox.png)
 Stacks elements horizontally.
 
-### `Grid`
+### [`Grid`](../screenshots/grid.png)
 A multi-column/multi-row table widget.
 ```cpp
 auto grid = std::make_shared<simplegui::Grid>(rows, cols, headers);
 grid->set_cell(row, col, "Text");
 ```
 
-### `SplitView`
+### [`SplitView`](../screenshots/split_view.png)
 A resizable splitter separating two widgets.
 ```cpp
 auto split = std::make_shared<simplegui::SplitView>(is_horizontal);
@@ -85,14 +85,14 @@ split->set_first(left_pane);
 split->set_second(right_pane);
 ```
 
-### `ScrollView`
+### [`ScrollView`](../screenshots/scroll_view.png)
 A scrollable container for a single large child widget (usually a `VBox`).
 ```cpp
 auto scroll = std::make_shared<simplegui::ScrollView>();
 scroll->set_content(large_vbox);
 ```
 
-### `TabView`
+### [`TabView`](../screenshots/tab_view.png)
 A tabbed container.
 ```cpp
 auto tabs = std::make_shared<simplegui::TabView>();
@@ -100,7 +100,7 @@ tabs->add_tab("Tab 1", vbox_1);
 tabs->add_tab("Tab 2", vbox_2);
 ```
 
-### `GroupBox`
+### [`GroupBox`](../screenshots/group_box.png)
 A bordered container with a title.
 ```cpp
 auto group = std::make_shared<simplegui::GroupBox>("Settings");
@@ -113,25 +113,26 @@ group->set_content(vbox);
 
 All controls return an `EventConnection` for their primary event handlers.
 
-| Control | State Accessors | Event Handler | Description |
-|---|---|---|---|
-| `Label` | `set_text`, `get_text` | None | Displays text. |
-| `Button` | N/A | `on_click([]() {})` | Clickable button. |
-| `TextInput` | `set_text`, `get_text` | `on_change([](const std::string&){})` | Single-line text field. |
-| `PasswordInput`| `set_text`, `get_text` | `on_change([](const std::string&){})` | Hidden text field. |
-| `Textarea` | `set_text`, `get_text` | `on_change([](const std::string&){})` | Multi-line text field. |
-| `Checkbox` | `set_checked`, `is_checked`| `on_change([](bool){})` | Toggle box. |
-| `Radio` | `set_checked`, `is_checked`| `on_change([](bool){})` | Exclusive toggle. |
-| `Slider` | `set_value`, `get_value` | `on_change([](int){})` | Horizontal slider (0-100). |
-| `Knob` | `set_value`, `get_value` | `on_change([](int){})` | Circular dial (0-100). |
-| `NumberInput` | `set_value`, `get_value` | `on_change([](int){})` | Spinbox for integers. |
-| `DatePicker` | `set_date`, `get_date` | `on_change([](const std::string&){})` | Calendar date picker. |
-| `ColorWell` | `set_color`, `get_color` | `on_change([](const std::string&){})` | Opens OS color picker. |
-| `ComboBox` | `add_item`, `get_selected` | `on_change([](const std::string&){})` | Dropdown menu. |
-| `ImageButton` | N/A | `on_click([]() {})` | Button with an icon. |
-| `Image` | `set_image_path` | None | Displays a picture. |
-| `Link` | `set_url` | None | Clickable URL hyperlink. |
-| `ProgressIndicator` | `set_value` | None | Horizontal loading bar. |
+| Control | Preview | State Accessors | Event Handler | Description |
+|---|:---:|---|---|---|
+| `Label` | [View](../screenshots/label.png) | `set_text`, `get_text` | None | Displays text. |
+| `Button` | [View](../screenshots/button.png) | N/A | `on_click([]() {})` | Clickable button. |
+| `TextInput` | [View](../screenshots/text_input.png) | `set_text`, `get_text` | `on_change([](const std::string&){})` | Single-line text field. |
+| `PasswordInput`| [View](../screenshots/password_input.png) | `set_text`, `get_text` | `on_change([](const std::string&){})` | Hidden text field. |
+| `SearchField` | [View](../screenshots/search_field.png) | `set_text`, `get_text` | `on_change([](const std::string&){})` | Search box with clear button. |
+| `Textarea` | [View](../screenshots/textarea.png) | `set_text`, `get_text` | `on_change([](const std::string&){})` | Multi-line text field. |
+| `Checkbox` | [View](../screenshots/checkbox.png) | `set_checked`, `is_checked`| `on_change([](bool){})` | Toggle box. |
+| `Radio` | [View](../screenshots/radio.png) | `set_checked`, `is_checked`| `on_change([](bool){})` | Exclusive toggle. |
+| `Slider` | [View](../screenshots/slider.png) | `set_value`, `get_value` | `on_change([](int){})` | Horizontal slider (0-100). |
+| `Knob` | [View](../screenshots/knob.png) | `set_value`, `get_value` | `on_change([](int){})` | Circular dial (0-100). |
+| `NumberInput` | [View](../screenshots/number_input.png) | `set_value`, `get_value` | `on_change([](int){})` | Spinbox for integers. |
+| `DatePicker` | [View](../screenshots/date_picker.png) | `set_date`, `get_date` | `on_change([](const std::string&){})` | Calendar date picker. |
+| `ColorWell` | [View](../screenshots/color_well.png) | `set_color`, `get_color` | `on_change([](const std::string&){})` | Opens OS color picker. |
+| `Dropdown` | [View](../screenshots/dropdown.png) | `get_selected`, `set_selected` | `on_change([](const std::string&){})` | Selection list. |
+| `ComboBox` | [View](../screenshots/combo_box.png) | `add_item`, `get_selected` | `on_change([](const std::string&){})` | Editable dropdown menu. |
+| `ImageButton` | [View](../screenshots/image_button.png) | N/A | `on_click([]() {})` | Button with an icon. |
+| `Link` | [View](../screenshots/link.png) | `set_url` | None | Clickable URL hyperlink. |
+| `ProgressIndicator` | [View](../screenshots/progress_indicator.png) | `set_value` | None | Horizontal loading bar. |
 
 ---
 
@@ -139,9 +140,9 @@ All controls return an `EventConnection` for their primary event handlers.
 
 Controls that perform raw QPainter commands to achieve native-feeling custom widgets.
 
-- **`CircularProgress`**: `set_value(int)`, a pie-chart style progress ring.
-- **`Rating`**: `set_rating(int)`, `on_change([](int){})`, an interactive 5-star rater.
-- **`Breadcrumbs`**: `on_click([](int index){})`, an interactive `Home > Profile > Settings` horizontal link trail.
+- **[`CircularProgress`](../screenshots/circular_progress.png)**: `set_value(int)`, a pie-chart style progress ring.
+- **[`Rating`](../screenshots/rating.png)**: `set_rating(int)`, `on_change([](int){})`, an interactive 5-star rater.
+- **[`Breadcrumbs`](../screenshots/breadcrumbs.png)**: `on_click([](int index){})`, an interactive `Home > Profile > Settings` horizontal link trail.
 
 ---
 

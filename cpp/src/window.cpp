@@ -30,4 +30,11 @@ void Window::show() {
     pimpl->qwindow.show();
 }
 
+bool Window::save_screenshot(const std::string& filepath) {
+    pimpl->qwindow.show();
+    pimpl->qwindow.repaint();
+    QPixmap pixmap = pimpl->qwindow.grab();
+    return pixmap.save(QString::fromStdString(filepath));
+}
+
 }

@@ -13,6 +13,7 @@ public:
 
     void set_content(std::shared_ptr<Control> content);
     void show();
+    bool save_screenshot(const std::string& filepath);
 
 private:
     struct Impl;

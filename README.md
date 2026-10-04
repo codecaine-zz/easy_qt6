@@ -11,6 +11,22 @@ EasyQt6 is a modern, lightweight, and zero-boilerplate C++ wrapper around Qt6. I
 - **Modern C++**: Uses `std::shared_ptr` for memory-safe UI construction and `std::function` lambdas for inline, readable event handling.
 - **Cross-Platform**: Powered by Qt6, runs seamlessly on macOS, Linux, and Windows.
 
+## Screenshots & Showcase
+
+| All Controls Showcase | Calculator Example |
+| :---: | :---: |
+| ![All Controls](screenshots/all_controls_showcase.png) | ![Calculator](screenshots/example_calculator.png) |
+
+| Login Form | Hello World |
+| :---: | :---: |
+| ![Login Form](screenshots/example_login_form.png) | ![Hello World](screenshots/example_hello_world.png) |
+
+### Controls & Layouts
+
+Every control and layout is captured with native Qt6 rendering in [`screenshots/`](screenshots/):
+- **Controls**: [Button](screenshots/button.png), [Label](screenshots/label.png), [TextInput](screenshots/text_input.png), [PasswordInput](screenshots/password_input.png), [SearchField](screenshots/search_field.png), [Checkbox](screenshots/checkbox.png), [Radio](screenshots/radio.png), [Slider](screenshots/slider.png), [Dropdown](screenshots/dropdown.png), [ComboBox](screenshots/combo_box.png), [NumberInput](screenshots/number_input.png), [Knob](screenshots/knob.png), [DatePicker](screenshots/date_picker.png), [ColorWell](screenshots/color_well.png), [ProgressIndicator](screenshots/progress_indicator.png), [CircularProgress](screenshots/circular_progress.png), [Rating](screenshots/rating.png), [Breadcrumbs](screenshots/breadcrumbs.png), [Textarea](screenshots/textarea.png), [Link](screenshots/link.png)
+- **Layouts**: [VBox](screenshots/vbox.png), [HBox](screenshots/hbox.png), [Grid](screenshots/grid.png), [GroupBox](screenshots/group_box.png), [TabView](screenshots/tab_view.png), [SplitView](screenshots/split_view.png), [ScrollView](screenshots/scroll_view.png)
+
 ## Quick Start
 
 See the `cpp/examples` folder for copy-paste-ready RAD templates:

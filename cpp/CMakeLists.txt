@@ -13,3 +13,4 @@ find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
 add_subdirectory(src)
 add_subdirectory(examples)
+add_subdirectory(tools)
