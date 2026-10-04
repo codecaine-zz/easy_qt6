@@ -44,6 +44,17 @@ jobs:
         modules: 'qtwebengine qtwebchannel qtpositioning'
         cache: true
 
+    # Apple removed the legacy AGL.framework in modern macOS SDKs (Xcode 15/16).
+    # Strip any -framework AGL references from Qt's cmake and prl files.
+    - name: Patch Qt AGL on macOS
+      if: runner.os == 'macOS'
+      run: |
+        QT_PATH="${Qt6_DIR:-$QT_ROOT_DIR}"
+        if [ -z "$QT_PATH" ]; then
+          QT_PATH="/Users/runner/work/easy_qt6/Qt"
+        fi
+        find "$QT_PATH" -type f \( -name "*.cmake" -o -name "*.prl" \) -exec sed -i '' -E 's/([ -]framework[ =]+AGL|-framework AGL)//g' {} + 2>/dev/null || true
+
     - name: Configure CMake
       run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
 

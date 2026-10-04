@@ -14,6 +14,13 @@ if(MSVC)
     add_compile_options(/utf-8)
 endif()
 
+# On macOS with modern Xcode/SDK, Apple removed the legacy AGL.framework.
+# Pre-define WrapOpenGL::WrapOpenGL so Qt's FindWrapOpenGL does not link AGL.
+if(APPLE AND NOT TARGET WrapOpenGL::WrapOpenGL)
+    add_library(WrapOpenGL::WrapOpenGL INTERFACE IMPORTED)
+    target_link_libraries(WrapOpenGL::WrapOpenGL INTERFACE "-framework OpenGL")
+endif()
+
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
 add_subdirectory(src)
