@@ -9,6 +9,11 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+# Sources contain UTF-8 text (arrows, stars, emoji). MSVC needs to be told so.
+if(MSVC)
+    add_compile_options(/utf-8)
+endif()
+
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
 add_subdirectory(src)

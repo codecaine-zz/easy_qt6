@@ -80,9 +80,4 @@ target_include_directories(simplegui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(simplegui PUBLIC Qt6::Widgets Qt6::WebEngineWidgets)
 
-# Source files contain UTF-8 text (symbols such as arrows and stars).
-if(MSVC)
-    target_compile_options(simplegui PRIVATE /utf-8)
-endif()
-
 add_library(simplegui::simplegui ALIAS simplegui)
