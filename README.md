@@ -13,9 +13,9 @@ Windows ARM64**.
 - **Familiar to RAD developers.** Delphi/VB-style names (`Edit`, `Memo`, `CheckBox`,
   `TrackBar`, `StringGrid`, `PageControl`…), a control `Name` + `find<T>()` lookup, menus,
   a status bar, `ShowMessage`/`InputBox`-style dialogs, a `Timer`, and `OnCloseQuery`.
-- **65 controls.** Standard inputs, layouts, charts, dashboard cards, web/PDF/map views,
+- **75 controls.** Standard inputs, layouts, charts, dashboard cards, web/PDF/map views,
   and **futuristic controls**: `ToggleSwitch`, `RadialGauge`, `NeonButton`, `LedIndicator`,
-  `RadarScope`, `TerminalView`, `SegmentedControl`, `GlassPanel`.
+  `RadarScope`, `TerminalView`, `SegmentedControl`, `GlassPanel`. Plus 10 new additions like `TreeView`, `CalendarView`, and `RichTextEditor`.
 - **Themes.** Modern dark/light, GNOME, KDE, Ubuntu, Windows 11 Fluent, and a **neon** sci-fi theme.
 - **Safe by default.** Text is always plain text, colors are validated, links are limited to
   http/https/mailto, and out-of-range indexes are ignored instead of crashing.
@@ -35,6 +35,10 @@ Windows ARM64**.
 | Text & buttons | App & dashboard widgets |
 | :---: | :---: |
 | ![Text and buttons](screenshots/gallery_text_buttons.png) | ![App widgets](screenshots/gallery_app_widgets.png) |
+
+| New v0.2 Controls |
+| :---: |
+| ![New Controls](screenshots/gallery_new_controls.png) |
 
 Every control appears in one of the grouped pictures in [`screenshots/`](screenshots/), and each
 group is shown in the [API Reference](docs/API_REFERENCE.md).

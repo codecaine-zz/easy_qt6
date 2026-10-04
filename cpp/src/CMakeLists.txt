@@ -66,6 +66,16 @@ add_library(simplegui
     terminal_view.cpp
     segmented_control.cpp
     glass_panel.cpp
+    tree_view.cpp
+    accordion.cpp
+    toast.cpp
+    time_picker.cpp
+    calendar_view.cpp
+    rich_text_editor.cpp
+    menu_bar.cpp
+    toolbar.cpp
+    form_layout.cpp
+    flow_layout.cpp
     detail/common.h
     detail/box_core.h
 )

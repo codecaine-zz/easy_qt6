@@ -663,6 +663,33 @@ int main(int argc, char* argv[]) {
         capture_apple("example_analytics_dashboard", "Enterprise Cloud Analytics", root, 960, 660);
     }
 
+    // 11. New Controls (v0.2 additions) ---------------------------------------
+    {
+        auto root = std::make_shared<simplegui::VBox>();
+        root->set_spacing(18);
+
+        auto time = std::make_shared<simplegui::TimePicker>();
+        time->set_time(14, 30);
+        
+        auto cal = std::make_shared<simplegui::CalendarView>();
+        cal->set_min_size(240, 180);
+        
+        root->add_child(row_of({tile("TimePicker", time), tile("CalendarView", cal)}));
+        
+        auto rtf = std::make_shared<simplegui::RichTextEditor>();
+        rtf->set_html("<h1>Welcome</h1><p>This is <b>bold</b> and <i>italic</i> text.</p>");
+        rtf->set_min_size(300, 100);
+        
+        auto form = std::make_shared<simplegui::FormLayout>();
+        form->add_row("Email address:", std::make_shared<simplegui::TextInput>("user@example.com"));
+        form->add_row("Password:", std::make_shared<simplegui::PasswordInput>());
+        form->add_row(std::make_shared<simplegui::Button>("Login"));
+        
+        root->add_child(row_of({tile("RichTextEditor", rtf), tile("FormLayout", form)}));
+
+        capture_apple("gallery_new_controls", "New Controls", root, 800, 480);
+    }
+
     std::cout << "All screenshots generated successfully!" << std::endl;
     return 0;
 }

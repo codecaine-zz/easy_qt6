@@ -44,6 +44,15 @@ public:
     // built-in style but keeps the colors/fonts set with the methods above.
     virtual void set_style(const std::string& style);
 
+    // --- Accessibility ----------------------------------------------------
+    void set_accessible_name(const std::string& name);
+    void set_accessible_description(const std::string& description);
+
+    // --- Animations -------------------------------------------------------
+    void fade_in(int duration_ms = 250);
+    void fade_out(int duration_ms = 250);
+    void slide_to(int x, int y, int duration_ms = 250);
+
     // --- Keyboard focus ---------------------------------------------------
     void set_focus();                         // put the typing cursor here
     bool has_focus() const;

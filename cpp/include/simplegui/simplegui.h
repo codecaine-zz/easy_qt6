@@ -82,5 +82,17 @@
 #include "simplegui/segmented_control.h"
 #include "simplegui/glass_panel.h"
 
+// New Controls (v0.2)
+#include "simplegui/tree_view.h"
+#include "simplegui/accordion.h"
+#include "simplegui/toast.h"
+#include "simplegui/time_picker.h"
+#include "simplegui/calendar_view.h"
+#include "simplegui/rich_text_editor.h"
+#include "simplegui/menu_bar.h"
+#include "simplegui/toolbar.h"
+#include "simplegui/form_layout.h"
+#include "simplegui/flow_layout.h"
+
 // Familiar names (Edit, Memo, CheckBox, TrackBar, ...)
 #include "simplegui/aliases.h"

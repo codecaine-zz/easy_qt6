@@ -1398,6 +1398,44 @@ An interactive OpenStreetMap map with a marker (needs an internet connection). L
 | `set_coordinates(lat, lng)` | Move the map and marker. |
 | `set_zoom(zoom)` | 1 (whole world) to 19 (street level). |
 
+## New Controls (v0.2)
+
+### TreeView
+A hierarchical list of items, great for file systems or nested categories.
+`auto tree = std::make_shared<TreeView>();`
+
+### Accordion
+A vertically stacked list of collapsible panels.
+`auto accordion = std::make_shared<Accordion>();`
+
+### Toast
+A temporary popup notification that does not block the user.
+`auto toast = std::make_shared<Toast>();`
+
+### TimePicker
+A control for selecting a specific time (HH:MM).
+`auto time_picker = std::make_shared<TimePicker>();`
+
+### CalendarView
+A full-sized, inline calendar grid.
+`auto calendar = std::make_shared<CalendarView>();`
+
+### RichTextEditor
+A text area supporting rich formatting (HTML).
+`auto rtf = std::make_shared<RichTextEditor>();`
+
+### MenuBar & ToolBar
+Classic desktop application navigation.
+`auto menu = std::make_shared<MenuBar>();`
+
+### FormLayout
+A layout that aligns labels and inputs automatically into two columns.
+`auto form = std::make_shared<FormLayout>();`
+
+### FlowLayout
+A layout that wraps elements to the next line when horizontal space runs out.
+`auto flow = std::make_shared<FlowLayout>();`
+
 ---
 
 # Part 4 — Extra tools

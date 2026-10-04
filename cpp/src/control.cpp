@@ -11,6 +11,8 @@
 
 #include <algorithm>
 #include <unordered_map>
+#include <QPropertyAnimation>
+#include <QGraphicsOpacityEffect>
 
 namespace simplegui {
 
@@ -256,6 +258,49 @@ std::shared_ptr<Control> find_control(const std::string& name) {
     auto control = it->second.weak.lock();
     if (!control) map.erase(it);
     return control;
+}
+
+void Control::set_accessible_name(const std::string& name) {
+    if (auto* w = get_qwidget()) w->setAccessibleName(detail::qs(name));
+}
+
+void Control::set_accessible_description(const std::string& description) {
+    if (auto* w = get_qwidget()) w->setAccessibleDescription(detail::qs(description));
+}
+
+void Control::fade_in(int duration_ms) {
+    if (auto* w = get_qwidget()) {
+        auto* effect = new QGraphicsOpacityEffect(w);
+        w->setGraphicsEffect(effect);
+        auto* anim = new QPropertyAnimation(effect, "opacity", w);
+        anim->setDuration(duration_ms);
+        anim->setStartValue(0.0);
+        anim->setEndValue(1.0);
+        anim->start(QAbstractAnimation::DeleteWhenStopped);
+        w->show();
+    }
+}
+
+void Control::fade_out(int duration_ms) {
+    if (auto* w = get_qwidget()) {
+        auto* effect = new QGraphicsOpacityEffect(w);
+        w->setGraphicsEffect(effect);
+        auto* anim = new QPropertyAnimation(effect, "opacity", w);
+        anim->setDuration(duration_ms);
+        anim->setStartValue(1.0);
+        anim->setEndValue(0.0);
+        QObject::connect(anim, &QPropertyAnimation::finished, w, &QWidget::hide);
+        anim->start(QAbstractAnimation::DeleteWhenStopped);
+    }
+}
+
+void Control::slide_to(int x, int y, int duration_ms) {
+    if (auto* w = get_qwidget()) {
+        auto* anim = new QPropertyAnimation(w, "pos", w);
+        anim->setDuration(duration_ms);
+        anim->setEndValue(QPoint(x, y));
+        anim->start(QAbstractAnimation::DeleteWhenStopped);
+    }
 }
 
 }  // namespace simplegui
