@@ -13,13 +13,13 @@ EasyQt6 is a modern, lightweight, and zero-boilerplate C++ wrapper around Qt6. I
 
 ## Screenshots & Showcase
 
-| All Controls Showcase | Calculator Example |
+| Application Preferences (Mixed Layouts) | Enterprise Data Explorer (Mixed Layouts) |
 | :---: | :---: |
-| ![All Controls](screenshots/all_controls_showcase.png) | ![Calculator](screenshots/example_calculator.png) |
+| ![Settings Dashboard](screenshots/example_settings_dashboard.png) | ![Data Explorer](screenshots/example_data_explorer.png) |
 
-| Login Form | Hello World |
+| Calculator Example | Login Form |
 | :---: | :---: |
-| ![Login Form](screenshots/example_login_form.png) | ![Hello World](screenshots/example_hello_world.png) |
+| ![Calculator](screenshots/example_calculator.png) | ![Login Form](screenshots/example_login_form.png) |
 
 ### Controls & Layouts
 
@@ -31,6 +31,8 @@ Every control and layout is captured with native Qt6 rendering in [`screenshots/
 
 See the `cpp/examples` folder for copy-paste-ready RAD templates:
 
+- `settings_dashboard`: **Advanced mixed layouts** combining tabs, group boxes, form rows, knobs, sliders, and bottom action bar.
+- `data_explorer`: **Advanced mixed layouts** combining breadcrumbs, search toolbar, split sidebar, data grid, and status bar.
 - `hello_world`: The absolute bare minimum to get a window on screen.
 - `login_form`: Demonstrates layouts, checkboxes, and input masking.
 - `calculator`: Demonstrates dynamic UI building with loops and grids.

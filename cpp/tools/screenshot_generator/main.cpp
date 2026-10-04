@@ -38,6 +38,7 @@
 
 int main(int argc, char* argv[]) {
     simplegui::Application app(argc, argv);
+    app.set_theme("modern_dark");
 
     std::string out_dir = "screenshots";
     if (argc > 1) {
@@ -48,6 +49,7 @@ int main(int argc, char* argv[]) {
     auto capture_in_window = [&](const std::string& name, const std::string& title, std::shared_ptr<simplegui::Control> ctrl, int w = 320, int h = 120) {
         simplegui::Window win(title, w, h);
         auto vbox = std::make_shared<simplegui::VBox>();
+        vbox->set_margins(16);
         vbox->add_child(ctrl);
         win.set_content(vbox);
         std::string filepath = out_dir + "/" + name + ".png";
@@ -55,48 +57,53 @@ int main(int argc, char* argv[]) {
         std::cout << "Saved: " << filepath << std::endl;
     };
 
-    std::cout << "Generating high-quality native Qt6 screenshots..." << std::endl;
+    std::cout << "Generating polished Qt6 screenshots with modern design..." << std::endl;
 
     // --- CONTROLS ---
-    capture_in_window("button", "Button", std::make_shared<simplegui::Button>("Click Me!"), 260, 100);
-    capture_in_window("label", "Label", std::make_shared<simplegui::Label>("Hello from EasyQt6!"), 280, 80);
-    capture_in_window("text_input", "TextInput", std::make_shared<simplegui::TextInput>("Type your text here..."), 320, 100);
-    capture_in_window("password_input", "PasswordInput", std::make_shared<simplegui::PasswordInput>("secret_password_123"), 320, 100);
-    capture_in_window("search_field", "SearchField", std::make_shared<simplegui::SearchField>("Search files..."), 320, 100);
-    capture_in_window("checkbox", "Checkbox", std::make_shared<simplegui::Checkbox>("Enable hardware acceleration", true), 320, 90);
-    capture_in_window("radio", "Radio", std::make_shared<simplegui::Radio>("Standard Delivery (3-5 business days)"), 340, 90);
+    auto btn = std::make_shared<simplegui::Button>("Primary Action");
+    btn->set_style("background-color: #2563eb; color: #ffffff; font-weight: 600; border: 1px solid #3b82f6;");
+    capture_in_window("button", "Button", btn, 260, 90);
+
+    capture_in_window("label", "Label", std::make_shared<simplegui::Label>("EasyQt6: Zero-boilerplate C++ GUI"), 300, 80);
+    capture_in_window("text_input", "TextInput", std::make_shared<simplegui::TextInput>("Type your text here..."), 320, 90);
+    capture_in_window("password_input", "PasswordInput", std::make_shared<simplegui::PasswordInput>("secret_password_123"), 320, 90);
+    capture_in_window("search_field", "SearchField", std::make_shared<simplegui::SearchField>("Search documents..."), 320, 90);
+    capture_in_window("checkbox", "Checkbox", std::make_shared<simplegui::Checkbox>("Enable hardware acceleration", true), 320, 80);
+    capture_in_window("radio", "Radio", std::make_shared<simplegui::Radio>("Standard Delivery (3-5 business days)"), 340, 80);
 
     auto slider = std::make_shared<simplegui::Slider>(0, 100, 65);
-    capture_in_window("slider", "Slider", slider, 320, 90);
+    capture_in_window("slider", "Slider", slider, 320, 80);
 
-    capture_in_window("dropdown", "Dropdown", std::make_shared<simplegui::Dropdown>(std::vector<std::string>{"Option A", "Option B", "Option C"}), 300, 100);
-    capture_in_window("combo_box", "ComboBox", std::make_shared<simplegui::ComboBox>(std::vector<std::string>{"San Francisco", "London", "Tokyo", "Paris"}), 320, 100);
-    capture_in_window("number_input", "NumberInput", std::make_shared<simplegui::NumberInput>(0, 100, 42), 240, 100);
-    capture_in_window("knob", "Knob", std::make_shared<simplegui::Knob>(0, 100, 70), 180, 180);
-    capture_in_window("date_picker", "DatePicker", std::make_shared<simplegui::DatePicker>(), 300, 110);
-    capture_in_window("color_well", "ColorWell", std::make_shared<simplegui::ColorWell>("#3b82f6"), 220, 90);
+    capture_in_window("dropdown", "Dropdown", std::make_shared<simplegui::Dropdown>(std::vector<std::string>{"Option A", "Option B", "Option C"}), 300, 90);
+    capture_in_window("combo_box", "ComboBox", std::make_shared<simplegui::ComboBox>(std::vector<std::string>{"San Francisco", "London", "Tokyo", "Paris"}), 320, 90);
+    capture_in_window("number_input", "NumberInput", std::make_shared<simplegui::NumberInput>(0, 100, 42), 240, 90);
+    capture_in_window("knob", "Knob", std::make_shared<simplegui::Knob>(0, 100, 70), 160, 160);
+    capture_in_window("date_picker", "DatePicker", std::make_shared<simplegui::DatePicker>(), 300, 100);
+    capture_in_window("color_well", "ColorWell", std::make_shared<simplegui::ColorWell>("#2563eb"), 200, 90);
 
     auto progress = std::make_shared<simplegui::ProgressIndicator>();
     progress->set_value(65);
-    capture_in_window("progress_indicator", "ProgressIndicator", progress, 320, 90);
+    capture_in_window("progress_indicator", "ProgressIndicator", progress, 320, 80);
 
     auto circ_progress = std::make_shared<simplegui::CircularProgress>();
     circ_progress->set_value(75);
-    capture_in_window("circular_progress", "CircularProgress", circ_progress, 180, 180);
+    capture_in_window("circular_progress", "CircularProgress", circ_progress, 160, 160);
 
     auto rating = std::make_shared<simplegui::Rating>(5);
     rating->set_rating(4);
-    capture_in_window("rating", "Rating", rating, 240, 90);
+    capture_in_window("rating", "Rating", rating, 240, 80);
 
-    capture_in_window("breadcrumbs", "Breadcrumbs", std::make_shared<simplegui::Breadcrumbs>(std::vector<std::string>{"Home", "Projects", "EasyQt6", "Settings"}), 380, 90);
-    capture_in_window("textarea", "Textarea", std::make_shared<simplegui::Textarea>("EasyQt6 provides clean, modern C++ wrappers\naround native Qt 6 widgets.\nFast, safe, and intuitive."), 380, 140);
+    capture_in_window("breadcrumbs", "Breadcrumbs", std::make_shared<simplegui::Breadcrumbs>(std::vector<std::string>{"Home", "Projects", "EasyQt6", "Settings"}), 380, 80);
+    capture_in_window("textarea", "Textarea", std::make_shared<simplegui::Textarea>("EasyQt6 provides clean, modern C++ wrappers\naround native Qt 6 widgets.\nFast, safe, and intuitive."), 380, 130);
     capture_in_window("link", "Link", std::make_shared<simplegui::Link>("Visit Qt Official Documentation", "https://doc.qt.io/"), 320, 80);
-    capture_in_window("image_button", "ImageButton", std::make_shared<simplegui::ImageButton>("", "Launch Mission"), 260, 100);
+    capture_in_window("image_button", "ImageButton", std::make_shared<simplegui::ImageButton>("", "Launch Mission"), 260, 90);
 
     // --- LAYOUTS ---
     {
         simplegui::Window win("VBox Layout", 280, 180);
         auto vbox = std::make_shared<simplegui::VBox>();
+        vbox->set_margins(16);
+        vbox->set_spacing(10);
         vbox->add_child(std::make_shared<simplegui::Button>("Top Button"));
         vbox->add_child(std::make_shared<simplegui::Button>("Middle Button"));
         vbox->add_child(std::make_shared<simplegui::Button>("Bottom Button"));
@@ -106,8 +113,10 @@ int main(int argc, char* argv[]) {
     }
 
     {
-        simplegui::Window win("HBox Layout", 360, 100);
+        simplegui::Window win("HBox Layout", 360, 90);
         auto hbox = std::make_shared<simplegui::HBox>();
+        hbox->set_margins(16);
+        hbox->set_spacing(10);
         hbox->add_child(std::make_shared<simplegui::Button>("Left"));
         hbox->add_child(std::make_shared<simplegui::Button>("Center"));
         hbox->add_child(std::make_shared<simplegui::Button>("Right"));
@@ -117,7 +126,7 @@ int main(int argc, char* argv[]) {
     }
 
     {
-        simplegui::Window win("Grid Layout", 380, 180);
+        simplegui::Window win("Grid Layout", 400, 180);
         auto grid = std::make_shared<simplegui::Grid>(3, 3, std::vector<std::string>{"ID", "Item", "Status"});
         grid->set_cell(0, 0, "101");
         grid->set_cell(0, 1, "Widgets");
@@ -137,6 +146,8 @@ int main(int argc, char* argv[]) {
         simplegui::Window win("GroupBox Layout", 360, 150);
         auto group_box = std::make_shared<simplegui::GroupBox>("User Preferences");
         auto group_vbox = std::make_shared<simplegui::VBox>();
+        group_vbox->set_margins(12);
+        group_vbox->set_spacing(8);
         group_vbox->add_child(std::make_shared<simplegui::Checkbox>("Receive email notifications", true));
         group_vbox->add_child(std::make_shared<simplegui::Checkbox>("Automatic updates", false));
         group_box->add_child(group_vbox);
@@ -149,9 +160,12 @@ int main(int argc, char* argv[]) {
         simplegui::Window win("TabView Layout", 400, 200);
         auto tab_view = std::make_shared<simplegui::TabView>();
         auto tab1 = std::make_shared<simplegui::VBox>();
+        tab1->set_margins(12);
+        tab1->set_spacing(8);
         tab1->add_child(std::make_shared<simplegui::Label>("Content for General Settings"));
         tab1->add_child(std::make_shared<simplegui::Button>("Save Settings"));
         auto tab2 = std::make_shared<simplegui::VBox>();
+        tab2->set_margins(12);
         tab2->add_child(std::make_shared<simplegui::Label>("Content for Account Details"));
         tab_view->add_tab("General", tab1);
         tab_view->add_tab("Account", tab2);
@@ -174,6 +188,8 @@ int main(int argc, char* argv[]) {
         simplegui::Window win("ScrollView Layout", 340, 180);
         auto scroll_view = std::make_shared<simplegui::ScrollView>();
         auto content = std::make_shared<simplegui::VBox>();
+        content->set_margins(12);
+        content->set_spacing(6);
         for (int i = 1; i <= 8; ++i) {
             content->add_child(std::make_shared<simplegui::Label>("Scrollable list entry #" + std::to_string(i)));
         }
@@ -185,26 +201,33 @@ int main(int argc, char* argv[]) {
 
     // --- FULL DEMO APPLICATIONS ---
     {
-        simplegui::Window win("Hello World", 320, 180);
+        simplegui::Window win("Hello World", 320, 160);
         auto vbox = std::make_shared<simplegui::VBox>();
+        vbox->set_margins(16);
+        vbox->set_spacing(10);
         auto label = std::make_shared<simplegui::Label>("Welcome to EasyQt6!");
-        auto btn = std::make_shared<simplegui::Button>("Click Me");
+        auto click_btn = std::make_shared<simplegui::Button>("Click Me");
+        click_btn->set_style("background-color: #2563eb; color: #ffffff; font-weight: 600; border: 1px solid #3b82f6;");
         vbox->add_child(label);
-        vbox->add_child(btn);
+        vbox->add_child(click_btn);
         win.set_content(vbox);
         win.save_screenshot(out_dir + "/example_hello_world.png");
         std::cout << "Saved: " << out_dir << "/example_hello_world.png" << std::endl;
     }
 
     {
-        simplegui::Window win("Login", 360, 240);
+        simplegui::Window win("Login", 360, 260);
         auto layout = std::make_shared<simplegui::VBox>();
+        layout->set_margins(20);
+        layout->set_spacing(10);
+
         auto user_label = std::make_shared<simplegui::Label>("Username:");
         auto user_input = std::make_shared<simplegui::TextInput>("admin");
         auto pass_label = std::make_shared<simplegui::Label>("Password:");
         auto pass_input = std::make_shared<simplegui::PasswordInput>("secret");
         auto remember = std::make_shared<simplegui::Checkbox>("Remember Me", true);
         auto login_btn = std::make_shared<simplegui::Button>("Log In");
+        login_btn->set_style("background-color: #2563eb; color: #ffffff; font-weight: 600; border: 1px solid #3b82f6;");
 
         layout->add_child(user_label);
         layout->add_child(user_input);
@@ -220,6 +243,8 @@ int main(int argc, char* argv[]) {
     {
         simplegui::Window win("Calculator", 320, 360);
         auto layout = std::make_shared<simplegui::VBox>();
+        layout->set_margins(16);
+        layout->set_spacing(10);
         auto display = std::make_shared<simplegui::TextInput>("1337");
         layout->add_child(display);
 
@@ -232,8 +257,13 @@ int main(int argc, char* argv[]) {
 
         for (const auto& row : buttons) {
             auto row_box = std::make_shared<simplegui::HBox>();
+            row_box->set_spacing(8);
             for (const auto& text : row) {
-                row_box->add_child(std::make_shared<simplegui::Button>(text));
+                auto b = std::make_shared<simplegui::Button>(text);
+                if (text == "=" || text == "C") {
+                    b->set_style("background-color: #2563eb; color: #ffffff; font-weight: bold; border: 1px solid #3b82f6;");
+                }
+                row_box->add_child(b);
             }
             layout->add_child(row_box);
         }
@@ -242,33 +272,219 @@ int main(int argc, char* argv[]) {
         std::cout << "Saved: " << out_dir << "/example_calculator.png" << std::endl;
     }
 
+    // 4. MIXED LAYOUT: Settings Dashboard
     {
-        simplegui::Window win("EasyQt6 All Controls Showcase", 520, 420);
-        auto tab_view = std::make_shared<simplegui::TabView>();
+        simplegui::Window win("Application Preferences", 540, 480);
+        auto main_layout = std::make_shared<simplegui::VBox>();
+        main_layout->set_margins(16);
+        main_layout->set_spacing(12);
 
-        auto basic_tab = std::make_shared<simplegui::VBox>();
-        basic_tab->add_child(std::make_shared<simplegui::Label>("Standard Controls"));
-        basic_tab->add_child(std::make_shared<simplegui::TextInput>("Text Input field"));
-        basic_tab->add_child(std::make_shared<simplegui::Button>("Submit Action"));
-        auto hbox = std::make_shared<simplegui::HBox>();
-        hbox->add_child(std::make_shared<simplegui::Checkbox>("Active", true));
-        hbox->add_child(std::make_shared<simplegui::Slider>(0, 100, 50));
-        basic_tab->add_child(hbox);
+        auto tabs = std::make_shared<simplegui::TabView>();
 
-        auto extra_tab = std::make_shared<simplegui::VBox>();
-        extra_tab->add_child(std::make_shared<simplegui::Radio>("Option A (Selected)"));
-        extra_tab->add_child(std::make_shared<simplegui::Dropdown>(std::vector<std::string>{"Dropdown Choice 1", "Dropdown Choice 2"}));
-        auto p = std::make_shared<simplegui::ProgressIndicator>();
-        p->set_value(70);
-        extra_tab->add_child(p);
+        // Tab 1: Profile
+        auto tab_profile = std::make_shared<simplegui::VBox>();
+        tab_profile->set_margins(12);
+        tab_profile->set_spacing(10);
 
-        tab_view->add_tab("Standard", basic_tab);
-        tab_view->add_tab("Extra", extra_tab);
-        win.set_content(tab_view);
-        win.save_screenshot(out_dir + "/all_controls_showcase.png");
-        std::cout << "Saved: " << out_dir << "/all_controls_showcase.png" << std::endl;
+        auto grp_user = std::make_shared<simplegui::GroupBox>("User Information");
+        auto user_vbox = std::make_shared<simplegui::VBox>();
+        user_vbox->set_margins(10);
+        user_vbox->set_spacing(8);
+
+        auto row_name = std::make_shared<simplegui::HBox>();
+        row_name->set_spacing(10);
+        row_name->add_child(std::make_shared<simplegui::Label>("Full Name:"));
+        row_name->add_child(std::make_shared<simplegui::TextInput>("Jerome Scott"));
+
+        auto row_email = std::make_shared<simplegui::HBox>();
+        row_email->set_spacing(10);
+        row_email->add_child(std::make_shared<simplegui::Label>("Email Address:"));
+        row_email->add_child(std::make_shared<simplegui::TextInput>("developer@easyqt6.org"));
+
+        user_vbox->add_child(row_name);
+        user_vbox->add_child(row_email);
+        grp_user->add_child(user_vbox);
+
+        auto grp_region = std::make_shared<simplegui::GroupBox>("Regional Settings");
+        auto region_vbox = std::make_shared<simplegui::VBox>();
+        region_vbox->set_margins(10);
+        region_vbox->set_spacing(8);
+
+        auto row_lang = std::make_shared<simplegui::HBox>();
+        row_lang->set_spacing(10);
+        row_lang->add_child(std::make_shared<simplegui::Label>("Language:"));
+        row_lang->add_child(std::make_shared<simplegui::Dropdown>(std::vector<std::string>{"English (US)", "Spanish", "German"}));
+
+        region_vbox->add_child(row_lang);
+        grp_region->add_child(region_vbox);
+
+        tab_profile->add_child(grp_user);
+        tab_profile->add_child(grp_region);
+        tab_profile->add_stretch();
+
+        // Tab 2: Appearance & Audio
+        auto tab_appearance = std::make_shared<simplegui::VBox>();
+        tab_appearance->set_margins(12);
+        tab_appearance->set_spacing(10);
+
+        auto grp_theme = std::make_shared<simplegui::GroupBox>("Theme & Colors");
+        auto theme_vbox = std::make_shared<simplegui::VBox>();
+        theme_vbox->set_margins(10);
+        theme_vbox->set_spacing(8);
+
+        auto chk_dark = std::make_shared<simplegui::Checkbox>("Enable High-Contrast Dark Mode", true);
+        auto row_color = std::make_shared<simplegui::HBox>();
+        row_color->set_spacing(10);
+        row_color->add_child(std::make_shared<simplegui::Label>("Accent Color:"));
+        row_color->add_child(std::make_shared<simplegui::ColorWell>("#2563eb"));
+        row_color->add_stretch();
+
+        auto row_scale = std::make_shared<simplegui::HBox>();
+        row_scale->set_spacing(10);
+        row_scale->add_child(std::make_shared<simplegui::Label>("UI Scale:"));
+        row_scale->add_child(std::make_shared<simplegui::Slider>(50, 150, 100));
+
+        theme_vbox->add_child(chk_dark);
+        theme_vbox->add_child(row_color);
+        theme_vbox->add_child(row_scale);
+        grp_theme->add_child(theme_vbox);
+
+        auto grp_audio = std::make_shared<simplegui::GroupBox>("Audio & Controls");
+        auto audio_hbox = std::make_shared<simplegui::HBox>();
+        audio_hbox->set_margins(10);
+        audio_hbox->set_spacing(16);
+
+        auto audio_left = std::make_shared<simplegui::VBox>();
+        audio_left->add_child(std::make_shared<simplegui::Label>("Master Volume"));
+        audio_left->add_child(std::make_shared<simplegui::Knob>(0, 100, 75));
+
+        auto audio_right = std::make_shared<simplegui::VBox>();
+        audio_right->add_child(std::make_shared<simplegui::Label>("Satisfaction"));
+        auto rtg = std::make_shared<simplegui::Rating>(5);
+        rtg->set_rating(5);
+        audio_right->add_child(rtg);
+
+        audio_hbox->add_child(audio_left);
+        audio_hbox->add_child(audio_right);
+        audio_hbox->add_stretch();
+        grp_audio->add_child(audio_hbox);
+
+        tab_appearance->add_child(grp_theme);
+        tab_appearance->add_child(grp_audio);
+        tab_appearance->add_stretch();
+
+        tabs->add_tab("Profile & Account", tab_profile);
+        tabs->add_tab("Appearance & Audio", tab_appearance);
+
+        // Bottom Bar
+        auto bottom_bar = std::make_shared<simplegui::HBox>();
+        bottom_bar->set_spacing(10);
+        auto btn_reset = std::make_shared<simplegui::Button>("Reset Defaults");
+        auto btn_cancel = std::make_shared<simplegui::Button>("Cancel");
+        auto btn_save = std::make_shared<simplegui::Button>("Save Changes");
+        btn_save->set_style("background-color: #2563eb; color: #ffffff; font-weight: bold; border: 1px solid #3b82f6;");
+
+        bottom_bar->add_child(btn_reset);
+        bottom_bar->add_stretch();
+        bottom_bar->add_child(btn_cancel);
+        bottom_bar->add_child(btn_save);
+
+        main_layout->add_child(tabs);
+        main_layout->add_child(bottom_bar);
+        win.set_content(main_layout);
+        win.save_screenshot(out_dir + "/example_settings_dashboard.png");
+        std::cout << "Saved: " << out_dir << "/example_settings_dashboard.png" << std::endl;
     }
 
-    std::cout << "All screenshots generated successfully!" << std::endl;
+    // 5. MIXED LAYOUT: Data Explorer
+    {
+        simplegui::Window win("Enterprise Data Explorer", 680, 480);
+        auto root = std::make_shared<simplegui::VBox>();
+        root->set_margins(16);
+        root->set_spacing(10);
+
+        auto crumbs = std::make_shared<simplegui::Breadcrumbs>(std::vector<std::string>{"Organization", "Analytics", "Live Transactions"});
+
+        auto toolbar = std::make_shared<simplegui::HBox>();
+        toolbar->set_spacing(8);
+        auto search = std::make_shared<simplegui::SearchField>("Search customers...");
+        auto status_filter = std::make_shared<simplegui::Dropdown>(std::vector<std::string>{"All Statuses", "Paid", "Pending", "Failed"});
+        auto btn_add = std::make_shared<simplegui::Button>("+ New Record");
+        btn_add->set_style("background-color: #2563eb; color: #ffffff; font-weight: 600; border: 1px solid #3b82f6;");
+        auto btn_refresh = std::make_shared<simplegui::Button>("Refresh");
+
+        toolbar->add_child(search);
+        toolbar->add_child(status_filter);
+        toolbar->add_child(btn_add);
+        toolbar->add_child(btn_refresh);
+
+        auto split = std::make_shared<simplegui::SplitView>(true);
+
+        auto sidebar = std::make_shared<simplegui::VBox>();
+        sidebar->set_margins(8);
+        sidebar->set_spacing(10);
+
+        auto grp_summary = std::make_shared<simplegui::GroupBox>("Overview");
+        auto summary_vbox = std::make_shared<simplegui::VBox>();
+        summary_vbox->set_spacing(6);
+        summary_vbox->add_child(std::make_shared<simplegui::Label>("Revenue: $148,200"));
+        auto circ = std::make_shared<simplegui::CircularProgress>();
+        circ->set_value(84);
+        summary_vbox->add_child(circ);
+        grp_summary->add_child(summary_vbox);
+
+        auto grp_filter = std::make_shared<simplegui::GroupBox>("Quick Filters");
+        auto filter_vbox = std::make_shared<simplegui::VBox>();
+        filter_vbox->set_spacing(6);
+        filter_vbox->add_child(std::make_shared<simplegui::Checkbox>("VIP Only", false));
+        filter_vbox->add_child(std::make_shared<simplegui::Checkbox>("High Value", true));
+        grp_filter->add_child(filter_vbox);
+
+        sidebar->add_child(grp_summary);
+        sidebar->add_child(grp_filter);
+        sidebar->add_stretch();
+
+        auto grid = std::make_shared<simplegui::Grid>(6, 5, std::vector<std::string>{"ID", "Customer", "Tier", "Amount", "Status"});
+        const std::vector<std::vector<std::string>> data = {
+            {"#401", "Acme Corporation", "Enterprise", "$12,450", "Paid"},
+            {"#402", "Nova Solutions LLC", "Pro", "$3,200", "Paid"},
+            {"#403", "Apex Systems Inc", "Basic", "$850", "Pending"},
+            {"#404", "Quantum Dynamics", "Enterprise", "$24,000", "Paid"},
+            {"#405", "Vanguard Media", "Pro", "$4,100", "Failed"},
+            {"#406", "Horizon Robotics", "Enterprise", "$18,900", "Paid"}
+        };
+
+        for (int r = 0; r < static_cast<int>(data.size()); ++r) {
+            for (int c = 0; c < 5; ++c) {
+                grid->set_cell(r, c, data[r][c]);
+            }
+        }
+
+        split->add_child(sidebar);
+        split->add_child(grid);
+
+        auto status_bar = std::make_shared<simplegui::HBox>();
+        status_bar->set_spacing(12);
+        auto lbl_status = std::make_shared<simplegui::Label>("6 of 1,420 records | Synced");
+        auto sync_progress = std::make_shared<simplegui::ProgressIndicator>();
+        sync_progress->set_value(100);
+        auto btn_export = std::make_shared<simplegui::Button>("Export CSV");
+
+        status_bar->add_child(lbl_status);
+        status_bar->add_stretch();
+        status_bar->add_child(sync_progress);
+        status_bar->add_child(btn_export);
+
+        root->add_child(crumbs);
+        root->add_child(toolbar);
+        root->add_child(split);
+        root->add_child(status_bar);
+
+        win.set_content(root);
+        win.save_screenshot(out_dir + "/example_data_explorer.png");
+        std::cout << "Saved: " << out_dir << "/example_data_explorer.png" << std::endl;
+    }
+
+    std::cout << "All polished screenshots generated successfully!" << std::endl;
     return 0;
 }

@@ -1,6 +1,7 @@
 add_library(simplegui
     application.cpp
     window.cpp
+    control.cpp
     label.cpp
     text_input.cpp
     button.cpp

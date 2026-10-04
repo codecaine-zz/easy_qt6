@@ -24,8 +24,32 @@ VBox::~VBox() = default;
 
 void VBox::add_child(std::shared_ptr<Control> control) {
     pimpl->children.push_back(control);
-    if (pimpl->qlayout) {
+    if (pimpl->qlayout && control) {
         pimpl->qlayout->addWidget(control->get_qwidget());
+    }
+}
+
+void VBox::add_stretch(int stretch) {
+    if (pimpl->qlayout) {
+        pimpl->qlayout->addStretch(stretch);
+    }
+}
+
+void VBox::set_spacing(int spacing) {
+    if (pimpl->qlayout) {
+        pimpl->qlayout->setSpacing(spacing);
+    }
+}
+
+void VBox::set_margins(int margin) {
+    if (pimpl->qlayout) {
+        pimpl->qlayout->setContentsMargins(margin, margin, margin, margin);
+    }
+}
+
+void VBox::set_margins(int left, int top, int right, int bottom) {
+    if (pimpl->qlayout) {
+        pimpl->qlayout->setContentsMargins(left, top, right, bottom);
     }
 }
 
