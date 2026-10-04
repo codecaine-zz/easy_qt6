@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import <CoreImage/CoreImage.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <PDFKit/PDFKit.h>
 #import <AVFoundation/AVFoundation.h>
@@ -649,8 +650,14 @@ extern BOOL vlang_is_window_valid(void *win_ptr);
 @interface SimpleToastView : NSView
 @end
 
-
-
+@interface HDRGlowBoxView : NSView
+@property (nonatomic, assign) double intensity;
+@property (nonatomic, assign) double headroom;
+@property (nonatomic, retain) NSColor *glowColor;
+@property (nonatomic, copy) NSString *label;
+@property (nonatomic, copy) NSString *controlName;
+@property (nonatomic, assign) id appDelegate;
+@end
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, NSTextFieldDelegate, NSTextViewDelegate, NSTableViewDataSource, NSTableViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTabViewDelegate, NSToolbarDelegate, NSCollectionViewDataSource, NSCollectionViewDelegate, WKScriptMessageHandler, WKNavigationDelegate>
 
@@ -950,6 +957,9 @@ extern BOOL vlang_is_window_valid(void *win_ptr);
 - (void)setupMenuBar;
 - (NSMenu *)findOrCreateMenuWithName:(NSString *)menuName;
 - (void)handleMenuItemClicked:(id)sender;
+- (NSView *)makeHDRMTKViewWithName:(NSString *)name;
+- (void)configureMTKViewHDR:(MTKView *)mtkView enabled:(BOOL)enabled colorspace:(NSString *)csName;
+- (NSView *)makeHDRGlowBoxWithName:(NSString *)name label:(NSString *)label intensity:(double)intensity colorHex:(NSString *)colorHex;
 @end
 
 @implementation ShortcutRecorder
@@ -1510,6 +1520,137 @@ static NSColor *colorFromHexString(NSString *hexString) {
     };
     NSSize titleSize = [_title sizeWithAttributes:titleAttrs];
     [_title drawAtPoint:NSMakePoint(center.x - titleSize.width / 2.0, center.y - 18.0) withAttributes:titleAttrs];
+  }
+}
+@end
+
+@implementation HDRGlowBoxView
+- (instancetype)initWithFrame:(NSRect)frameRect {
+  self = [super initWithFrame:frameRect];
+  if (self) {
+    _intensity = 2.0;
+    _headroom = 2.0;
+    _glowColor = [[NSColor colorWithDisplayP3Red:0.2 green:0.8 blue:1.0 alpha:1.0] retain];
+    _label = [@"HDR Highlight" copy];
+    _controlName = [@"" copy];
+    [self setWantsLayer:YES];
+    if (@available(macOS 10.15, *)) {
+      if ([self.layer respondsToSelector:@selector(setWantsExtendedDynamicRangeContent:)]) {
+        [self.layer setValue:@YES forKey:@"wantsExtendedDynamicRangeContent"];
+      }
+    }
+    if (@available(macOS 14.0, *)) {
+      if ([self.layer respondsToSelector:@selector(setPreferredDynamicRange:)]) {
+        [self.layer setValue:@"high" forKey:@"preferredDynamicRange"];
+      }
+    }
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [_glowColor release];
+  [_label release];
+  [_controlName release];
+  [super dealloc];
+}
+
+- (void)setIntensity:(double)intensity {
+  _intensity = intensity;
+  if (@available(macOS 14.0, *)) {
+    if ([self.layer respondsToSelector:@selector(setContentsHeadroom:)]) {
+      [self.layer setValue:@((CGFloat)intensity) forKey:@"contentsHeadroom"];
+    }
+  }
+  [self setNeedsDisplay:YES];
+}
+
+- (void)setGlowColor:(NSColor *)glowColor {
+  if (_glowColor != glowColor) {
+    [_glowColor release];
+    _glowColor = [glowColor retain];
+    [self setNeedsDisplay:YES];
+  }
+}
+
+- (void)setLabel:(NSString *)label {
+  if (_label != label) {
+    [_label release];
+    _label = [label copy];
+    [self setNeedsDisplay:YES];
+  }
+}
+
+- (void)drawRect:(NSRect)dirtyRect {
+  [super drawRect:dirtyRect];
+  NSRect bounds = [self bounds];
+  if (bounds.size.width <= 0 || bounds.size.height <= 0) return;
+
+  NSRect cardRect = NSInsetRect(bounds, 2.0, 2.0);
+  NSBezierPath *bgPath = [NSBezierPath bezierPathWithRoundedRect:cardRect xRadius:10.0 yRadius:10.0];
+  
+  [[NSColor colorWithRed:0.08 green:0.09 blue:0.12 alpha:0.95] setFill];
+  [bgPath fill];
+  
+  CGFloat r = 0.2, g = 0.8, b = 1.0, a = 1.0;
+  NSColor *base = self.glowColor ?: [NSColor colorWithDisplayP3Red:0.2 green:0.8 blue:1.0 alpha:1.0];
+  NSColor *p3 = [base colorUsingColorSpace:[NSColorSpace displayP3ColorSpace]];
+  if (p3) {
+    r = [p3 redComponent];
+    g = [p3 greenComponent];
+    b = [p3 blueComponent];
+    a = [p3 alphaComponent];
+  }
+  
+  CGFloat boost = (CGFloat)self.intensity;
+  NSColor *hdrColor = nil;
+  if (@available(macOS 14.0, *)) {
+    if ([base respondsToSelector:@selector(colorWithApplyingContentHeadroom:)]) {
+      hdrColor = [base colorWithApplyingContentHeadroom:boost];
+    }
+  }
+  if (!hdrColor) {
+    hdrColor = [NSColor colorWithDisplayP3Red:r * boost green:g * boost blue:b * boost alpha:a];
+  }
+  
+  [bgPath setLineWidth:2.5];
+  [hdrColor setStroke];
+  [bgPath stroke];
+  
+  CGFloat pillW = 12.0;
+  CGFloat pillH = 12.0;
+  CGFloat pillY = NSMidY(cardRect) - (pillH / 2.0);
+  NSRect dotRect = NSMakeRect(cardRect.origin.x + 14.0, pillY, pillW, pillH);
+  NSBezierPath *dotPath = [NSBezierPath bezierPathWithOvalInRect:dotRect];
+  [hdrColor setFill];
+  [dotPath fill];
+  
+  NSString *text = self.label ?: @"";
+  NSDictionary *textAttrs = @{
+    NSFontAttributeName: [NSFont boldSystemFontOfSize:13.0],
+    NSForegroundColorAttributeName: [NSColor whiteColor]
+  };
+  CGFloat textX = dotRect.origin.x + pillW + 10.0;
+  NSSize textSize = [text sizeWithAttributes:textAttrs];
+  CGFloat textY = NSMidY(cardRect) - (textSize.height / 2.0);
+  [text drawAtPoint:NSMakePoint(textX, textY) withAttributes:textAttrs];
+  
+  NSString *headroomStr = [NSString stringWithFormat:@"EDR %.1fx", self.intensity];
+  NSDictionary *badgeAttrs = @{
+    NSFontAttributeName: [NSFont monospacedSystemFontOfSize:11.0 weight:NSFontWeightMedium],
+    NSForegroundColorAttributeName: [hdrColor colorWithAlphaComponent:0.9]
+  };
+  NSSize badgeSize = [headroomStr sizeWithAttributes:badgeAttrs];
+  CGFloat badgeX = NSMaxX(cardRect) - badgeSize.width - 14.0;
+  if (badgeX > textX + textSize.width + 10.0) {
+    [headroomStr drawAtPoint:NSMakePoint(badgeX, NSMidY(cardRect) - (badgeSize.height / 2.0)) withAttributes:badgeAttrs];
+  }
+}
+
+- (void)mouseUp:(NSEvent *)event {
+  [super mouseUp:event];
+  if (self.appDelegate && [self.appDelegate respondsToSelector:@selector(handleButtonClicked:)]) {
+    [self.appDelegate handleButtonClicked:self];
   }
 }
 @end
@@ -3207,6 +3348,83 @@ static void applyStyleToView(NSView *view, NSColor *backgroundColor, NSColor *fo
   self.controlsByName[[name lowercaseString]] = mtkView;
   [self addControlToLayout:mtkView];
   return mtkView;
+}
+
+- (NSView *)makeHDRMTKViewWithName:(NSString *)name {
+  MTKView *mtkView = [[MTKView alloc] initWithFrame:NSZeroRect device:MTLCreateSystemDefaultDevice()];
+  mtkView.colorPixelFormat = MTLPixelFormatRGBA16Float;
+  mtkView.wantsLayer = YES;
+  if ([mtkView.layer isKindOfClass:[CAMetalLayer class]]) {
+    CAMetalLayer *metalLayer = (CAMetalLayer *)mtkView.layer;
+    metalLayer.device = mtkView.device;
+    metalLayer.wantsExtendedDynamicRangeContent = YES;
+    CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearDisplayP3);
+    if (cs) {
+      metalLayer.colorspace = cs;
+      CGColorSpaceRelease(cs);
+    }
+    metalLayer.pixelFormat = MTLPixelFormatRGBA16Float;
+  }
+  [self makeStretchableView:mtkView minimumWidth:320];
+  [mtkView.heightAnchor constraintEqualToConstant:300].active = YES;
+  
+  self.controlsByName[[name lowercaseString]] = mtkView;
+  [self addControlToLayout:mtkView];
+  return mtkView;
+}
+
+- (void)configureMTKViewHDR:(MTKView *)mtkView enabled:(BOOL)enabled colorspace:(NSString *)csName {
+  if (!mtkView) return;
+  if (enabled) {
+    mtkView.colorPixelFormat = MTLPixelFormatRGBA16Float;
+    mtkView.wantsLayer = YES;
+    if ([mtkView.layer isKindOfClass:[CAMetalLayer class]]) {
+      CAMetalLayer *metalLayer = (CAMetalLayer *)mtkView.layer;
+      metalLayer.wantsExtendedDynamicRangeContent = YES;
+      metalLayer.pixelFormat = MTLPixelFormatRGBA16Float;
+      CGColorSpaceRef cs = NULL;
+      if ([csName isEqualToString:@"extended_linear_srgb"]) {
+        cs = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearSRGB);
+      } else if ([csName isEqualToString:@"display_p3"]) {
+        cs = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
+      } else {
+        cs = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearDisplayP3);
+      }
+      if (cs) {
+        metalLayer.colorspace = cs;
+        CGColorSpaceRelease(cs);
+      }
+    }
+  } else {
+    mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
+    if ([mtkView.layer isKindOfClass:[CAMetalLayer class]]) {
+      CAMetalLayer *metalLayer = (CAMetalLayer *)mtkView.layer;
+      metalLayer.wantsExtendedDynamicRangeContent = NO;
+      metalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+      CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+      if (cs) {
+        metalLayer.colorspace = cs;
+        CGColorSpaceRelease(cs);
+      }
+    }
+  }
+}
+
+- (NSView *)makeHDRGlowBoxWithName:(NSString *)name label:(NSString *)label intensity:(double)intensity colorHex:(NSString *)colorHex {
+  HDRGlowBoxView *box = [[HDRGlowBoxView alloc] initWithFrame:NSMakeRect(0, 0, 320, 48)];
+  box.label = label ?: @"HDR Highlight";
+  box.intensity = intensity > 0.0 ? intensity : 2.0;
+  box.controlName = name ?: @"";
+  box.appDelegate = self;
+  if (colorHex && colorHex.length > 0) {
+    box.glowColor = colorFromHexString(colorHex);
+  }
+  [box.heightAnchor constraintEqualToConstant:48.0].active = YES;
+  [self makeStretchableView:box minimumWidth:280];
+  
+  self.controlsByName[[name lowercaseString]] = box;
+  [self addControlToLayout:box];
+  return box;
 }
 
 - (NSView *)makeMapViewWithName:(NSString *)name {
@@ -13898,6 +14116,8 @@ void window_set_image_path(main__WindowInfo *info, const char *name, const char 
       } else {
         [imageView setImage:nil];
       }
+      [imageView.layer setNeedsDisplay];
+      [imageView setNeedsDisplay:YES];
     }
   });
 }
@@ -23088,6 +23308,13 @@ char *window_get_screens_info(void) {
     NSRect visible = [s visibleFrame];
     CGFloat scale = [s backingScaleFactor];
     BOOL isMain = (s == [NSScreen mainScreen]);
+    CGFloat maxEDR = 1.0;
+    CGFloat maxPotentialEDR = 1.0;
+    if (@available(macOS 10.15, *)) {
+      maxEDR = [s maximumExtendedDynamicRangeColorComponentValue];
+      maxPotentialEDR = [s maximumPotentialExtendedDynamicRangeColorComponentValue];
+    }
+    BOOL isHDR = (maxEDR > 1.0 || maxPotentialEDR > 1.0);
     [arr addObject:@{
       @"index": @(idx++),
       @"x": @((int)frame.origin.x),
@@ -23097,7 +23324,10 @@ char *window_get_screens_info(void) {
       @"visible_width": @((int)visible.size.width),
       @"visible_height": @((int)visible.size.height),
       @"scale": @((double)scale),
-      @"is_main": @(isMain)
+      @"is_main": @(isMain),
+      @"max_edr_headroom": @((double)maxEDR),
+      @"max_potential_edr_headroom": @((double)maxPotentialEDR),
+      @"is_hdr": @(isHDR)
     }];
   }
   NSData *data = [NSJSONSerialization dataWithJSONObject:arr options:0 error:nil];
@@ -23156,6 +23386,565 @@ char *window_get_app_bundle_path(void) {
   NSString *path = [[NSBundle mainBundle] bundlePath] ?: @"";
   return strdup([path UTF8String]);
 }
+
+// ============================================================================
+// HDR & Extended Dynamic Range (EDR) Support
+// ============================================================================
+
+int window_is_screen_hdr_supported(main__WindowInfo *info) {
+  AppDelegate *delegate = (info) ? (AppDelegate *)info->app_delegate : nil;
+  __block BOOL supported = NO;
+  void (^runBlock)(void) = ^{
+    NSScreen *screen = (delegate && delegate.window) ? [delegate.window screen] : [NSScreen mainScreen];
+    if (!screen) screen = [NSScreen mainScreen];
+    if (screen) {
+      if (@available(macOS 10.15, *)) {
+        CGFloat maxEDR = [screen maximumExtendedDynamicRangeColorComponentValue];
+        CGFloat potEDR = [screen maximumPotentialExtendedDynamicRangeColorComponentValue];
+        if (maxEDR > 1.0 || potEDR > 1.0) {
+          supported = YES;
+        }
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return supported ? 1 : 0;
+}
+
+double window_get_screen_edr_headroom(main__WindowInfo *info) {
+  AppDelegate *delegate = (info) ? (AppDelegate *)info->app_delegate : nil;
+  __block double headroom = 1.0;
+  void (^runBlock)(void) = ^{
+    NSScreen *screen = (delegate && delegate.window) ? [delegate.window screen] : [NSScreen mainScreen];
+    if (!screen) screen = [NSScreen mainScreen];
+    if (screen) {
+      if (@available(macOS 10.15, *)) {
+        headroom = (double)[screen maximumExtendedDynamicRangeColorComponentValue];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return headroom;
+}
+
+double window_get_screen_max_potential_edr_headroom(main__WindowInfo *info) {
+  AppDelegate *delegate = (info) ? (AppDelegate *)info->app_delegate : nil;
+  __block double headroom = 1.0;
+  void (^runBlock)(void) = ^{
+    NSScreen *screen = (delegate && delegate.window) ? [delegate.window screen] : [NSScreen mainScreen];
+    if (!screen) screen = [NSScreen mainScreen];
+    if (screen) {
+      if (@available(macOS 10.15, *)) {
+        headroom = (double)[screen maximumPotentialExtendedDynamicRangeColorComponentValue];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return headroom;
+}
+
+double window_get_screen_reference_edr_headroom(main__WindowInfo *info) {
+  AppDelegate *delegate = (info) ? (AppDelegate *)info->app_delegate : nil;
+  __block double headroom = 1.0;
+  void (^runBlock)(void) = ^{
+    NSScreen *screen = (delegate && delegate.window) ? [delegate.window screen] : [NSScreen mainScreen];
+    if (!screen) screen = [NSScreen mainScreen];
+    if (screen) {
+      if (@available(macOS 10.15, *)) {
+        headroom = (double)[screen maximumReferenceExtendedDynamicRangeColorComponentValue];
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return headroom;
+}
+
+void window_set_hdr_color_space(main__WindowInfo *info, int enabled, const char *color_space_name) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *name = color_space_name ? [nsstring(color_space_name) lowercaseString] : @"extended_srgb";
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (!delegate.window) return;
+    if (enabled) {
+      if ([name isEqualToString:@"display_p3"] || [name isEqualToString:@"p3"]) {
+        delegate.window.colorSpace = [NSColorSpace displayP3ColorSpace];
+      } else if ([name isEqualToString:@"adobe_rgb"]) {
+        delegate.window.colorSpace = [NSColorSpace adobeRGB1998ColorSpace];
+      } else {
+        delegate.window.colorSpace = [NSColorSpace extendedSRGBColorSpace];
+      }
+    } else {
+      delegate.window.colorSpace = [NSColorSpace sRGBColorSpace];
+    }
+  });
+}
+
+char *window_get_window_color_space(main__WindowInfo *info) {
+  if (!info || !info->app_delegate) return strdup("srgb");
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  __block NSString *csName = @"srgb";
+  void (^runBlock)(void) = ^{
+    if (delegate.window && delegate.window.colorSpace) {
+      NSString *desc = [delegate.window.colorSpace localizedName];
+      if (desc && desc.length > 0) {
+        csName = desc;
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([csName UTF8String]);
+}
+
+int window_is_window_hdr(main__WindowInfo *info) {
+  if (!info || !info->app_delegate) return 0;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  __block int isHDR = 0;
+  void (^runBlock)(void) = ^{
+    if (delegate.window && delegate.window.colorSpace) {
+      NSColorSpace *cs = delegate.window.colorSpace;
+      if (cs == [NSColorSpace extendedSRGBColorSpace] || cs == [NSColorSpace displayP3ColorSpace]) {
+        isHDR = 1;
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return isHDR;
+}
+
+void window_set_image_dynamic_range(main__WindowInfo *info, const char *name, const char *dynamic_range) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  NSString *dr = [nsstring(dynamic_range) lowercaseString];
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = delegate.controlsByName[key];
+    if ([view isKindOfClass:[NSImageView class]]) {
+      NSImageView *imageView = (NSImageView *)view;
+      [imageView setWantsLayer:YES];
+      
+      BOOL isHigh = ([dr isEqualToString:@"high"] || [dr isEqualToString:@"hdr"]);
+      BOOL isConstrained = ([dr isEqualToString:@"constrained"] || [dr isEqualToString:@"constrained_high"]);
+      NSString *caRange = @"standard";
+      CGFloat headroom = 1.0;
+      
+      if (@available(macOS 14.0, *)) {
+        if (isHigh) {
+          imageView.preferredImageDynamicRange = NSImageDynamicRangeHigh;
+          caRange = @"high";
+          headroom = 2.5;
+        } else if (isConstrained) {
+          imageView.preferredImageDynamicRange = NSImageDynamicRangeConstrainedHigh;
+          caRange = @"constrainedHigh";
+          headroom = 1.5;
+        } else {
+          imageView.preferredImageDynamicRange = NSImageDynamicRangeStandard;
+          caRange = @"standard";
+          headroom = 1.0;
+        }
+        if ([imageView.layer respondsToSelector:@selector(setPreferredDynamicRange:)]) {
+          [imageView.layer setValue:caRange forKey:@"preferredDynamicRange"];
+        }
+        if ([imageView.layer respondsToSelector:@selector(setContentsHeadroom:)]) {
+          [imageView.layer setValue:@(headroom) forKey:@"contentsHeadroom"];
+        }
+      }
+      if (@available(macOS 10.15, *)) {
+        BOOL isHDR = (isHigh || isConstrained);
+        if ([imageView.layer respondsToSelector:@selector(setWantsExtendedDynamicRangeContent:)]) {
+          [imageView.layer setValue:@(isHDR) forKey:@"wantsExtendedDynamicRangeContent"];
+        }
+      }
+      
+      // Highlight/Exposure boost for universal visual responsiveness across all displays (including SDR screens & images)
+      if (isHigh) {
+        CIFilter *exposure = [CIFilter filterWithName:@"CIExposureAdjust"];
+        [exposure setDefaults];
+        [exposure setValue:@(0.75) forKey:@"inputEV"];
+        imageView.layer.filters = @[ exposure ];
+      } else if (isConstrained) {
+        CIFilter *exposure = [CIFilter filterWithName:@"CIExposureAdjust"];
+        [exposure setDefaults];
+        [exposure setValue:@(0.35) forKey:@"inputEV"];
+        imageView.layer.filters = @[ exposure ];
+      } else {
+        imageView.layer.filters = @[];
+      }
+      
+      // Force refresh of image representation and layer cache
+      NSImage *curImg = imageView.image;
+      if (curImg) {
+        imageView.image = nil;
+        imageView.image = curImg;
+      }
+      [imageView.layer setNeedsDisplay];
+      [imageView setNeedsDisplay:YES];
+    }
+  });
+}
+
+char *window_get_image_dynamic_range(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate) return strdup("standard");
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  __block NSString *res = @"standard";
+  void (^runBlock)(void) = ^{
+    NSView *view = delegate.controlsByName[key];
+    if ([view isKindOfClass:[NSImageView class]]) {
+      NSImageView *imageView = (NSImageView *)view;
+      if (@available(macOS 14.0, *)) {
+        NSImageDynamicRange dr = imageView.preferredImageDynamicRange;
+        if (dr == NSImageDynamicRangeHigh) {
+          res = @"high";
+        } else if (dr == NSImageDynamicRangeConstrainedHigh) {
+          res = @"constrained";
+        } else {
+          res = @"standard";
+        }
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return strdup([res UTF8String]);
+}
+
+void *window_add_hdr_image_control(main__WindowInfo *info, const char *name, const char *file_path, const char *dynamic_range) {
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  __block NSImageView *imageView = nil;
+  NSString *dr = dynamic_range ? [nsstring(dynamic_range) lowercaseString] : @"high";
+  void (^runBlock)(void) = ^{
+    imageView = [[NSImageView alloc] initWithFrame:NSZeroRect];
+    [imageView setImageScaling:NSImageScaleProportionallyDown];
+    [imageView setImageFrameStyle:NSImageFrameNone];
+    [imageView setWantsLayer:YES];
+    
+    BOOL isHigh = ([dr isEqualToString:@"high"] || [dr isEqualToString:@"hdr"]);
+    BOOL isConstrained = ([dr isEqualToString:@"constrained"] || [dr isEqualToString:@"constrained_high"]);
+    NSString *caRange = @"standard";
+    CGFloat headroom = 1.0;
+    
+    if (@available(macOS 14.0, *)) {
+      if (isHigh) {
+        imageView.preferredImageDynamicRange = NSImageDynamicRangeHigh;
+        caRange = @"high";
+        headroom = 2.5;
+      } else if (isConstrained) {
+        imageView.preferredImageDynamicRange = NSImageDynamicRangeConstrainedHigh;
+        caRange = @"constrainedHigh";
+        headroom = 1.5;
+      } else {
+        imageView.preferredImageDynamicRange = NSImageDynamicRangeStandard;
+        caRange = @"standard";
+        headroom = 1.0;
+      }
+      if ([imageView.layer respondsToSelector:@selector(setPreferredDynamicRange:)]) {
+        [imageView.layer setValue:caRange forKey:@"preferredDynamicRange"];
+      }
+      if ([imageView.layer respondsToSelector:@selector(setContentsHeadroom:)]) {
+        [imageView.layer setValue:@(headroom) forKey:@"contentsHeadroom"];
+      }
+    }
+    if (@available(macOS 10.15, *)) {
+      BOOL isHDR = (isHigh || isConstrained);
+      if ([imageView.layer respondsToSelector:@selector(setWantsExtendedDynamicRangeContent:)]) {
+        [imageView.layer setValue:@(isHDR) forKey:@"wantsExtendedDynamicRangeContent"];
+      }
+    }
+    
+    if (isHigh) {
+      CIFilter *exposure = [CIFilter filterWithName:@"CIExposureAdjust"];
+      [exposure setDefaults];
+      [exposure setValue:@(0.75) forKey:@"inputEV"];
+      imageView.layer.filters = @[ exposure ];
+    } else if (isConstrained) {
+      CIFilter *exposure = [CIFilter filterWithName:@"CIExposureAdjust"];
+      [exposure setDefaults];
+      [exposure setValue:@(0.35) forKey:@"inputEV"];
+      imageView.layer.filters = @[ exposure ];
+    }
+    
+    [imageView.widthAnchor constraintEqualToConstant:480].active = YES;
+    [imageView.heightAnchor constraintEqualToConstant:240].active = YES;
+    
+    NSString *path = nsstring(file_path);
+    if (path.length > 0) {
+      NSImage *image = [[NSImage alloc] initWithContentsOfFile:path];
+      if (image) {
+        [imageView setImage:image];
+      }
+    }
+    
+    [delegate addControlToLayout:imageView];
+    NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    delegate.controlsByName[key] = imageView;
+  };
+  
+  if ([NSThread isMainThread]) {
+    runBlock();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), runBlock);
+  }
+  return (__bridge void *)imageView;
+}
+
+void window_set_control_edr(main__WindowInfo *info, const char *name, int enabled) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = delegate.controlsByName[key];
+    if (!view) return;
+    [view setWantsLayer:YES];
+    CALayer *layer = view.layer;
+    if (!layer) return;
+    if (@available(macOS 10.15, *)) {
+      if ([layer respondsToSelector:@selector(setWantsExtendedDynamicRangeContent:)]) {
+        [layer setValue:@(enabled != 0) forKey:@"wantsExtendedDynamicRangeContent"];
+      }
+    }
+  });
+}
+
+int window_get_control_edr(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate) return 0;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  __block int res = 0;
+  void (^runBlock)(void) = ^{
+    NSView *view = delegate.controlsByName[key];
+    if (view && view.layer) {
+      if (@available(macOS 10.15, *)) {
+        if ([view.layer respondsToSelector:@selector(wantsExtendedDynamicRangeContent)]) {
+          id val = [view.layer valueForKey:@"wantsExtendedDynamicRangeContent"];
+          if (val && [val boolValue]) res = 1;
+        }
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return res;
+}
+
+void window_set_control_dynamic_range(main__WindowInfo *info, const char *name, const char *dynamic_range) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  NSString *dr = dynamic_range ? [nsstring(dynamic_range) lowercaseString] : @"high";
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = delegate.controlsByName[key];
+    if (!view) return;
+    [view setWantsLayer:YES];
+    CALayer *layer = view.layer;
+    if (@available(macOS 14.0, *)) {
+      NSImageDynamicRange nsRange = NSImageDynamicRangeStandard;
+      NSString *caRange = @"standard";
+      if ([dr isEqualToString:@"high"] || [dr isEqualToString:@"hdr"]) {
+        nsRange = NSImageDynamicRangeHigh;
+        caRange = @"high";
+      } else if ([dr isEqualToString:@"constrained"] || [dr isEqualToString:@"constrained_high"]) {
+        nsRange = NSImageDynamicRangeConstrainedHigh;
+        caRange = @"constrainedHigh";
+      }
+      if ([layer respondsToSelector:@selector(setPreferredDynamicRange:)]) {
+        [layer setValue:caRange forKey:@"preferredDynamicRange"];
+      }
+      if ([view isKindOfClass:[NSImageView class]]) {
+        NSImageView *iv = (NSImageView *)view;
+        iv.preferredImageDynamicRange = nsRange;
+      }
+    }
+  });
+}
+
+void window_set_control_contents_headroom(main__WindowInfo *info, const char *name, double headroom) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = delegate.controlsByName[key];
+    if (!view) return;
+    [view setWantsLayer:YES];
+    CALayer *layer = view.layer;
+    if (@available(macOS 14.0, *)) {
+      if ([layer respondsToSelector:@selector(setContentsHeadroom:)]) {
+        [layer setValue:@((CGFloat)headroom) forKey:@"contentsHeadroom"];
+      }
+    }
+    if ([view isKindOfClass:[HDRGlowBoxView class]]) {
+      [(HDRGlowBoxView *)view setIntensity:headroom];
+    }
+  });
+}
+
+double window_get_control_contents_headroom(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate) return 1.0;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  __block double res = 1.0;
+  void (^runBlock)(void) = ^{
+    NSView *view = delegate.controlsByName[key];
+    if (view && view.layer) {
+      if (@available(macOS 14.0, *)) {
+        if ([view.layer respondsToSelector:@selector(contentsHeadroom)]) {
+          id val = [view.layer valueForKey:@"contentsHeadroom"];
+          if (val) res = [val doubleValue];
+        }
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return res;
+}
+
+void *window_add_hdr_mtk_view_control(main__WindowInfo *info, const char *name) {
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  return [delegate makeHDRMTKViewWithName:nsstring(name)];
+}
+
+void window_set_mtk_view_hdr(main__WindowInfo *info, const char *name, int enabled, const char *colorspace_name) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  NSString *cs = colorspace_name ? [nsstring(colorspace_name) lowercaseString] : @"extended_linear_display_p3";
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = delegate.controlsByName[key];
+    if ([view isKindOfClass:[MTKView class]]) {
+      [delegate configureMTKViewHDR:(MTKView *)view enabled:(enabled != 0) colorspace:cs];
+    }
+  });
+}
+
+int window_is_mtk_view_hdr(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate) return 0;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  __block int res = 0;
+  void (^runBlock)(void) = ^{
+    NSView *view = delegate.controlsByName[key];
+    if ([view isKindOfClass:[MTKView class]]) {
+      MTKView *mtk = (MTKView *)view;
+      if (mtk.colorPixelFormat == MTLPixelFormatRGBA16Float) {
+        if ([mtk.layer isKindOfClass:[CAMetalLayer class]]) {
+          CAMetalLayer *ml = (CAMetalLayer *)mtk.layer;
+          if (ml.wantsExtendedDynamicRangeContent) {
+            res = 1;
+          }
+        }
+      }
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return res;
+}
+
+void *window_add_hdr_glow_box_control(main__WindowInfo *info, const char *name, const char *label, double intensity, const char *color_hex) {
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  return [delegate makeHDRGlowBoxWithName:nsstring(name) label:nsstring(label) intensity:intensity colorHex:nsstring(color_hex)];
+}
+
+void window_set_hdr_glow_box_intensity(main__WindowInfo *info, const char *name, double intensity) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = delegate.controlsByName[key];
+    if ([view isKindOfClass:[HDRGlowBoxView class]]) {
+      [(HDRGlowBoxView *)view setIntensity:intensity];
+    }
+  });
+}
+
+void window_set_hdr_glow_box_color(main__WindowInfo *info, const char *name, const char *color_hex) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  NSString *hex = nsstring(color_hex);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = delegate.controlsByName[key];
+    if ([view isKindOfClass:[HDRGlowBoxView class]]) {
+      [(HDRGlowBoxView *)view setGlowColor:colorFromHexString(hex)];
+    }
+  });
+}
+
+void window_set_hdr_glow_box_label(main__WindowInfo *info, const char *name, const char *label) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  NSString *lbl = nsstring(label);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = delegate.controlsByName[key];
+    if ([view isKindOfClass:[HDRGlowBoxView class]]) {
+      [(HDRGlowBoxView *)view setLabel:lbl];
+    }
+  });
+}
+
+double window_get_hdr_glow_box_intensity(main__WindowInfo *info, const char *name) {
+  if (!info || !info->app_delegate) return 1.0;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  __block double res = 1.0;
+  void (^runBlock)(void) = ^{
+    NSView *view = delegate.controlsByName[key];
+    if ([view isKindOfClass:[HDRGlowBoxView class]]) {
+      res = [(HDRGlowBoxView *)view intensity];
+    }
+  };
+  if ([NSThread isMainThread]) { runBlock(); } else { dispatch_sync(dispatch_get_main_queue(), runBlock); }
+  return res;
+}
+
+void window_set_control_hdr_color(main__WindowInfo *info, const char *name, const char *property, double r, double g, double b, double a, double headroom) {
+  if (!info || !info->app_delegate) return;
+  AppDelegate *delegate = (AppDelegate *)info->app_delegate;
+  NSString *key = [[nsstring(name) lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  NSString *prop = property ? [nsstring(property) lowercaseString] : @"background";
+  double hr = headroom > 1.0 ? headroom : 1.0;
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = delegate.controlsByName[key];
+    if (!view) return;
+    [view setWantsLayer:YES];
+    if (@available(macOS 10.15, *)) {
+      if ([view.layer respondsToSelector:@selector(setWantsExtendedDynamicRangeContent:)]) {
+        [view.layer setValue:@YES forKey:@"wantsExtendedDynamicRangeContent"];
+      }
+    }
+    
+    NSColor *hdrColor = nil;
+    NSColor *baseP3 = [NSColor colorWithDisplayP3Red:r green:g blue:b alpha:a];
+    if (@available(macOS 14.0, *)) {
+      if ([baseP3 respondsToSelector:@selector(colorWithApplyingContentHeadroom:)]) {
+        hdrColor = [baseP3 colorWithApplyingContentHeadroom:(CGFloat)hr];
+      }
+    }
+    if (!hdrColor) {
+      hdrColor = [NSColor colorWithDisplayP3Red:r * hr green:g * hr blue:b * hr alpha:a];
+    }
+    
+    if ([view isKindOfClass:[HDRGlowBoxView class]]) {
+      HDRGlowBoxView *glow = (HDRGlowBoxView *)view;
+      glow.glowColor = hdrColor;
+      glow.intensity = hr;
+      [glow setNeedsDisplay:YES];
+      return;
+    }
+    
+    if ([prop isEqualToString:@"background"] || [prop isEqualToString:@"bg"]) {
+      view.layer.backgroundColor = [hdrColor CGColor];
+    } else if ([prop isEqualToString:@"border"]) {
+      view.layer.borderColor = [hdrColor CGColor];
+      view.layer.borderWidth = 2.0;
+    } else if ([prop isEqualToString:@"shadow"] || [prop isEqualToString:@"glow"]) {
+      view.layer.shadowColor = [hdrColor CGColor];
+      view.layer.shadowOpacity = 0.8;
+      view.layer.shadowRadius = 8.0;
+      view.layer.shadowOffset = CGSizeZero;
+    }
+  });
+}
+
 
 
 

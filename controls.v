@@ -6002,3 +6002,194 @@ pub fn (win &SimpleWindow) scroll_to_bottom(name string) &SimpleWindow {
 	}
 	return win
 }
+
+// ── HDR & Extended Dynamic Range (EDR) Control APIs ───────────────────────────
+
+// add_hdr_image adds a native NSImageView control configured for High Dynamic Range (HDR) display.
+// dynamic_range can be "high", "constrained", or "standard" (defaults to "high").
+// Supported on macOS 14+ Sonoma with hardware EDR displays.
+pub fn (win &SimpleWindow) add_hdr_image(name string, file_path string, dynamic_range string) &SimpleWindow {
+	mut real_name := name
+	if real_name == '' {
+		real_name = win.auto_name('hdr_image')
+	}
+	dr := if dynamic_range == '' { 'high' } else { dynamic_range }
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.controls << ControlEntry{
+			name:  real_name
+			kind:  'hdr_image'
+			value: file_path
+		}
+	}
+	if win.window_info != unsafe { nil } {
+		C.window_add_hdr_image_control(win.window_info, real_name.str, file_path.str, dr.str)
+	}
+	return win
+}
+
+// set_image_dynamic_range overrides the preferred image dynamic range for an image view.
+// Options: "high" (NSImageDynamicRangeHigh), "constrained" (NSImageDynamicRangeConstrainedHigh), "standard" (NSImageDynamicRangeStandard).
+pub fn (win &SimpleWindow) set_image_dynamic_range(name string, dynamic_range string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_image_dynamic_range(win.window_info, name.str, dynamic_range.str)
+	}
+	return win
+}
+
+// get_image_dynamic_range returns the current preferred dynamic range setting ("high", "constrained", "standard").
+pub fn (win &SimpleWindow) get_image_dynamic_range(name string) string {
+	if win.window_info != unsafe { nil } {
+		res := C.window_get_image_dynamic_range(win.window_info, name.str)
+		if res != unsafe { nil } {
+			return unsafe { tos3(res) }
+		}
+	}
+	return 'standard'
+}
+
+// enable_image_hdr toggles High Dynamic Range on an image view control.
+pub fn (win &SimpleWindow) enable_image_hdr(name string, enabled bool) &SimpleWindow {
+	return win.set_image_dynamic_range(name, if enabled { 'high' } else { 'standard' })
+}
+
+// set_control_edr enables or disables extended dynamic range content on any control's backing CALayer.
+// (CALayer.wantsExtendedDynamicRangeContent).
+pub fn (win &SimpleWindow) set_control_edr(name string, enabled bool) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_control_edr(win.window_info, name.str, if enabled { 1 } else { 0 })
+	}
+	return win
+}
+
+// is_control_edr returns true if the target control's layer has extended dynamic range enabled.
+pub fn (win &SimpleWindow) is_control_edr(name string) bool {
+	if win.window_info != unsafe { nil } {
+		return C.window_get_control_edr(win.window_info, name.str) == 1
+	}
+	return false
+}
+
+// set_control_dynamic_range sets the preferred dynamic range ("high", "constrained", "standard") on the control's layer.
+// (CALayer.preferredDynamicRange on macOS 14+).
+pub fn (win &SimpleWindow) set_control_dynamic_range(name string, dynamic_range string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_control_dynamic_range(win.window_info, name.str, dynamic_range.str)
+	}
+	return win
+}
+
+// set_control_contents_headroom sets the maximum dynamic range headroom required by the contents of the layer.
+// (CALayer.contentsHeadroom on macOS 14+).
+pub fn (win &SimpleWindow) set_control_contents_headroom(name string, headroom f64) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_control_contents_headroom(win.window_info, name.str, headroom)
+	}
+	return win
+}
+
+// get_control_contents_headroom returns the contents headroom of the control's backing layer.
+pub fn (win &SimpleWindow) get_control_contents_headroom(name string) f64 {
+	if win.window_info != unsafe { nil } {
+		return C.window_get_control_contents_headroom(win.window_info, name.str)
+	}
+	return 1.0
+}
+
+// add_hdr_mtk_view adds a MetalKit MTKView canvas preconfigured for HDR / EDR custom graphics rendering.
+// Configures CAMetalLayer with RGBA16Float pixel format, Extended Linear Display P3 color space,
+// and wantsExtendedDynamicRangeContent = true.
+pub fn (win &SimpleWindow) add_hdr_mtk_view(name string) &SimpleWindow {
+	mut real_name := name
+	if real_name == '' {
+		real_name = win.auto_name('hdr_mtkview')
+	}
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.upsert_control(real_name, 'hdr_mtkview', '', '', false, 0)
+	}
+	if win.window_info != unsafe { nil } {
+		C.window_add_hdr_mtk_view_control(win.window_info, real_name.str)
+	}
+	return win
+}
+
+// set_mtk_view_hdr configures HDR / Extended Dynamic Range rendering on a Metal canvas view.
+// colorspace can be "extended_linear_display_p3" (default) or "extended_linear_srgb".
+pub fn (win &SimpleWindow) set_mtk_view_hdr(name string, enabled bool, colorspace string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		cs := if colorspace == '' { 'extended_linear_display_p3' } else { colorspace }
+		C.window_set_mtk_view_hdr(win.window_info, name.str, if enabled { 1 } else { 0 }, cs.str)
+	}
+	return win
+}
+
+// is_mtk_view_hdr returns true if the Metal canvas view is configured for HDR / EDR rendering.
+pub fn (win &SimpleWindow) is_mtk_view_hdr(name string) bool {
+	if win.window_info != unsafe { nil } {
+		return C.window_is_mtk_view_hdr(win.window_info, name.str) == 1
+	}
+	return false
+}
+
+// add_hdr_glow_box adds a custom rendered HDR highlight / glowing badge control.
+// This view utilizes CALayer EDR and extended Display P3 color rendering to shine brighter
+// than standard UI white on HDR/XDR displays (intensity 1.0 = SDR, 2.0 = 2x EDR, up to 4.0x).
+pub fn (win &SimpleWindow) add_hdr_glow_box(name string, label string, intensity f64, color_hex string) &SimpleWindow {
+	mut real_name := name
+	if real_name == '' {
+		real_name = win.auto_name('hdr_glow')
+	}
+	unsafe {
+		mut w := &SimpleWindow(win)
+		w.upsert_control(real_name, 'hdr_glow', label, color_hex, false, int(intensity * 100))
+	}
+	if win.window_info != unsafe { nil } {
+		col := if color_hex == '' { '#00D4FF' } else { color_hex }
+		intense := if intensity <= 0.0 { 2.0 } else { intensity }
+		C.window_add_hdr_glow_box_control(win.window_info, real_name.str, label.str, intense, col.str)
+	}
+	return win
+}
+
+// set_hdr_glow_box_intensity sets the brightness multiplier (EDR intensity) on an HDR glow box.
+pub fn (win &SimpleWindow) set_hdr_glow_box_intensity(name string, intensity f64) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_hdr_glow_box_intensity(win.window_info, name.str, intensity)
+	}
+	return win
+}
+
+// set_hdr_glow_box_color sets the base glow color hex for an HDR glow box.
+pub fn (win &SimpleWindow) set_hdr_glow_box_color(name string, color_hex string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_hdr_glow_box_color(win.window_info, name.str, color_hex.str)
+	}
+	return win
+}
+
+// set_hdr_glow_box_label updates the text label of an HDR glow box.
+pub fn (win &SimpleWindow) set_hdr_glow_box_label(name string, label string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_hdr_glow_box_label(win.window_info, name.str, label.str)
+	}
+	return win
+}
+
+// get_hdr_glow_box_intensity returns the current EDR brightness multiplier of an HDR glow box.
+pub fn (win &SimpleWindow) get_hdr_glow_box_intensity(name string) f64 {
+	if win.window_info != unsafe { nil } {
+		return C.window_get_hdr_glow_box_intensity(win.window_info, name.str)
+	}
+	return 1.0
+}
+
+// set_control_hdr_color applies an extended Display P3 HDR color with EDR headroom to the target control.
+// property can be "background", "border", or "glow".
+pub fn (win &SimpleWindow) set_control_hdr_color(name string, property string, r f64, g f64, b f64, a f64, headroom f64) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_control_hdr_color(win.window_info, name.str, property.str, r, g, b, a, headroom)
+	}
+	return win
+}
+

@@ -6787,6 +6787,92 @@ Retrieves the array of currently selected items from the right-side list of a tr
 ### `win.add_property_grid(name string, props map[string]string) &SimpleWindow`
 Builds a compact key-value input form where keys are rendered as aligned labels and values are rendered as text fields. The input text fields are automatically named `{name}_{key}` (e.g. `user_form_Email`) for easy value retrieval.
 
+## 23. High Dynamic Range (HDR) & Extended Dynamic Range (EDR) Architecture
 
+SimpleGUI provides end-to-end support for macOS Cocoa HDR APIs across AppKit, Core Animation, MetalKit, and the `colorutils` color science module.
 
+Apple calls its display mechanism **EDR (Extended Dynamic Range)**, enabling standard interface content and peak high-brightness HDR content to coexist seamlessly on displays such as MacBook Pro Liquid Retina XDR, Apple Studio Display, and Pro Display XDR.
 
+### 23.1 Display Hardware & EDR Headroom Detection
+
+| Method | Return | Description |
+| :--- | :--- | :--- |
+| `simplegui.is_hdr_supported()` | `bool` | Returns `true` if connected displays support extended dynamic range (headroom > 1.0). |
+| `simplegui.get_screen_edr_headroom()` | `f64` | Current maximum EDR headroom multiplier for the primary screen (e.g. `1.0` for SDR, `2.0`–`4.0` for HDR). |
+| `win.is_hdr_supported()` | `bool` | Returns whether the display screen hosting this window supports HDR/EDR. |
+| `win.get_screen_edr_headroom()` | `f64` | Current maximum EDR headroom multiplier for this window's screen. |
+| `win.get_screen_max_potential_edr_headroom()` | `f64` | Maximum potential EDR headroom available on this screen. |
+| `win.get_screen_reference_edr_headroom()` | `f64` | Reference preset EDR headroom (`0.0` when not in reference preset mode). |
+
+### 23.2 Window HDR & Wide Color Space Configuration
+
+| Method | Return | Description |
+| :--- | :--- | :--- |
+| `win.set_window_hdr(enabled bool)` | `&SimpleWindow` | Enables or disables Extended Dynamic Range color space (`extended_srgb`) on the window. |
+| `win.set_window_color_space(space string)` | `&SimpleWindow` | Configures window color space: `"extended_srgb"`, `"display_p3"`, `"adobe_rgb"`, or `"srgb"`. |
+| `win.get_window_color_space()` | `string` | Returns the localized name or model identifier of the window's active color space. |
+| `win.is_window_hdr()` | `bool` | Returns `true` if the window is currently configured with an extended dynamic range color space. |
+
+### 23.3 Native `NSImageView` HDR Image Display (macOS 14 Sonoma+)
+
+AppKit's `NSImageView` directly renders HDR images (such as HDR PNGs, 10-bit HEIF/AVIF, and ISO 21496-1 Gain Map photos) with extended dynamic range.
+
+| Method | Return | Description |
+| :--- | :--- | :--- |
+| `win.add_hdr_image(name, file_path, range)` | `&SimpleWindow` | Adds an image view with preferred dynamic range preconfigured (`"high"`, `"constrained"`, or `"standard"`). |
+| `win.set_image_dynamic_range(name, range)` | `&SimpleWindow` | Sets `preferredImageDynamicRange` on the `NSImageView` and its layer. |
+| `win.get_image_dynamic_range(name)` | `string` | Gets current dynamic range setting (`"high"`, `"constrained"`, `"standard"`). |
+| `win.enable_image_hdr(name, enabled)` | `&SimpleWindow` | Convenience toggle setting dynamic range to `"high"` or `"standard"`. |
+
+### 23.4 Core Animation Layer HDR Configuration (`CALayer`)
+
+| Method | Return | Description |
+| :--- | :--- | :--- |
+| `win.set_control_edr(name, enabled)` | `&SimpleWindow` | Sets `CALayer.wantsExtendedDynamicRangeContent` on the control's backing layer. |
+| `win.is_control_edr(name)` | `bool` | Checks whether the control's layer has extended dynamic range enabled. |
+| `win.set_control_dynamic_range(name, range)` | `&SimpleWindow` | Sets `CALayer.preferredDynamicRange` (`"high"`, `"constrained"`, `"standard"`). |
+| `win.set_control_contents_headroom(name, headroom)` | `&SimpleWindow` | Sets `CALayer.contentsHeadroom` specifying maximum dynamic range required. |
+| `win.get_control_contents_headroom(name)` | `f64` | Retrieves `CALayer.contentsHeadroom`. |
+
+### 23.5 Hardware-Accelerated Metal EDR Canvas (`MTKView` & `CAMetalLayer`)
+
+For custom 2D/3D HDR rendering, Apple documents configuring a `CAMetalLayer` with 16-bit floating point buffers and Extended Linear Display P3 color space:
+
+```v
+// Add an HDR Metal canvas view preconfigured with RGBA16Float and Extended Linear Display P3
+win.add_hdr_mtk_view('metal_hdr_canvas')
+
+// Switch existing MTKView between SDR and HDR
+win.set_mtk_view_hdr('my_canvas', true, 'extended_linear_display_p3')
+assert win.is_mtk_view_hdr('my_canvas') == true
+```
+
+### 23.6 Custom HDR Controls & Glowing Highlights (`HDRGlowBoxView`)
+
+Standard AppKit controls (buttons, text fields, sliders) clip to SDR 1.0 white. SimpleGUI provides custom HDR-capable controls designed specifically for highlights that shine brighter than ordinary UI white:
+
+```v
+// Add an interactive glowing HDR highlight element
+win.add_hdr_glow_box('neon_alert', '⚡ High Voltage Alert', 2.5, '#00D4FF')
+
+// Adjust EDR brightness multiplier dynamically (1.0 = SDR, 2.0 = 2x EDR, up to 4.0x)
+win.set_hdr_glow_box_intensity('neon_alert', 3.0)
+
+// Apply extended Display P3 HDR colors with headroom
+win.set_control_hdr_color('neon_alert', 'glow', 0.2, 0.9, 1.0, 1.0, 3.0)
+
+// Handle click events just like a normal button
+win.on_click('neon_alert', fn (mut w simplegui.SimpleWindow) {
+    w.toast('HDR Highlight clicked!')
+})
+```
+
+### 23.7 Color Science & HDR Color Representation (`colorutils.HDRColor`)
+
+The `colorutils` module provides the `HDRColor` struct, mirroring Cocoa's `NSColor` extended exposure and headroom APIs:
+
+- **Unclamped Channels**: `r`, `g`, `b` can exceed `1.0` in extended color spaces.
+- **Headroom Scaling**: `c.applying_content_headroom(headroom)` scales luminance to display capability (mirrors `-[NSColor applyingContentHeadroom:]`).
+- **SDR Recovery**: `c.standard_dynamic_range()` safely recovers standard `[0..255]` RGB values (mirrors `-[NSColor standardDynamicRange]`).
+- **Linear Exposure**: `c.linear_exposure()` computes effective multiplier relative to 1.0 SDR white (mirrors `-[NSColor linearExposure]`).
+- **Filmic Tone Mapping**: `c.tone_map_reinhard()` and `c.tone_map_aces()` tone-map HDR colors to SDR.

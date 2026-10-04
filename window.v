@@ -9,6 +9,7 @@ module simplegui
 #flag -framework Cocoa
 #flag -framework WebKit
 #flag -framework QuartzCore
+#flag -framework CoreImage
 #flag -framework ApplicationServices
 #flag -framework IOKit
 #flag -framework AudioToolbox
@@ -1222,6 +1223,32 @@ fn C.window_cancel_dock_bounce()
 fn C.window_set_activation_policy(&u8)
 fn C.window_get_activation_policy() &char
 fn C.window_get_app_bundle_path() &char
+
+// HDR & Extended Dynamic Range (EDR) Support
+fn C.window_is_screen_hdr_supported(&WindowInfo) int
+fn C.window_get_screen_edr_headroom(&WindowInfo) f64
+fn C.window_get_screen_max_potential_edr_headroom(&WindowInfo) f64
+fn C.window_get_screen_reference_edr_headroom(&WindowInfo) f64
+fn C.window_set_hdr_color_space(&WindowInfo, int, &u8)
+fn C.window_get_window_color_space(&WindowInfo) &char
+fn C.window_is_window_hdr(&WindowInfo) int
+fn C.window_set_image_dynamic_range(&WindowInfo, &u8, &u8)
+fn C.window_get_image_dynamic_range(&WindowInfo, &u8) &char
+fn C.window_add_hdr_image_control(&WindowInfo, &u8, &u8, &u8) voidptr
+fn C.window_set_control_edr(&WindowInfo, &u8, int)
+fn C.window_get_control_edr(&WindowInfo, &u8) int
+fn C.window_set_control_dynamic_range(&WindowInfo, &u8, &u8)
+fn C.window_set_control_contents_headroom(&WindowInfo, &u8, f64)
+fn C.window_get_control_contents_headroom(&WindowInfo, &u8) f64
+fn C.window_add_hdr_mtk_view_control(&WindowInfo, &u8) voidptr
+fn C.window_set_mtk_view_hdr(&WindowInfo, &u8, int, &u8)
+fn C.window_is_mtk_view_hdr(&WindowInfo, &u8) int
+fn C.window_add_hdr_glow_box_control(&WindowInfo, &u8, &u8, f64, &u8) voidptr
+fn C.window_set_hdr_glow_box_intensity(&WindowInfo, &u8, f64)
+fn C.window_set_hdr_glow_box_color(&WindowInfo, &u8, &u8)
+fn C.window_set_hdr_glow_box_label(&WindowInfo, &u8, &u8)
+fn C.window_get_hdr_glow_box_intensity(&WindowInfo, &u8) f64
+fn C.window_set_control_hdr_color(&WindowInfo, &u8, &u8, f64, f64, f64, f64, f64)
 
 // new_simple_window creates and initializes a new native SimpleWindow instance with the specified title, width, and height.
 pub fn new_simple_window(title string, width int, height int) &SimpleWindow {
@@ -4940,3 +4967,75 @@ pub fn (win &SimpleWindow) get_tab_count() int {
 	}
 	return 1
 }
+
+// ── HDR & Extended Dynamic Range (EDR) Window APIs ────────────────────────────
+
+// is_hdr_supported returns whether the display screen for this window supports High Dynamic Range (EDR headroom > 1.0).
+pub fn (win &SimpleWindow) is_hdr_supported() bool {
+	if win.window_info != unsafe { nil } {
+		return C.window_is_screen_hdr_supported(win.window_info) == 1
+	}
+	return is_hdr_supported()
+}
+
+// get_screen_edr_headroom returns the current maximum EDR headroom multiplier for this window's screen (e.g. 1.0 for SDR, >1.0 for HDR).
+pub fn (win &SimpleWindow) get_screen_edr_headroom() f64 {
+	if win.window_info != unsafe { nil } {
+		return C.window_get_screen_edr_headroom(win.window_info)
+	}
+	return get_screen_edr_headroom()
+}
+
+// get_screen_max_potential_edr_headroom returns the potential maximum EDR headroom for this window's screen.
+pub fn (win &SimpleWindow) get_screen_max_potential_edr_headroom() f64 {
+	if win.window_info != unsafe { nil } {
+		return C.window_get_screen_max_potential_edr_headroom(win.window_info)
+	}
+	return 1.0
+}
+
+// get_screen_reference_edr_headroom returns the reference EDR headroom value.
+pub fn (win &SimpleWindow) get_screen_reference_edr_headroom() f64 {
+	if win.window_info != unsafe { nil } {
+		return C.window_get_screen_reference_edr_headroom(win.window_info)
+	}
+	return 1.0
+}
+
+// set_window_hdr enables or disables Extended Dynamic Range / HDR color space on the window.
+// When enabled, controls and layers inside the window can draw luminance beyond standard UI white.
+pub fn (win &SimpleWindow) set_window_hdr(enabled bool) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		C.window_set_hdr_color_space(win.window_info, if enabled { 1 } else { 0 }, 'extended_srgb'.str)
+	}
+	return win
+}
+
+// set_window_color_space sets the window color space ("extended_srgb", "display_p3", "srgb", "adobe_rgb").
+pub fn (win &SimpleWindow) set_window_color_space(space_name string) &SimpleWindow {
+	if win.window_info != unsafe { nil } {
+		enabled := space_name != 'srgb'
+		C.window_set_hdr_color_space(win.window_info, if enabled { 1 } else { 0 }, space_name.str)
+	}
+	return win
+}
+
+// get_window_color_space returns the localized name or description of the window's color space.
+pub fn (win &SimpleWindow) get_window_color_space() string {
+	if win.window_info != unsafe { nil } {
+		res := C.window_get_window_color_space(win.window_info)
+		if res != unsafe { nil } {
+			return unsafe { tos3(res) }
+		}
+	}
+	return 'sRGB'
+}
+
+// is_window_hdr returns true if the window is currently configured with an extended dynamic range color space.
+pub fn (win &SimpleWindow) is_window_hdr() bool {
+	if win.window_info != unsafe { nil } {
+		return C.window_is_window_hdr(win.window_info) == 1
+	}
+	return false
+}
+

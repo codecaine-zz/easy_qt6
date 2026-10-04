@@ -872,4 +872,36 @@ void window_set_activation_policy(const char *policy);
 char *window_get_activation_policy(void);
 char *window_get_app_bundle_path(void);
 
+// HDR & Extended Dynamic Range (EDR) Support
+int window_is_screen_hdr_supported(main__WindowInfo *info);
+double window_get_screen_edr_headroom(main__WindowInfo *info);
+double window_get_screen_max_potential_edr_headroom(main__WindowInfo *info);
+double window_get_screen_reference_edr_headroom(main__WindowInfo *info);
+
+void window_set_hdr_color_space(main__WindowInfo *info, int enabled, const char *color_space_name);
+char *window_get_window_color_space(main__WindowInfo *info);
+int window_is_window_hdr(main__WindowInfo *info);
+
+void window_set_image_dynamic_range(main__WindowInfo *info, const char *name, const char *dynamic_range);
+char *window_get_image_dynamic_range(main__WindowInfo *info, const char *name);
+void *window_add_hdr_image_control(main__WindowInfo *info, const char *name, const char *file_path, const char *dynamic_range);
+
+void window_set_control_edr(main__WindowInfo *info, const char *name, int enabled);
+int window_get_control_edr(main__WindowInfo *info, const char *name);
+void window_set_control_dynamic_range(main__WindowInfo *info, const char *name, const char *dynamic_range);
+void window_set_control_contents_headroom(main__WindowInfo *info, const char *name, double headroom);
+double window_get_control_contents_headroom(main__WindowInfo *info, const char *name);
+
+void *window_add_hdr_mtk_view_control(main__WindowInfo *info, const char *name);
+void window_set_mtk_view_hdr(main__WindowInfo *info, const char *name, int enabled, const char *colorspace_name);
+int window_is_mtk_view_hdr(main__WindowInfo *info, const char *name);
+
+void *window_add_hdr_glow_box_control(main__WindowInfo *info, const char *name, const char *label, double intensity, const char *color_hex);
+void window_set_hdr_glow_box_intensity(main__WindowInfo *info, const char *name, double intensity);
+void window_set_hdr_glow_box_color(main__WindowInfo *info, const char *name, const char *color_hex);
+void window_set_hdr_glow_box_label(main__WindowInfo *info, const char *name, const char *label);
+double window_get_hdr_glow_box_intensity(main__WindowInfo *info, const char *name);
+
+void window_set_control_hdr_color(main__WindowInfo *info, const char *name, const char *property, double r, double g, double b, double a, double headroom);
+
 #endif

@@ -5,15 +5,18 @@ import json2
 // MacScreenInfo describes a connected display monitor.
 pub struct MacScreenInfo {
 pub:
-	index          int
-	x              int
-	y              int
-	width          int
-	height         int
-	visible_width  int
-	visible_height int
-	scale          f64
-	is_main        bool
+	index                      int
+	x                          int
+	y                          int
+	width                      int
+	height                     int
+	visible_width              int
+	visible_height             int
+	scale                      f64
+	is_main                    bool
+	max_edr_headroom           f64
+	max_potential_edr_headroom f64
+	is_hdr                     bool
 }
 
 // MacAppInfo describes a running application process.
@@ -448,6 +451,16 @@ pub fn get_main_screen() MacScreenInfo {
 		return screens[0]
 	}
 	return MacScreenInfo{}
+}
+
+// is_hdr_supported returns true if the main screen or connected display supports HDR / Extended Dynamic Range.
+pub fn is_hdr_supported() bool {
+	return get_main_screen().is_hdr
+}
+
+// get_screen_edr_headroom returns the current maximum EDR headroom multiplier for the primary display (e.g. 1.0 for SDR, >1.0 for HDR).
+pub fn get_screen_edr_headroom() f64 {
+	return get_main_screen().max_edr_headroom
 }
 
 // --- Dock & Application Activation Policy ---

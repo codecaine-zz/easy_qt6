@@ -85,6 +85,14 @@ If you are new to programming or desktop app creation, here are simple definitio
   - Light & Dark system palettes: `GitHub Dark` (Default), `Apple Dark`, `Apple Light`, `Deep Space OLED`, `Tokyo Night`, `Nord Arctic`, `Dracula Vampire`, `Cyberpunk Neon`, `Catppuccin Mocha`, `Monokai Pro`, `Gruvbox Dark`, `Cobalt Blue`, `Emerald Forest`, `Sunset Dusk`, `GitHub Light`, `Solarized Dark`, `Solarized Light`, and `Warm Paper & Ink`.
   - **Cross-App Theme State Persistence**: User theme choices persist automatically to `~/.config/simplegui/theme.txt` and synchronize seamlessly across all applications on startup.
   - **Theme-driven control styling**: buttons, dropdowns, inputs, and date pickers restyle from the applied theme's background — a light theme renders light controls even when macOS is in system Dark Mode (and vice versa).
+- **High Dynamic Range (HDR) & Extended Dynamic Range (EDR) Architecture**:
+  - **Hardware & Headroom Diagnostics**: Query display HDR capability (`is_hdr_supported`), live EDR headroom (`get_screen_edr_headroom`), maximum potential headroom, and Apple Reference mode headroom.
+  - **Color Space Management**: Toggle wide-gamut Extended Linear sRGB (`extended_srgb`) and Display P3 (`display_p3`) on native windows (`win.set_window_hdr`, `win.set_window_color_space`).
+  - **Native HDR Image Views**: Configure `NSImageView` with macOS Sonoma `preferredImageDynamicRange` (`standard`, `constrained_high`, `high`) via `win.add_hdr_image` and `win.set_image_dynamic_range`.
+  - **Core Animation EDR Layers**: Configure layer-level EDR controls (`wantsExtendedDynamicRangeContent`, `preferredDynamicRange`, and `contentsHeadroom`) for custom controls.
+  - **Metal HDR Custom Rendering**: Add `MTKView` and `CAMetalLayer` instances pre-configured for HDR with 64-bit `RGBA16Float` half-float textures and `extendedLinearDisplayP3` color spaces (`win.add_hdr_mtk_view`, `win.set_mtk_view_hdr`).
+  - **Custom HDR Controls & Highlights**: Render vibrant UI accents shining beyond SDR 1.0 peak white with `HDRGlowBoxView` (`win.add_hdr_glow_box`, `win.set_hdr_glow_box_intensity`).
+  - **Color Science & Tone-Mapping (`colorutils`)**: `HDRColor` struct with stops/exposure scaling (`linear_exposure`), headroom clamping, SDR recovery, and Reinhard & ACES filmic tone-mapping algorithms.
 - **Centralized Command Injection Prevention & Safe Execution**:
   - POSIX single-quote escaping for arguments and inputs (`simplegui.quote_arg`, `simplegui.quote_path`).
   - Safe shell isolation executors (`simplegui.exec_safe`, `simplegui.exec_safe_stdin`) neutralizing command breakout (`;`, `&&`, `|`, `` ` ``, `$()`, `>`, `<`).
