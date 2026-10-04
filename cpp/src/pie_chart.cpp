@@ -9,14 +9,14 @@
 namespace simplegui {
 namespace {
 
-class PieChartWidget : public QWidget {
+class PieChartWidget : public detail::PaintedWidget {
 public:
     std::string title;
     std::vector<PieSlice> slices;
     bool draw_legend = true;
     bool draw_percentages = true;
 
-    explicit PieChartWidget(QWidget* parent = nullptr) : QWidget(parent) {
+    explicit PieChartWidget(QWidget* parent = nullptr) : detail::PaintedWidget(parent) {
         setMinimumSize(280, 180);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }

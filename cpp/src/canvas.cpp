@@ -15,7 +15,7 @@ namespace {
 // Upper bound for the backing image so huge coordinates cannot exhaust memory.
 constexpr int kMaxCanvasSide = 8192;
 
-class CanvasWidget : public QWidget {
+class CanvasWidget : public detail::PaintedWidget {
 public:
     QPixmap buffer;
     QColor background = QColor(0x0f, 0x17, 0x2a);

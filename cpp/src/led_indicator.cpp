@@ -1,6 +1,7 @@
 #include "simplegui/led_indicator.h"
 #include "detail/common.h"
 
+#include <QEvent>
 #include <QPainter>
 #include <QTimer>
 #include <QWidget>
@@ -10,7 +11,7 @@
 namespace simplegui {
 namespace {
 
-class LedWidget : public QWidget {
+class LedWidget : public detail::PaintedWidget {
 public:
     QColor color = QColor(0x22, 0xc5, 0x5e);
     bool on = true;
@@ -28,12 +29,18 @@ public:
     }
 
     void refresh_size() {
-        const int text_w = label.isEmpty() ? 0 : fontMetrics().horizontalAdvance(label) + 8;
+        const int text_w = label.isEmpty() ? 0 : fontMetrics().horizontalAdvance(label) + 12;
         setFixedSize(diameter + 8 + text_w, std::max(diameter + 8, fontMetrics().height() + 4));
         update();
     }
 
 protected:
+    // Style sheets may change the font after construction; re-measure then.
+    void changeEvent(QEvent* e) override {
+        if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange) refresh_size();
+        QWidget::changeEvent(e);
+    }
+
     void paintEvent(QPaintEvent*) override {
         QPainter p(this);
         p.setRenderHint(QPainter::Antialiasing);

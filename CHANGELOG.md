@@ -34,7 +34,8 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Tests and examples:**
   - Headless API smoke tests (`ctest`), which also run in CI.
   - Cross-platform examples `mission_control` and `classic_rad`.
-- **Docs:** screenshots for every new control, and a complete beginner-friendly API reference.
+- **Docs:** a complete beginner-friendly API reference. Screenshots are consolidated into ten
+  grouped galleries (`screenshots/gallery_*.png`) that together show every control.
 
 ### Fixed
 - **Use-after-free and crash bugs:**
@@ -54,6 +55,10 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Window and styling:**
   - `Window::set_content` no longer deletes content that is shared elsewhere.
   - Composite controls keep their styling when you call `set_name()`.
+  - Self-drawn controls (gauges, charts, LEDs, switches…) no longer get an opaque box behind
+    them from a theme or a parent's `set_style("background…")`, so they blend into panels like `GlassPanel`.
+  - `LedIndicator` re-measures its label when the font changes, so the text is no longer cut off.
+  - All themes now style `DatePicker` like the other input boxes.
 - **Code quality:** the code builds with zero warnings under `-Wall -Wextra -Wpedantic -Wshadow`.
 
 ### Security

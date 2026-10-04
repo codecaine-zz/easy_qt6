@@ -17,7 +17,7 @@ QString format_number(double v) {
     return QString::number(v, 'f', 1);
 }
 
-class BarChartWidget : public QWidget {
+class BarChartWidget : public detail::PaintedWidget {
 public:
     QString title;
     std::vector<BarItem> bars;

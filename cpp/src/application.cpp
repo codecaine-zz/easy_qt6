@@ -41,7 +41,7 @@ QPushButton:disabled {
 }
 
 /* Input Fields (macOS HIG styling) */
-QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox {
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QDateEdit {
     background-color: #101216;
     color: #f5f5f7;
     border: 1px solid #2d313b;
@@ -240,7 +240,7 @@ QPushButton:pressed {
 }
 
 /* Input Fields */
-QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox {
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QDateEdit {
     background-color: #ffffff;
     color: #0f172a;
     border: 1px solid #cbd5e1;
@@ -402,7 +402,7 @@ QPushButton:pressed {
     background-color: #2c2c2c;
 }
 
-QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox {
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QDateEdit {
     background-color: #303030;
     color: #ffffff;
     border: 1px solid #424242;
@@ -577,7 +577,7 @@ QPushButton:hover {
     background-color: #3d4349;
     border-color: #3daee9;
 }
-QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox {
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDateEdit {
     background-color: #1b1e20;
     color: #eff0f1;
     border: 1px solid #474e54;
@@ -656,7 +656,7 @@ QPushButton:pressed {
     border-color: #333333;
 }
 
-QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox {
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QDateEdit {
     background-color: #1f1f1f;
     color: #ffffff;
     border: 1px solid #383838;
@@ -889,7 +889,12 @@ std::vector<std::string> Application::available_themes() {
 }
 
 void Application::set_stylesheet(const std::string& qss) {
-    pimpl->qapp.setStyleSheet(QString::fromStdString(qss));
+    // Self-painted controls (gauges, charts, LEDs...) carry the "sg_transparent"
+    // property. This more specific rule stops a theme's "QWidget { background }"
+    // from painting an opaque box behind them. Per-control colors still win.
+    QString sheet = QString::fromStdString(qss);
+    sheet += QStringLiteral("\n*[sg_transparent=\"true\"] { background: transparent; }\n");
+    pimpl->qapp.setStyleSheet(sheet);
 }
 
 void Application::set_app_name(const std::string& name) {

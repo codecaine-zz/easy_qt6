@@ -9,7 +9,7 @@
 namespace simplegui {
 namespace {
 
-class HeatmapWidget : public QWidget {
+class HeatmapWidget : public detail::PaintedWidget {
 public:
     int weeks;
     int days;

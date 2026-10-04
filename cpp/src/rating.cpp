@@ -15,7 +15,7 @@ namespace {
 constexpr int kStarSize = 24;
 constexpr double kPi = 3.14159265358979323846;
 
-class RatingWidget : public QWidget {
+class RatingWidget : public detail::PaintedWidget {
 public:
     int rating = 0;
     int max_stars;

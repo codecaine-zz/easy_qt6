@@ -8,11 +8,11 @@
 namespace simplegui {
 namespace {
 
-class CompositionBarWidget : public QWidget {
+class CompositionBarWidget : public detail::PaintedWidget {
 public:
     std::vector<CompositionSegment> segments;
 
-    explicit CompositionBarWidget(QWidget* parent = nullptr) : QWidget(parent) {
+    explicit CompositionBarWidget(QWidget* parent = nullptr) : detail::PaintedWidget(parent) {
         setMinimumSize(160, 18);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     }

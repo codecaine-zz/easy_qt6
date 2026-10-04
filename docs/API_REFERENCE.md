@@ -383,10 +383,28 @@ Invalid colors are simply ignored, so a typo can never crash your program.
 
 # Part 3 — Controls
 
-Each control below shows a picture (when available), a short example and **every** function it
-has. Remember: every control *also* has the [common functions](#things-every-control-can-do).
+Each group of controls below starts with **one picture showing all of them together**, followed
+by short examples and **every** function each control has. Remember: every control *also* has
+the [common functions](#things-every-control-can-do).
+
+| Picture | Shows |
+|---|---|
+| [gallery_layouts.png](../screenshots/gallery_layouts.png) | VBox, HBox, GroupBox, TabView, SplitView, ScrollView |
+| [gallery_text_buttons.png](../screenshots/gallery_text_buttons.png) | Label, Button, NeonButton, ImageButton, Link, TextInput, PasswordInput, SearchField, MaskedInput, Textarea, TokenField |
+| [gallery_choices.png](../screenshots/gallery_choices.png) | Checkbox, Radio, ToggleSwitch, Dropdown, ComboBox, SegmentedControl, ListBox |
+| [gallery_numbers_dates.png](../screenshots/gallery_numbers_dates.png) | Slider, Knob, NumberInput, ColorWell, DatePicker, DateRangePicker, Rating, FeedbackMood |
+| [gallery_progress_status.png](../screenshots/gallery_progress_status.png) | ProgressIndicator, CircularProgress, StatusPill, LedIndicator, RadialGauge, VfdMeter |
+| [gallery_futuristic.png](../screenshots/gallery_futuristic.png) | GlassPanel, RadialGauge, ToggleSwitch, LedIndicator, RadarScope, SegmentedControl, TerminalView, NeonButton (neon theme) |
+| [gallery_pictures_tables.png](../screenshots/gallery_pictures_tables.png) | Image, Canvas, Grid |
+| [gallery_charts.png](../screenshots/gallery_charts.png) | BarChart, LineChart, PieChart, DonutChart, RadarChart, CandlestickChart |
+| [gallery_telemetry.png](../screenshots/gallery_telemetry.png) | Sparkline, CompositionBar, ActivityHeatmap, StatCard, StatGrid |
+| [gallery_app_widgets.png](../screenshots/gallery_app_widgets.png) | Breadcrumbs, NavRail, ProductCard, UserProfileCard, MediaPlayer, KanbanBoard |
+
+WebView, HtmlView, PdfView and MapView show live content, so they have no picture.
 
 ## Layouts
+
+![Layouts gallery: VBox, HBox, GroupBox, TabView, SplitView, ScrollView](../screenshots/gallery_layouts.png)
 
 Layouts arrange other controls for you, so windows resize nicely. You never position things
 by pixel coordinates.
@@ -395,8 +413,6 @@ by pixel coordinates.
 space; stretch `2` grows twice as much; `0` (the default) keeps its natural size.
 
 ### VBox — a column
-
-![VBox](../screenshots/vbox.png)
 
 Stacks controls **top to bottom**. *Also known as:* `Column`, `Panel`.
 
@@ -424,8 +440,6 @@ column->add_stretch();            // a spring that pushes the rest down
 
 ### HBox — a row
 
-![HBox](../screenshots/hbox.png)
-
 Places controls **side by side, left to right**. *Also known as:* `Row`. Same functions as
 `VBox` (`add_child`, `add_stretch`, `add_spacing`, `remove_child`, `clear`, `child_count`,
 `set_spacing`, `set_margins`).
@@ -438,8 +452,6 @@ buttons->add_child(ok);
 ```
 
 ### GroupBox — a titled frame
-
-![GroupBox](../screenshots/group_box.png)
 
 A border with a title that groups related controls (stacked top to bottom). *Also known as:* `Frame`.
 
@@ -456,8 +468,6 @@ A border with a title that groups related controls (stacked top to bottom). *Als
 See [Futuristic controls → GlassPanel](#glasspanel).
 
 ### TabView — pages with tabs
-
-![TabView](../screenshots/tab_view.png)
 
 *Also known as:* `PageControl`, `TabControl`, `Notebook`.
 
@@ -479,8 +489,6 @@ tabs->on_change([](int index) { /* index 0 = first tab */ });
 
 ### SplitView — resizable panes
 
-![SplitView](../screenshots/split_view.png)
-
 Two or more panes with a bar between them that the user can drag. *Also known as:* `Splitter`.
 
 | Function | What it does |
@@ -491,8 +499,6 @@ Two or more panes with a bar between them that the user can drag. *Also known as
 | `set_sizes({a, b, c})` | Starting sizes for three or more panes. |
 
 ### ScrollView — scroll bars
-
-![ScrollView](../screenshots/scroll_view.png)
 
 Adds scroll bars around one large control (usually a `VBox` full of controls).
 *Also known as:* `ScrollBox`, `ScrollArea`.
@@ -505,9 +511,9 @@ Adds scroll bars around one large control (usually a `VBox` full of controls).
 
 ## Text and buttons
 
-### Label
+![Text and buttons gallery](../screenshots/gallery_text_buttons.png)
 
-![Label](../screenshots/label.png)
+### Label
 
 Shows text. Text is always shown exactly as written (never treated as HTML).
 *Also known as:* `StaticText`.
@@ -521,8 +527,6 @@ Shows text. Text is always shown exactly as written (never treated as HTML).
 | `set_selectable(true/false)` | Let the user select and copy the text. |
 
 ### Button
-
-![Button](../screenshots/button.png)
 
 *Also known as:* `CommandButton`, `PushButton`.
 
@@ -543,8 +547,6 @@ A glowing futuristic button — see [Futuristic controls → NeonButton](#neonbu
 
 ### ImageButton
 
-![ImageButton](../screenshots/image_button.png)
-
 A button showing a picture/icon. *Also known as:* `BitBtn`, `SpeedButton`.
 
 | Function | What it does |
@@ -557,8 +559,6 @@ A button showing a picture/icon. *Also known as:* `BitBtn`, `SpeedButton`.
 
 ### Link
 
-![Link](../screenshots/link.png)
-
 Underlined text that opens a web page in the user's browser. For safety only `http://`,
 `https://` and `mailto:` addresses are opened. *Also known as:* `HyperLink`, `LinkLabel`.
 
@@ -570,8 +570,6 @@ Underlined text that opens a web page in the user's browser. For safety only `ht
 | `on_click(handler(url))` | Runs when clicked (in addition to opening the browser). |
 
 ### TextInput — one-line text box
-
-![TextInput](../screenshots/text_input.png)
 
 *Also known as:* `Edit`, `TextBox`, `LineEdit`.
 
@@ -593,8 +591,6 @@ name->on_enter([](const std::string& text) { show_message("Hi " + text); });
 
 ### PasswordInput
 
-![PasswordInput](../screenshots/password_input.png)
-
 Like `TextInput` but shows dots. *Also known as:* `PasswordEdit`.
 
 | Function | What it does |
@@ -606,8 +602,6 @@ Like `TextInput` but shows dots. *Also known as:* `PasswordEdit`.
 
 ### SearchField
 
-![SearchField](../screenshots/search_field.png)
-
 A search box with a built-in ✕ clear button.
 
 | Function | What it does |
@@ -618,8 +612,6 @@ A search box with a built-in ✕ clear button.
 | `on_enter(handler(text))` | Runs when Enter is pressed. |
 
 ### MaskedInput — fixed-pattern box
-
-![MaskedInput](../screenshots/masked_input.png)
 
 Only accepts text matching a pattern, such as a phone number. *Also known as:* `MaskEdit`.
 
@@ -649,8 +641,6 @@ auto phone = std::make_shared<MaskedInput>("(999) 999-9999");
 
 ### Textarea — multi-line text
 
-![Textarea](../screenshots/textarea.png)
-
 *Also known as:* `Memo`, `TextArea`.
 
 | Function | What it does |
@@ -664,8 +654,6 @@ auto phone = std::make_shared<MaskedInput>("(999) 999-9999");
 | `on_change(handler(text))` | Runs whenever the text changes. |
 
 ### TokenField — tags / chips
-
-![TokenField](../screenshots/token_field.png)
 
 Type a word and press Enter: it becomes a removable "chip". Duplicates are ignored.
 
@@ -681,9 +669,9 @@ Type a word and press Enter: it becomes a removable "chip". Duplicates are ignor
 
 ## Choices
 
-### Checkbox
+![Choices gallery](../screenshots/gallery_choices.png)
 
-![Checkbox](../screenshots/checkbox.png)
+### Checkbox
 
 *Also known as:* `CheckBox`.
 
@@ -695,8 +683,6 @@ Type a word and press Enter: it becomes a removable "chip". Duplicates are ignor
 | `on_change(handler(bool checked))` | Runs when ticked or unticked. |
 
 ### Radio — pick one option
-
-![Radio](../screenshots/radio.png)
 
 Radio buttons in the **same layout** form a group: choosing one un-chooses the others.
 *Also known as:* `RadioButton`, `OptionButton`.
@@ -714,8 +700,6 @@ An animated on/off switch — see [Futuristic controls → ToggleSwitch](#toggle
 
 ### Dropdown — pick from a list
 
-![Dropdown](../screenshots/dropdown.png)
-
 The user picks one item and **cannot** type their own value.
 
 | Function | What it does |
@@ -729,8 +713,6 @@ The user picks one item and **cannot** type their own value.
 
 ### ComboBox — pick or type
 
-![ComboBox](../screenshots/combo_box.png)
-
 Like `Dropdown`, but the user may also type their own text.
 
 | Function | What it does |
@@ -742,8 +724,6 @@ Like `Dropdown`, but the user may also type their own text.
 | `on_change(handler(text))` | Runs when the text changes (picked or typed). |
 
 ### ListBox — a scrollable list
-
-![ListBox](../screenshots/list_box.png)
 
 ```cpp
 auto fruit = std::make_shared<ListBox>(std::vector<std::string>{"Apple", "Banana"});
@@ -773,9 +753,9 @@ A "Day | Week | Month" switch — see [Futuristic controls → SegmentedControl]
 
 ## Numbers, dates and colors
 
-### Slider
+![Numbers, dates and colors gallery](../screenshots/gallery_numbers_dates.png)
 
-![Slider](../screenshots/slider.png)
+### Slider
 
 *Also known as:* `TrackBar`, `Scale`.
 
@@ -789,8 +769,6 @@ A "Day | Week | Month" switch — see [Futuristic controls → SegmentedControl]
 
 ### Knob
 
-![Knob](../screenshots/knob.png)
-
 A round dial. *Also known as:* `Dial`.
 
 | Function | What it does |
@@ -800,8 +778,6 @@ A round dial. *Also known as:* `Dial`.
 | `on_change(handler(int value))` | Runs while it turns. |
 
 ### NumberInput
-
-![NumberInput](../screenshots/number_input.png)
 
 A box for whole numbers with up/down arrows. *Also known as:* `SpinEdit`, `SpinBox`, `NumericUpDown`.
 
@@ -815,8 +791,6 @@ A box for whole numbers with up/down arrows. *Also known as:* `SpinEdit`, `SpinB
 
 ### DatePicker
 
-![DatePicker](../screenshots/date_picker.png)
-
 Dates are always text in the form `"YYYY-MM-DD"`, e.g. `"2026-10-31"`.
 *Also known as:* `DateTimePicker`, `DateEdit`.
 
@@ -829,8 +803,6 @@ Dates are always text in the form `"YYYY-MM-DD"`, e.g. `"2026-10-31"`.
 | `on_change(handler(date))` | Runs when the date changes. |
 
 ### DateRangePicker
-
-![DateRangePicker](../screenshots/date_range_picker.png)
 
 Two dates ("from" → "to") plus quick **7D** and **30D** buttons. Empty start = 7 days ago,
 empty end = today.
@@ -846,8 +818,6 @@ empty end = today.
 
 ### ColorWell
 
-![ColorWell](../screenshots/color_well.png)
-
 A colored button that opens the color picker. *Also known as:* `ColorButton`, `ColorBox`.
 
 | Function | What it does |
@@ -859,8 +829,6 @@ A colored button that opens the color picker. *Also known as:* `ColorButton`, `C
 
 ### Rating — stars
 
-![Rating](../screenshots/rating.png)
-
 | Function | What it does |
 |---|---|
 | `Rating(max_stars = 5)` | Creates the stars. |
@@ -870,8 +838,6 @@ A colored button that opens the color picker. *Also known as:* `ColorButton`, `C
 | `on_change(handler(int stars))` | Runs when the user clicks a star. |
 
 ### FeedbackMood — emoji faces
-
-![FeedbackMood](../screenshots/feedback_mood.png)
 
 Five faces from angry (1) to delighted (5). `0` = nothing chosen.
 
@@ -883,9 +849,9 @@ Five faces from angry (1) to delighted (5). `0` = nothing chosen.
 
 ## Progress and status
 
-### ProgressIndicator — a progress bar
+![Progress and status gallery](../screenshots/gallery_progress_status.png)
 
-![ProgressIndicator](../screenshots/progress_indicator.png)
+### ProgressIndicator — a progress bar
 
 *Also known as:* `ProgressBar`.
 
@@ -898,8 +864,6 @@ Five faces from angry (1) to delighted (5). `0` = nothing chosen.
 
 ### CircularProgress — a progress ring
 
-![CircularProgress](../screenshots/circular_progress.png)
-
 | Function | What it does |
 |---|---|
 | `CircularProgress()` | Creates the ring. |
@@ -909,8 +873,6 @@ Five faces from angry (1) to delighted (5). `0` = nothing chosen.
 | `set_diameter(pixels)` | Size (default 60). |
 
 ### StatusPill
-
-![StatusPill](../screenshots/status_pill.png)
 
 A rounded badge with a colored dot, e.g. **● LIVE**.
 
@@ -927,8 +889,6 @@ See [Futuristic controls](#futuristic-controls).
 
 ### VfdMeter — retro segment meter
 
-![VfdMeter](../screenshots/vfd_meter.png)
-
 | Function | What it does |
 |---|---|
 | `VfdMeter(segments = 20, vertical = true)` | Creates the meter. |
@@ -938,13 +898,13 @@ See [Futuristic controls](#futuristic-controls).
 
 ## Futuristic controls
 
+![Futuristic controls gallery (neon theme)](../screenshots/gallery_futuristic.png)
+
 Eight modern, animated controls for dashboards, sci-fi interfaces and control panels. They
 look best with `app.set_theme("neon")`. Try the
 [Mission Control example](../cpp/examples_shared/mission_control/main.cpp).
 
 ### ToggleSwitch
-
-![ToggleSwitch](../screenshots/toggle_switch.png)
 
 A smooth animated on/off switch. Click it, or press Space when it has focus. *Also known as:* `Switch`.
 
@@ -963,8 +923,6 @@ wifi->on_toggle([](bool on) { /* on = true or false */ });
 | `on_toggle(handler(bool on))` | Runs when the switch is flipped. |
 
 ### RadialGauge
-
-![RadialGauge](../screenshots/radial_gauge.png)
 
 A sci-fi speedometer: glowing arc, needle and big number. The needle glides smoothly. The arc
 turns amber above the *warning* level and red above the *danger* level. *Also known as:* `Gauge`.
@@ -991,8 +949,6 @@ rpm->set_value(3500);
 
 ### NeonButton
 
-![NeonButton](../screenshots/neon_button.png)
-
 A glowing outlined button that lights up when the mouse is over it. Works exactly like
 `Button` (including keyboard Space/Enter).
 
@@ -1006,8 +962,6 @@ A glowing outlined button that lights up when the mouse is over it. Works exactl
 
 ### LedIndicator
 
-![LedIndicator](../screenshots/led_indicator.png)
-
 A small round status light, optionally blinking. *Also known as:* `Led`, `Lamp`.
 
 | Function | What it does |
@@ -1020,8 +974,6 @@ A small round status light, optionally blinking. *Also known as:* `Led`, `Lamp`.
 | `set_label(text)` | Optional text to the right. |
 
 ### RadarScope
-
-![RadarScope](../screenshots/radar_scope.png)
 
 An animated radar screen with a rotating sweep and "blips". Angles are degrees: **0 = up**,
 90 = right, clockwise. Distance is **0.0 (centre) to 1.0 (edge)**. It starts sweeping
@@ -1045,8 +997,6 @@ radar->move_blip(ship, 60, 0.6);
 | `blip_count()` | Number of targets. |
 
 ### TerminalView
-
-![TerminalView](../screenshots/terminal_view.png)
 
 A retro-futuristic console: colored lines of output plus an optional command line. Up/Down
 arrows recall earlier commands. Text is always shown as plain text. *Also known as:* `Console`.
@@ -1073,8 +1023,6 @@ term->on_command([](const std::string& cmd) { /* user pressed Enter */ });
 
 ### SegmentedControl
 
-![SegmentedControl](../screenshots/segmented_control.png)
-
 A row of joined buttons where exactly one is selected. Indexes start at 0.
 
 | Function | What it does |
@@ -1087,8 +1035,6 @@ A row of joined buttons where exactly one is selected. Indexes start at 0.
 | `on_change(handler(index, text))` | Runs when the user picks a different segment. |
 
 ### GlassPanel
-
-![GlassPanel](../screenshots/glass_panel.png)
 
 A frosted-glass card with a glowing border and optional title. It holds controls in a column,
 exactly like a `VBox`.
@@ -1104,6 +1050,8 @@ exactly like a `VBox`.
 
 ## Pictures and drawing
 
+![Pictures, drawing and tables gallery: Image, Canvas, Grid](../screenshots/gallery_pictures_tables.png)
+
 ### Image
 
 Shows a picture file (PNG, JPG, BMP, GIF, SVG). *Also known as:* `Picture`, `PictureBox`.
@@ -1115,8 +1063,6 @@ Shows a picture file (PNG, JPG, BMP, GIF, SVG). *Also known as:* `Picture`, `Pic
 | `set_scaled(true/false)` | Stretch to fill the control (keeps its shape). |
 
 ### Canvas — draw your own graphics
-
-![Canvas](../screenshots/canvas.png)
 
 Coordinates are pixels; **(0, 0) is the top-left corner**, x grows right, y grows down.
 Drawings stay until you call `clear()`. *Also known as:* `PaintBox`.
@@ -1148,9 +1094,9 @@ canvas->on_mouse_down([canvas_ptr = canvas.get()](int x, int y) {
 
 ## Tables
 
-### Grid — a spreadsheet-style table
+*The Grid is pictured in the [Pictures and drawing](#pictures-and-drawing) gallery above.*
 
-![Grid](../screenshots/grid.png)
+### Grid — a spreadsheet-style table
 
 Rows and columns are counted from 0. Out-of-range cells are safely ignored.
 *Also known as:* `StringGrid`, `Table`, `DataGrid`.
@@ -1181,12 +1127,12 @@ See also [ListBox](#listbox--a-scrollable-list) for a simple one-column list.
 
 ## Charts
 
+![Charts gallery](../screenshots/gallery_charts.png)
+
 All charts redraw automatically when you change their data. Leave a color empty (`""`) to use
 the built-in palette.
 
 ### BarChart
-
-![BarChart](../screenshots/bar_chart.png)
 
 | Function | What it does |
 |---|---|
@@ -1201,8 +1147,6 @@ the built-in palette.
 | `set_y_range(min, max)` | Fix the vertical axis; `set_y_range(0, 0)` = automatic. |
 
 ### LineChart
-
-![LineChart](../screenshots/line_chart.png)
 
 ```cpp
 auto chart = std::make_shared<LineChart>("Visitors");
@@ -1226,8 +1170,6 @@ chart->add_series("This week", {120, 180, 150}, "#0a84ff");
 
 ### PieChart
 
-![PieChart](../screenshots/pie_chart.png)
-
 | Function | What it does |
 |---|---|
 | `PieChart(title = "")` | Creates the chart. |
@@ -1239,8 +1181,6 @@ chart->add_series("This week", {120, 180, 150}, "#0a84ff");
 
 ### DonutChart
 
-![DonutChart](../screenshots/donut_chart.png)
-
 | Function | What it does |
 |---|---|
 | `DonutChart(center_title = "", center_subtitle = "")` | Creates the ring with text in the hole. |
@@ -1250,8 +1190,6 @@ chart->add_series("This week", {120, 180, 150}, "#0a84ff");
 | `set_thickness(pixels)` | Ring thickness. |
 
 ### RadarChart
-
-![RadarChart](../screenshots/radar_chart.png)
 
 A spider-web chart comparing datasets across named dimensions (values 0–100).
 
@@ -1267,8 +1205,6 @@ A spider-web chart comparing datasets across named dimensions (values 0–100).
 
 ### CandlestickChart
 
-![CandlestickChart](../screenshots/candlestick_chart.png)
-
 Stock-market candles (open, high, low, close). Green = closed higher, red = closed lower.
 
 | Function | What it does |
@@ -1281,7 +1217,7 @@ Stock-market candles (open, high, low, close). Green = closed higher, red = clos
 
 ### Sparkline
 
-![Sparkline](../screenshots/sparkline.png)
+![Telemetry gallery: Sparkline, CompositionBar, ActivityHeatmap, StatCard, StatGrid](../screenshots/gallery_telemetry.png)
 
 A tiny live graph — call `add_sample()` over time (pairs nicely with a [Timer](#timer-and-run_later)).
 
@@ -1297,8 +1233,6 @@ A tiny live graph — call `add_sample()` over time (pairs nicely with a [Timer]
 
 ### CompositionBar
 
-![CompositionBar](../screenshots/composition_bar.png)
-
 One bar split into colored parts (like a disk-usage bar).
 
 | Function | What it does |
@@ -1309,8 +1243,6 @@ One bar split into colored parts (like a disk-usage bar).
 | `clear_segments()` | Remove all parts. |
 
 ### ActivityHeatmap
-
-![ActivityHeatmap](../screenshots/activity_heatmap.png)
 
 A GitHub-style grid of squares with intensity 0 (empty) to 4 (brightest).
 
@@ -1324,9 +1256,11 @@ A GitHub-style grid of squares with intensity 0 (empty) to 4 (brightest).
 
 ## Dashboard and app widgets
 
-### StatCard
+![App and dashboard widgets gallery](../screenshots/gallery_app_widgets.png)
 
-![StatCard](../screenshots/stat_card.png)
+*StatCard and StatGrid are pictured in the telemetry gallery in the [Charts](#charts) section.*
+
+### StatCard
 
 | Function | What it does |
 |---|---|
@@ -1337,8 +1271,6 @@ A GitHub-style grid of squares with intensity 0 (empty) to 4 (brightest).
 
 ### StatGrid
 
-![StatGrid](../screenshots/stat_grid.png)
-
 | Function | What it does |
 |---|---|
 | `StatGrid()` | A row of KPI tiles. |
@@ -1346,8 +1278,6 @@ A GitHub-style grid of squares with intensity 0 (empty) to 4 (brightest).
 | `set_stats({StatItem...})` / `clear()` / `count()` | Replace / remove / count tiles. `StatItem` has `title`, `value`, `trend`, `is_positive`. |
 
 ### ProductCard
-
-![ProductCard](../screenshots/product_card.png)
 
 | Function | What it does |
 |---|---|
@@ -1360,8 +1290,6 @@ A GitHub-style grid of squares with intensity 0 (empty) to 4 (brightest).
 
 ### UserProfileCard
 
-![UserProfileCard](../screenshots/user_profile_card.png)
-
 | Function | What it does |
 |---|---|
 | `UserProfileCard(name, handle, role, bio, is_online = true, action_label = "Connect")` | A profile card. |
@@ -1370,8 +1298,6 @@ A GitHub-style grid of squares with intensity 0 (empty) to 4 (brightest).
 | `on_action(handler())` | Runs when the action button is clicked. |
 
 ### MediaPlayer
-
-![MediaPlayer](../screenshots/media_player.png)
 
 A music-player panel. **It is only the user interface — it does not play sound itself.**
 Connect its events to your own playback code. Durations are `"mm:ss"` or `"h:mm:ss"`.
@@ -1389,8 +1315,6 @@ Connect its events to your own playback code. Durations are `"mm:ss"` or `"h:mm:
 
 ### KanbanBoard
 
-![KanbanBoard](../screenshots/kanban_board.png)
-
 A task board with columns and cards. You choose the IDs (e.g. `"todo"`, `"task-42"`).
 
 | Function | What it does |
@@ -1407,8 +1331,6 @@ A task board with columns and cards. You choose the IDs (e.g. `"todo"`, `"task-4
 
 ### NavRail
 
-![NavRail](../screenshots/nav_rail.png)
-
 A slim vertical navigation bar. Each item has an id, an icon (any emoji/symbol), a label and an
 optional red badge number.
 
@@ -1422,8 +1344,6 @@ optional red badge number.
 
 ### Breadcrumbs
 
-![Breadcrumbs](../screenshots/breadcrumbs.png)
-
 A clickable "you are here" path: Home › Projects › Report.
 
 | Function | What it does |
@@ -1434,6 +1354,8 @@ A clickable "you are here" path: Home › Projects › Report.
 | `on_click(handler(int index))` | Runs when a part is clicked (0 = first). |
 
 ## Web pages, PDFs and maps
+
+*These views show live web or PDF content, so they have no screenshot.*
 
 These use the Chromium engine built into Qt (QtWebEngine). *WebView is also known as* `WebBrowser`.
 

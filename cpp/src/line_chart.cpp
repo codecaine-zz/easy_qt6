@@ -10,7 +10,7 @@
 namespace simplegui {
 namespace {
 
-class LineChartWidget : public QWidget {
+class LineChartWidget : public detail::PaintedWidget {
 public:
     std::string title;
     std::vector<LineSeries> series_list;
@@ -22,7 +22,7 @@ public:
     double custom_min = 0.0;
     double custom_max = 0.0;
 
-    explicit LineChartWidget(QWidget* parent = nullptr) : QWidget(parent) {
+    explicit LineChartWidget(QWidget* parent = nullptr) : detail::PaintedWidget(parent) {
         setMinimumSize(320, 180);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }

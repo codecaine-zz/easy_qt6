@@ -8,14 +8,14 @@
 namespace simplegui {
 namespace {
 
-class VfdMeterWidget : public QWidget {
+class VfdMeterWidget : public detail::PaintedWidget {
 public:
     int segment_count = 20;
     bool is_vertical = true;
     double percentage = 0.0;
     bool glow_effect = true;
 
-    explicit VfdMeterWidget(QWidget* parent = nullptr) : QWidget(parent) {
+    explicit VfdMeterWidget(QWidget* parent = nullptr) : detail::PaintedWidget(parent) {
         setMinimumSize(24, 120);
     }
 

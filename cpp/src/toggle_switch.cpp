@@ -17,6 +17,7 @@ public:
     double knob = 0.0;  // 0 = left (off), 1 = right (on); animated
 
     SwitchWidget() : anim_(new QVariantAnimation(this)) {
+        setProperty("sg_transparent", true);
         setCheckable(true);
         setCursor(Qt::PointingHandCursor);
         setFocusPolicy(Qt::StrongFocus);

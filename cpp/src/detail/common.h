@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-class QWidget;
+#include <QWidget>
 
 namespace simplegui::detail {
 
@@ -138,5 +138,15 @@ void fire(const Event<Args...>& event, Vals&&... vals) {
 // Replaces the built-in look of a widget while keeping any colors/fonts the user
 // applied through Control::set_text_color(), set_font_size(), and friends.
 void set_base_style(QWidget* widget, const QString& css);
+
+// Base class for controls that paint themselves (gauges, charts, LEDs...).
+// The "sg_transparent" property lets the application theme keep their
+// background see-through, so they blend into panels such as GlassPanel.
+class PaintedWidget : public QWidget {
+public:
+    explicit PaintedWidget(QWidget* parent = nullptr) : QWidget(parent) {
+        setProperty("sg_transparent", true);
+    }
+};
 
 }  // namespace simplegui::detail

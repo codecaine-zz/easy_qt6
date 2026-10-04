@@ -10,7 +10,7 @@ namespace {
 
 constexpr int kTitleHeight = 26;
 
-class GlassWidget : public QWidget {
+class GlassWidget : public detail::PaintedWidget {
 public:
     QString title;
     QColor accent = QColor(0x00, 0xe5, 0xff);

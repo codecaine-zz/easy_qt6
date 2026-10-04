@@ -9,14 +9,14 @@
 namespace simplegui {
 namespace {
 
-class DonutWidget : public QWidget {
+class DonutWidget : public detail::PaintedWidget {
 public:
     std::vector<DonutSlice> slices;
     QString center_title;
     QString center_subtitle;
     int thickness = 22;
 
-    explicit DonutWidget(QWidget* parent = nullptr) : QWidget(parent) {
+    explicit DonutWidget(QWidget* parent = nullptr) : detail::PaintedWidget(parent) {
         setMinimumSize(140, 140);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }

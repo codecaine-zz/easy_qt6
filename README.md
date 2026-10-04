@@ -28,12 +28,16 @@ Windows ARM64**.
 | :---: | :---: |
 | ![Analytics Dashboard](screenshots/example_analytics_dashboard.png) | ![System Monitor](screenshots/example_system_monitor.png) |
 
-| Futuristic: RadialGauge | Futuristic: TerminalView |
+| Futuristic controls (neon theme) | Charts |
 | :---: | :---: |
-| ![RadialGauge](screenshots/radial_gauge.png) | ![TerminalView](screenshots/terminal_view.png) |
+| ![Futuristic controls](screenshots/gallery_futuristic.png) | ![Charts](screenshots/gallery_charts.png) |
 
-Every control has a picture in [`screenshots/`](screenshots/) and in the
-[API Reference](docs/API_REFERENCE.md).
+| Text & buttons | App & dashboard widgets |
+| :---: | :---: |
+| ![Text and buttons](screenshots/gallery_text_buttons.png) | ![App widgets](screenshots/gallery_app_widgets.png) |
+
+Every control appears in one of the grouped pictures in [`screenshots/`](screenshots/), and each
+group is shown in the [API Reference](docs/API_REFERENCE.md).
 
 ## Quick start
 

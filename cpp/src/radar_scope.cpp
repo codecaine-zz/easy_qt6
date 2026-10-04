@@ -23,7 +23,7 @@ struct Blip {
     QColor color;     // invalid = use the scope color
 };
 
-class RadarWidget : public QWidget {
+class RadarWidget : public detail::PaintedWidget {
 public:
     QColor color = QColor(0x39, 0xff, 0x88);
     double sweep = 0.0;   // current sweep angle, degrees clockwise from north

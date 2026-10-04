@@ -16,7 +16,7 @@ constexpr double kStartAngle = 225.0;  // degrees, Qt convention (0 = 3 o'clock,
 constexpr double kSweep = 270.0;
 constexpr double kPi = 3.14159265358979323846;
 
-class GaugeWidget : public QWidget {
+class GaugeWidget : public detail::PaintedWidget {
 public:
     QString title;
     QString units;

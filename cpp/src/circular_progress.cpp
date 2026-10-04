@@ -9,7 +9,7 @@
 namespace simplegui {
 namespace {
 
-class CircularProgressWidget : public QWidget {
+class CircularProgressWidget : public detail::PaintedWidget {
 public:
     int value = 0;
     bool show_text = false;

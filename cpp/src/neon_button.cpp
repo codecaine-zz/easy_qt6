@@ -17,6 +17,7 @@ public:
     double glow = 0.0;  // 0 = idle, 1 = fully lit (animated on hover)
 
     NeonWidget() : anim_(new QVariantAnimation(this)) {
+        setProperty("sg_transparent", true);
         setCursor(Qt::PointingHandCursor);
         setFocusPolicy(Qt::StrongFocus);
         setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);

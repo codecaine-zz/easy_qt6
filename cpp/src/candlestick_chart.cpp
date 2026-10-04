@@ -9,13 +9,13 @@
 namespace simplegui {
 namespace {
 
-class CandlestickWidget : public QWidget {
+class CandlestickWidget : public detail::PaintedWidget {
 public:
     std::string title;
     std::vector<CandleData> candles;
     bool draw_grid = true;
 
-    explicit CandlestickWidget(QWidget* parent = nullptr) : QWidget(parent) {
+    explicit CandlestickWidget(QWidget* parent = nullptr) : detail::PaintedWidget(parent) {
         setMinimumSize(320, 180);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }

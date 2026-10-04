@@ -11,7 +11,7 @@
 namespace simplegui {
 namespace {
 
-class SparklineWidget : public QWidget {
+class SparklineWidget : public detail::PaintedWidget {
 public:
     std::deque<double> samples;
     int max_samples = 60;
@@ -20,7 +20,7 @@ public:
     QColor color = QColor("#06b6d4");
     bool fill_enabled = true;
 
-    explicit SparklineWidget(QWidget* parent = nullptr) : QWidget(parent) {
+    explicit SparklineWidget(QWidget* parent = nullptr) : detail::PaintedWidget(parent) {
         setMinimumSize(120, 48);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     }

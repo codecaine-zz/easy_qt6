@@ -54,13 +54,17 @@ constexpr const char* kFontPx = "sg_font_px";
 constexpr const char* kBold = "sg_bold";
 constexpr const char* kFamily = "sg_family";
 
-QString wrap_declarations(const QString& css) {
+QString wrap_declarations(const QString& css, bool self_painted) {
     const QString trimmed = css.trimmed();
     if (trimmed.isEmpty()) return {};
     // Qt treats a selector-less style sheet as "* { ... }"; do the same explicitly so
     // it can be combined with our own rule below.
     if (trimmed.contains(QLatin1Char('{'))) return trimmed;
-    return QStringLiteral("* { %1 }").arg(trimmed);
+    QString out = QStringLiteral("* { %1 }").arg(trimmed);
+    // "* { background... }" also reaches every child. Keep self-painted children
+    // (gauges, charts, LEDs...) see-through so they don't get an opaque box.
+    if (!self_painted) out += QStringLiteral("\n*[sg_transparent=\"true\"] { background: transparent; }");
+    return out;
 }
 
 void capture_base(QWidget* w) {
@@ -81,7 +85,7 @@ int widget_id(QWidget* w) {
 }
 
 void rebuild_style(QWidget* w) {
-    QString css = wrap_declarations(w->property(kBase).toString());
+    QString css = wrap_declarations(w->property(kBase).toString(), w->property("sg_transparent").toBool());
 
     QStringList decls;
     const QString color = w->property(kColor).toString();

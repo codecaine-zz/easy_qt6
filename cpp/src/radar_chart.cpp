@@ -9,14 +9,14 @@
 namespace simplegui {
 namespace {
 
-class RadarChartWidget : public QWidget {
+class RadarChartWidget : public detail::PaintedWidget {
 public:
     std::string title;
     std::vector<std::string> dimensions;
     std::vector<RadarDataset> datasets;
     bool draw_legend = true;
 
-    explicit RadarChartWidget(QWidget* parent = nullptr) : QWidget(parent) {
+    explicit RadarChartWidget(QWidget* parent = nullptr) : detail::PaintedWidget(parent) {
         setMinimumSize(260, 240);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }

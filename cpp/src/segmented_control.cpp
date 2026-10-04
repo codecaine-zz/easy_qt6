@@ -13,7 +13,7 @@
 namespace simplegui {
 namespace {
 
-class SegmentWidget : public QWidget {
+class SegmentWidget : public detail::PaintedWidget {
 public:
     QStringList items;
     int selected = -1;
