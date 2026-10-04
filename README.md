@@ -28,7 +28,7 @@ Build real, native Cocoa desktop apps in [V](https://vlang.io) with a beginner-f
 - [Demos](#demos)
 - [Production Workstations & Studio Applications](#production-workstations--studio-applications)
 - [SimpleCLI: Headless Console & RAD Toolkit](#simplecli-headless-console--rad-toolkit)
-- [Developer Utility Suite (37 Modules)](#developer-utility-suite-37-modules)
+- [Developer Utility Suite (40 Modules)](#developer-utility-suite-40-modules)
 - [Related GUI & RAD Desktop Projects](#related-gui--rad-desktop-projects)
 - [Security & Command Injection Prevention](#security--command-injection-prevention)
 - [Testing](#testing)
@@ -2181,9 +2181,9 @@ For headless console scripts, backend daemons, automation tools, and CI/CD pipel
 
 ---
 
-## Developer Utility Suite (37 Modules)
+## Developer Utility Suite (40 Modules)
 
-`vlang_simplegui` bundles the complete **`vlang_utils`** developer utility suite — 37 standalone, zero-dependency, production-grade utility modules designed for rapid application development:
+`vlang_simplegui` bundles the complete **`vlang_utils`** developer utility suite — 40 standalone, zero-dependency, production-grade utility modules designed for rapid application development:
 
 | Module | Description |
 | :--- | :--- |
@@ -2224,8 +2224,11 @@ For headless console scripts, backend daemons, automation tools, and CI/CD pipel
 | [`eventutils`](UTILS_API.md#eventutils-api) | In-memory publish-subscribe event dispatcher (`EventEmitter`, `on`, `once`, `off`, `emit`). |
 | [`diffutils`](UTILS_API.md#diffutils-api) | Line-level text diffing (`diff_lines`) and standard Git-style unified diff generation (`unified_diff`). |
 | [`graphutils`](UTILS_API.md#graphutils-api) | Generic Directed Acyclic Graphs (`Graph[T]`), cycle detection, Kahn's topological sort (`topological_sort`), BFS, and DFS. |
+| [`jsonutils`](UTILS_API.md#jsonutils-api) | RFC 6901 JSON Pointer get/set, RFC 7386 Merge Patch, canonical encoding, deep equality, structural diff, and pretty/minify. |
+| [`markdownutils`](UTILS_API.md#markdownutils-api) | Safe Markdown → HTML converter (GFM tables, task lists, code blocks), heading anchors, TOC generation, and plain-text extraction. |
+| [`webutils`](UTILS_API.md#webutils-api) | Express-style web framework with a secure EJS-style template engine and batteries included (sessions, CSRF, CORS, rate limiting, security headers, static files, multipart, gzip, signed cookies, in-process testing). |
 
-👉 **Read the comprehensive 5,900+ line [Developer Utility Suite Reference Manual (UTILS_API.md)](UTILS_API.md).**
+👉 **Read the comprehensive 6,000+ line [Developer Utility Suite Reference Manual (UTILS_API.md)](UTILS_API.md).**
 
 ---
 

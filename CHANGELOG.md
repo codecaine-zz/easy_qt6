@@ -24,11 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive `CONTRIBUTING.md` outlining project structure, formatting, and PR guidelines.
   - Platform Support Matrix table in `README.md`.
   - Detailed `CHANGELOG.md` tracking all major releases.
-- **vlang_utils Suite Update (37 Modules)**:
-  - Synchronized developer utility suite from `codecaine-zz/vlang_utils`.
-  - Added 7 new modules: `mathutils`, `cronutils`, `urlutils`, `jwtutils`, `eventutils`, `diffutils`, and `graphutils` with full unit test coverage and standalone demos.
-  - Enhanced existing modules (`timeutils`, `asyncutils`, `cliutils`, `cryptoutils`, `fileutils`, `flowutils`, `httputils`, `sliceutils`, `sqliteutils`, `strutils`, `sysutils`).
-  - Updated API reference documentation in `UTILS_API.md` and project `README.md`.
+- **vlang_utils Suite Update (40 Modules)**:
+  - Synchronized and upgraded developer utility suite to v2.0 from `codecaine-zz/vlang_utils`.
+  - Added 3 new production modules: `jsonutils` (RFC 6901 Pointer, RFC 7386 Merge Patch, diff), `markdownutils` (safe GFM parser, TOC), and `webutils` (Express-style web framework, sandboxed EJS-style templates, CSRF, sessions, rate limiter, security headers, zero 3rd-party dependencies).
+  - Hardened and extended all 37 existing modules with security fixes (CSPRNG in `cryptoutils`, `jwtutils` alg verification, path-traversal and bomb limits in `tarutils`/`archiveutils`), bug fixes, and performance enhancements (such as in-memory RFC 4180 `parse_csv`/`parse_csv_with` in `fileutils`).
+  - Synchronized 40 standalone demos and updated complete API reference documentation in `UTILS_API.md` and `README.md`.
 
 ### Changed
 - **SimpleCLI Argument Validation**:

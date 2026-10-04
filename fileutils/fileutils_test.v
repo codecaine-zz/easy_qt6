@@ -291,3 +291,16 @@ fn test_mime_type() {
 	assert mime_type('archive.zip') == 'application/zip'
 	assert mime_type('unknown.xyz123') == 'application/octet-stream'
 }
+
+fn test_parse_csv_handles_quotes_newlines_and_comments() {
+	content := '# ignored\r\nid,name,notes\r\n1,Alice,"Hello, ""world"""\r\n2,Bob,"two\nlines"'
+	rows := parse_csv(content, `,`)
+
+	assert rows == [
+		['id', 'name', 'notes'],
+		['1', 'Alice', 'Hello, "world"'],
+		['2', 'Bob', 'two\nlines'],
+	]
+	assert parse_csv_with('#a,b\n', comment: 0) == [['#a', 'b']]
+	assert parse_csv_with(' a , b \n', trim: true) == [['a', 'b']]
+}
