@@ -1,6 +1,6 @@
 # EasyQt6
 
-EasyQt6 is a modern, lightweight, and zero-boilerplate C++ wrapper around Qt6. It is designed to be as straightforward to use as Visual Basic or Delphi—allowing rapid UI development without touching raw Qt classes, macros, or memory management.
+EasyQt6 is a modern, lightweight, and zero-boilerplate C++ wrapper around Qt6. It is designed to be as straightforward to use as Visual Basic or Delphi - allowing rapid UI development without touching raw Qt classes, macros, or memory management.
 
 ## Features
 
