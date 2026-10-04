@@ -1,0 +1,4 @@
+add_subdirectory(hello_world)
+add_subdirectory(calculator)
+add_subdirectory(system_monitor)
+add_subdirectory(settings_dashboard)

@@ -1,0 +1,2 @@
+add_executable(example_win_settings_dashboard main.cpp)
+target_link_libraries(example_win_settings_dashboard PRIVATE simplegui)

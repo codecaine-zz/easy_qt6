@@ -1,0 +1,5 @@
+add_subdirectory(hello_world)
+add_subdirectory(calculator)
+add_subdirectory(system_monitor)
+add_subdirectory(software_center)
+add_subdirectory(terminal_config)

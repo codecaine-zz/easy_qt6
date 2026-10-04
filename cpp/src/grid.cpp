@@ -16,7 +16,37 @@ struct Grid::Impl {
             qt_headers << QString::fromStdString(h);
         }
         qtable->setHorizontalHeaderLabels(qt_headers);
-        qtable->horizontalHeader()->setStretchLastSection(true);
+        qtable->verticalHeader()->setVisible(false);
+        qtable->verticalHeader()->setDefaultSectionSize(30);
+        qtable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        qtable->setShowGrid(false);
+        qtable->setSelectionBehavior(QAbstractItemView::SelectRows);
+        qtable->setAlternatingRowColors(true);
+        qtable->setMinimumHeight(rows * 30 + 38);
+        qtable->setStyleSheet(
+            "QTableWidget {"
+            "  background-color: #12141a;"
+            "  alternate-background-color: #181b22;"
+            "  border: 1px solid #282c37;"
+            "  border-radius: 8px;"
+            "  color: #f1f5f9;"
+            "  gridline-color: transparent;"
+            "}"
+            "QHeaderView::section {"
+            "  background-color: #1a1d26;"
+            "  color: #8b92a5;"
+            "  font-weight: 600;"
+            "  font-size: 11px;"
+            "  padding: 6px 12px;"
+            "  border: none;"
+            "  border-bottom: 1px solid #282c37;"
+            "  text-transform: uppercase;"
+            "}"
+            "QTableWidget::item {"
+            "  padding: 6px 12px;"
+            "  border: none;"
+            "}"
+        );
     }
     ~Impl() { if (qtable && !qtable->parent()) delete qtable; }
 };

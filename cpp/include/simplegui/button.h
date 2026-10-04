@@ -12,6 +12,9 @@ public:
     explicit Button(const std::string& text);
     ~Button() override;
 
+    void set_text(const std::string& text);
+    std::string get_text() const;
+
     EventConnection on_click(std::function<void()> handler);
     QWidget* get_qwidget() const override;
 

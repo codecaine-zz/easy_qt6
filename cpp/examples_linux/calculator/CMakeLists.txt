@@ -1,0 +1,2 @@
+add_executable(example_linux_calculator main.cpp)
+target_link_libraries(example_linux_calculator PRIVATE simplegui)

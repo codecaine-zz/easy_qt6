@@ -37,6 +37,24 @@ add_library(simplegui
     stat_card.cpp
     composition_bar.cpp
     status_pill.cpp
+    activity_heatmap.cpp
+    stat_grid.cpp
+    user_profile_card.cpp
+    product_card.cpp
+    donut_chart.cpp
+    kanban_board.cpp
+    feedback_mood.cpp
+    date_range_picker.cpp
+    masked_input.cpp
+    token_field.cpp
+    nav_rail.cpp
+    media_player.cpp
+    bar_chart.cpp
+    line_chart.cpp
+    pie_chart.cpp
+    canvas.cpp
+    radar_chart.cpp
+    candlestick_chart.cpp
 )
 
 target_include_directories(simplegui PUBLIC

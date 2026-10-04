@@ -27,6 +27,12 @@ void SplitView::add_child(std::shared_ptr<Control> control) {
     }
 }
 
+void SplitView::set_sizes(int first, int second) {
+    if (pimpl->qsplitter) {
+        pimpl->qsplitter->setSizes({first, second});
+    }
+}
+
 QWidget* SplitView::get_qwidget() const {
     return pimpl->qsplitter.data();
 }

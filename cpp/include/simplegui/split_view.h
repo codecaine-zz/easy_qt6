@@ -11,6 +11,7 @@ public:
     ~SplitView() override;
 
     void add_child(std::shared_ptr<Control> control);
+    void set_sizes(int first, int second);
 
     QWidget* get_qwidget() const override;
 

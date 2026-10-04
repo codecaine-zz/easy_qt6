@@ -1,0 +1,2 @@
+add_executable(example_linux_terminal_config main.cpp)
+target_link_libraries(example_linux_terminal_config PRIVATE simplegui)

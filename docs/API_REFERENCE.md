@@ -172,6 +172,105 @@ High-precision telemetry and monitoring widgets inspired by Dave Plummer's [TMOG
 
 ---
 
+## High-Level Composite & App Parity Controls
+
+Rich, production-grade composite controls ported from `vlang_simplegui` and enhanced with native Qt6 antialiasing, layout responsiveness, and dark styling:
+
+- **[`KanbanBoard`](../screenshots/kanban_board.png)**: Agile task management board with columns, card badges, and interactive task cards.
+  - `add_column("todo", "To Do")`
+  - `add_card("todo", "c1", "Task Title", "TAG", "Task description...")`
+  - `move_card("c1", "done")`
+  - `on_card_clicked([](const std::string& card_id) {})`
+- **[`UserProfileCard`](../screenshots/user_profile_card.png)**: User profile card with avatar initials, online status badge, handle, bio, and action button.
+  - `set_online_status(bool is_online)`
+  - `set_bio(const std::string& bio)`
+  - `on_action([]() {})`
+- **[`ProductCard`](../screenshots/product_card.png)**: Store product card with badge pill, star rating, description, price, and CTA.
+  - `set_price("$149.00")`
+  - `set_badge("POPULAR")`
+  - `set_rating(4.9)`
+  - `set_in_stock(bool in_stock)`
+  - `on_buy([]() {})`
+- **[`DonutChart`](../screenshots/donut_chart.png)**: Antialiased radial donut / ring progress chart with center readout.
+  - `add_segment("Apps", 45.0, "#3b82f6")`
+  - `set_center_text("78%", "USED")`
+  - `set_thickness(22)`
+- **[`ActivityHeatmap`](../screenshots/activity_heatmap.png)**: GitHub-style multi-week activity heatmap.
+  - `set_cell(int week, int day, int intensity)` // 0 to 4
+  - `set_color_scale("#10b981")`
+- **[`StatGrid`](../screenshots/stat_grid.png)**: KPI dashboard grid with value readouts and trend indicators.
+  - `add_stat("Active Users", "14,892", "+12.4%", true)`
+  - `clear()`
+- **[`MediaPlayer`](../screenshots/media_player.png)**: Media playback card with album artwork, title, scrub slider, and playback controls.
+  - `set_track("Track Name", "Artist", "03:45")`
+  - `set_position(int seconds, int total_seconds)`
+  - `set_playing(bool is_playing)`
+  - `on_play_pause([](bool is_playing) {})`
+  - `on_seek([](int seconds) {})`
+- **[`FeedbackMood`](../screenshots/feedback_mood.png)**: 5-level interactive mood satisfaction rating selector.
+  - `set_rating(int rating)` // 1 to 5
+  - `int rating()`
+  - `on_change([](int rating) {})`
+- **[`DateRangePicker`](../screenshots/date_range_picker.png)**: Dual date picker with calendar popups and quick presets.
+  - `set_range("2026-10-01", "2026-10-31")`
+  - `start_date()`, `end_date()`
+  - `on_range_changed([](const std::string& start, const std::string& end) {})`
+- **[`TokenField`](../screenshots/token_field.png)**: Interactive tag/chip input with dismissible tokens.
+  - `add_token("C++20")`
+  - `remove_token("C++20")`
+  - `tokens()`
+  - `on_tokens_changed([](const std::vector<std::string>& tokens) {})`
+- **[`MaskedInput`](../screenshots/masked_input.png)**: Formatted input enforcing phone, IP, or key masks.
+  - `set_mask("(999) 999-9999")`
+  - `set_text("5550192834")`
+  - `text()`
+  - `on_change([](const std::string& text) {})`
+- **[`NavRail`](../screenshots/nav_rail.png)**: Vertical compact navigation rail with icon glyphs, text labels, and active indicator.
+  - `add_item("dash", "⚡", "Dash")`
+  - `set_selected("dash")`
+  - `on_select([](const std::string& id) {})`
+
+---
+
+## Graphics & Advanced Charts
+
+Comprehensive 2D rendering and data visualization suite for analytics, telemetry, games, and financial applications:
+
+- **[`BarChart`](../screenshots/bar_chart.png)**: Vertical categorized bar chart with rounded tops, grid lines, and value tags.
+  - `add_bar("Jan", 45.0, "#3b82f6")`
+  - `set_title("Monthly Revenue")`
+  - `set_show_values(true)`
+  - `set_show_grid(true)`
+  - `set_y_range(0.0, 100.0)`
+- **[`LineChart`](../screenshots/line_chart.png)**: Multi-series 2D Cartesian line chart with cubic Bezier smoothing, gradient fills, and data points.
+  - `set_x_labels({"00:00", "06:00", "12:00", "18:00"})`
+  - `add_series("Inbound", {12, 45, 82, 30}, "#3b82f6", true)`
+  - `set_smooth(true)`
+  - `show_points(true)`
+  - `show_grid(true)`
+  - `show_legend(true)`
+- **[`PieChart`](../screenshots/pie_chart.png)**: Solid wedge pie chart with seam outlines, auto percentage calculation, and side legend.
+  - `add_slice("Americas", 44.0, "#3b82f6")`
+  - `show_legend(true)`
+  - `show_percentages(true)`
+- **[`Canvas`](../screenshots/canvas.png)**: Retained 2D vector graphics canvas with mouse tracking and immediate-mode drawing commands.
+  - `clear("#090d16")`
+  - `draw_line(x1, y1, x2, y2, color, width)`
+  - `draw_rect(x, y, w, h, color, width)`, `fill_rect(x, y, w, h, color)`
+  - `draw_circle(cx, cy, r, color, width)`, `fill_circle(cx, cy, r, color)`
+  - `draw_text(x, y, text, color, font_size)`
+  - `on_mouse_down([](int x, int y) {})`, `on_mouse_move([](int x, int y) {})`
+- **[`RadarChart`](../screenshots/radar_chart.png)**: Multi-dimensional spider / polar chart with concentric polygonal web and translucent overlays.
+  - `set_dimensions({"Speed", "UX", "Security", "Scale", "Reliability"})`
+  - `add_dataset("Production", {92, 88, 84, 90, 96}, "#3b82f6")`
+  - `show_legend(true)`
+- **[`CandlestickChart`](../screenshots/candlestick_chart.png)**: Financial OHLC trading chart with bullish/bearish color coding and dynamic price scale.
+  - `add_candle("10:00", open, high, low, close)`
+  - `set_title("BTC/USDT")`
+  - `show_grid(true)`
+
+---
+
 ## Web Views
 
 Advanced Chromium-backed rendering engines utilizing `QtWebEngine`.

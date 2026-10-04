@@ -16,6 +16,19 @@ Button::Button(const std::string& text)
 
 Button::~Button() = default;
 
+void Button::set_text(const std::string& text) {
+    if (pimpl->qbutton) {
+        pimpl->qbutton->setText(QString::fromStdString(text));
+    }
+}
+
+std::string Button::get_text() const {
+    if (pimpl->qbutton) {
+        return pimpl->qbutton->text().toStdString();
+    }
+    return "";
+}
+
 EventConnection Button::on_click(std::function<void()> handler) {
     if (pimpl->qbutton) {
         auto conn = QObject::connect(pimpl->qbutton.data(), &QPushButton::clicked, [handler]() {

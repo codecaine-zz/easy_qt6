@@ -12,5 +12,7 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
 add_subdirectory(src)
-add_subdirectory(examples)
+add_subdirectory(examples_macos)
+add_subdirectory(examples_linux)
+add_subdirectory(examples_windows)
 add_subdirectory(tools)
