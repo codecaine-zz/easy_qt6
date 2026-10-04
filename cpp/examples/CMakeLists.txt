@@ -1,0 +1,5 @@
+add_subdirectory(minimal)
+add_subdirectory(hello_world)
+add_subdirectory(login_form)
+add_subdirectory(calculator)
+add_subdirectory(web_browser)

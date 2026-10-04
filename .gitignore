@@ -1,37 +1,72 @@
-# Binaries for programs and plugins
-main
-vlang_macos_native_window
-*.exe
-*.exe~
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
 *.so
 *.dylib
 *.dll
 
-# Ignore binary output folders
-bin/
+# Fortran module files
+*.mod
+*.smod
 
-# Ignore common editor/system specific metadata
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app/
+*.app
+
+# CMake
+build/
+cpp/build/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# Qt / CMake Autogen
+*_autogen/
+moc_*.cpp
+moc_*.h
+ui_*.h
+qrc_*.cpp
+.qmake.stash
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE / Editor files
 .idea/
 .vscode/
-*.iml
-
-# ENV
-.env
-
-# vweb and database
-*.db
-*.js
-
-# Ignore installed modules through `v install --local`:
-modules/
-
-# Ignore build output folder
-dist/
-
-build_app
-build_demos
-list_windows
-
-practice.v
-test_shot.png
+*.swp
+*.swo
+*.user
+*.user.*
