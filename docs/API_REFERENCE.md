@@ -146,6 +146,32 @@ Controls that perform raw QPainter commands to achieve native-feeling custom wid
 
 ---
 
+## TMOG Precision Telemetry Controls
+
+High-precision telemetry and monitoring widgets inspired by Dave Plummer's [TMOG](https://tmog.org/) (The Mother of Graphs / Task Manager):
+
+- **[`Sparkline`](../screenshots/sparkline.png)**: Real-time rolling telemetry line graph with gradient area fill, grid lines, and leading glow dot.
+  - `add_sample(double value)`
+  - `set_samples(std::vector<double>)`
+  - `set_color("#06b6d4")`
+  - `set_range(min, max)`
+- **[`VfdMeter`](../screenshots/vfd_meter.png)**: Vacuum Fluorescent Display / LED segmented level meter with green/amber/red threshold segments and glow effect.
+  - `set_value(double percentage)`
+  - `set_segments(int count)`
+  - `set_glow(bool enabled)`
+- **[`StatCard`](../screenshots/stat_card.png)**: Prominent digital telemetry readout card with label, value, subtext, and custom accent color.
+  - `set_title("CPU LOAD")`
+  - `set_value("4.85 GHz")`
+  - `set_subtext("Turbo Active")`
+  - `set_accent_color("#06b6d4")`
+- **[`CompositionBar`](../screenshots/composition_bar.png)**: Multi-segment partitioned bar showing resource/memory distribution.
+  - `add_segment("Apps", 14.0, "#2563eb")`
+  - `clear_segments()`
+- **[`StatusPill`](../screenshots/status_pill.png)**: High-tech badge with glowing status dot indicator.
+  - `set_status("LIVE 1.0.0", "#10b981")`
+
+---
+
 ## Web Views
 
 Advanced Chromium-backed rendering engines utilizing `QtWebEngine`.

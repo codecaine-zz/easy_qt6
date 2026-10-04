@@ -13,17 +13,18 @@ EasyQt6 is a modern, lightweight, and zero-boilerplate C++ wrapper around Qt6. I
 
 ## Screenshots & Showcase
 
-| Application Preferences (Mixed Layouts) | Enterprise Data Explorer (Mixed Layouts) |
+| System Telemetry Monitor (TMOG Inspired) | Enterprise Data Explorer (Mixed Layouts) |
 | :---: | :---: |
-| ![Settings Dashboard](screenshots/example_settings_dashboard.png) | ![Data Explorer](screenshots/example_data_explorer.png) |
+| ![System Monitor](screenshots/example_system_monitor.png) | ![Data Explorer](screenshots/example_data_explorer.png) |
 
-| Calculator Example | Login Form |
+| Application Preferences (Mixed Layouts) | Calculator RAD Example |
 | :---: | :---: |
-| ![Calculator](screenshots/example_calculator.png) | ![Login Form](screenshots/example_login_form.png) |
+| ![Settings Dashboard](screenshots/example_settings_dashboard.png) | ![Calculator](screenshots/example_calculator.png) |
 
 ### Controls & Layouts
 
 Every control and layout is captured with native Qt6 rendering in [`screenshots/`](screenshots/):
+- **TMOG Precision Telemetry**: [Sparkline Graph](screenshots/sparkline.png), [VFD Segmented Meter](screenshots/vfd_meter.png), [StatCard Readout](screenshots/stat_card.png), [CompositionBar](screenshots/composition_bar.png), [StatusPill Badge](screenshots/status_pill.png)
 - **Controls**: [Button](screenshots/button.png), [Label](screenshots/label.png), [TextInput](screenshots/text_input.png), [PasswordInput](screenshots/password_input.png), [SearchField](screenshots/search_field.png), [Checkbox](screenshots/checkbox.png), [Radio](screenshots/radio.png), [Slider](screenshots/slider.png), [Dropdown](screenshots/dropdown.png), [ComboBox](screenshots/combo_box.png), [NumberInput](screenshots/number_input.png), [Knob](screenshots/knob.png), [DatePicker](screenshots/date_picker.png), [ColorWell](screenshots/color_well.png), [ProgressIndicator](screenshots/progress_indicator.png), [CircularProgress](screenshots/circular_progress.png), [Rating](screenshots/rating.png), [Breadcrumbs](screenshots/breadcrumbs.png), [Textarea](screenshots/textarea.png), [Link](screenshots/link.png)
 - **Layouts**: [VBox](screenshots/vbox.png), [HBox](screenshots/hbox.png), [Grid](screenshots/grid.png), [GroupBox](screenshots/group_box.png), [TabView](screenshots/tab_view.png), [SplitView](screenshots/split_view.png), [ScrollView](screenshots/scroll_view.png)
 
@@ -31,6 +32,7 @@ Every control and layout is captured with native Qt6 rendering in [`screenshots/
 
 See the `cpp/examples` folder for copy-paste-ready RAD templates:
 
+- `system_monitor`: **TMOG-inspired precision telemetry monitor** with live rolling `Sparkline`, glowing `VfdMeter` core levels, `StatCard` readouts, and `CompositionBar`.
 - `settings_dashboard`: **Advanced mixed layouts** combining tabs, group boxes, form rows, knobs, sliders, and bottom action bar.
 - `data_explorer`: **Advanced mixed layouts** combining breadcrumbs, search toolbar, split sidebar, data grid, and status bar.
 - `hello_world`: The absolute bare minimum to get a window on screen.

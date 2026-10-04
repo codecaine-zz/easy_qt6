@@ -35,6 +35,11 @@
 #include "simplegui/breadcrumbs.h"
 #include "simplegui/split_view.h"
 #include "simplegui/scroll_view.h"
+#include "simplegui/sparkline.h"
+#include "simplegui/vfd_meter.h"
+#include "simplegui/stat_card.h"
+#include "simplegui/composition_bar.h"
+#include "simplegui/status_pill.h"
 
 int main(int argc, char* argv[]) {
     simplegui::Application app(argc, argv);
@@ -97,6 +102,28 @@ int main(int argc, char* argv[]) {
     capture_in_window("textarea", "Textarea", std::make_shared<simplegui::Textarea>("EasyQt6 provides clean, modern C++ wrappers\naround native Qt 6 widgets.\nFast, safe, and intuitive."), 380, 130);
     capture_in_window("link", "Link", std::make_shared<simplegui::Link>("Visit Qt Official Documentation", "https://doc.qt.io/"), 320, 80);
     capture_in_window("image_button", "ImageButton", std::make_shared<simplegui::ImageButton>("", "Launch Mission"), 260, 90);
+
+    // TMOG Precision Telemetry Controls
+    auto spark = std::make_shared<simplegui::Sparkline>("#06b6d4");
+    spark->set_samples({15, 20, 24, 18, 30, 45, 60, 52, 40, 35, 48, 70, 85, 65, 42, 38, 50});
+    capture_in_window("sparkline", "Sparkline Telemetry Graph", spark, 340, 100);
+
+    auto vfd = std::make_shared<simplegui::VfdMeter>(16, false);
+    vfd->set_value(78.0);
+    capture_in_window("vfd_meter", "VFD Segmented Level Meter", vfd, 300, 70);
+
+    auto stat = std::make_shared<simplegui::StatCard>("CPU LOAD", "4.85 GHz", "Turbo Boost Active", "#06b6d4");
+    capture_in_window("stat_card", "StatCard Telemetry Readout", stat, 220, 100);
+
+    auto comp = std::make_shared<simplegui::CompositionBar>();
+    comp->add_segment("App", 16.0, "#2563eb");
+    comp->add_segment("Wired", 8.0, "#06b6d4");
+    comp->add_segment("Cache", 6.0, "#f59e0b");
+    comp->add_segment("Free", 34.0, "#27272a");
+    capture_in_window("composition_bar", "CompositionBar Segmented Bar", comp, 320, 70);
+
+    auto pill = std::make_shared<simplegui::StatusPill>("LIVE 1.0.0 RTM", "#10b981");
+    capture_in_window("status_pill", "StatusPill Badge Indicator", pill, 200, 70);
 
     // --- LAYOUTS ---
     {
@@ -483,6 +510,116 @@ int main(int argc, char* argv[]) {
         win.set_content(root);
         win.save_screenshot(out_dir + "/example_data_explorer.png");
         std::cout << "Saved: " << out_dir << "/example_data_explorer.png" << std::endl;
+    }
+
+    // 6. TMOG SYSTEM MONITOR DASHBOARD
+    {
+        simplegui::Window win("TMOG Inspired System Telemetry", 740, 560);
+        auto root = std::make_shared<simplegui::VBox>();
+        root->set_margins(16);
+        root->set_spacing(12);
+
+        auto header = std::make_shared<simplegui::HBox>();
+        header->set_spacing(10);
+        auto title = std::make_shared<simplegui::Label>("TMOG / PRECISION TELEMETRY");
+        title->set_style("font-weight: bold; font-size: 14px; letter-spacing: 1px; color: #f4f4f5;");
+        auto pill_live = std::make_shared<simplegui::StatusPill>("LIVE 1.0.0", "#10b981");
+        auto pill_sensors = std::make_shared<simplegui::StatusPill>("SENSORS ONLINE", "#06b6d4");
+        header->add_child(title);
+        header->add_child(pill_live);
+        header->add_stretch();
+        header->add_child(pill_sensors);
+
+        auto stat_row = std::make_shared<simplegui::HBox>();
+        stat_row->set_spacing(10);
+        stat_row->add_child(std::make_shared<simplegui::StatCard>("CPU LOAD", "34.8%", "16 Cores · 4.80 GHz", "#06b6d4"));
+        stat_row->add_child(std::make_shared<simplegui::StatCard>("MEMORY", "14.2 GB", "64 GB Total (22%)", "#10b981"));
+        stat_row->add_child(std::make_shared<simplegui::StatCard>("DISK THROUGHPUT", "1.42 GB/s", "NVMe PCIe 4.0", "#f59e0b"));
+        stat_row->add_child(std::make_shared<simplegui::StatCard>("PACKAGE POWER", "46.5 W", "Efficiency High", "#ec4899"));
+
+        auto mid_row = std::make_shared<simplegui::HBox>();
+        mid_row->set_spacing(12);
+
+        auto grp_graph = std::make_shared<simplegui::GroupBox>("CPU Utilization History (Rolling Telemetry)");
+        auto graph_vbox = std::make_shared<simplegui::VBox>();
+        graph_vbox->set_margins(12);
+        graph_vbox->set_spacing(10);
+
+        auto sparkline = std::make_shared<simplegui::Sparkline>("#06b6d4");
+        sparkline->set_range(0.0, 100.0);
+        const std::vector<double> history = {
+            18, 22, 25, 20, 19, 35, 48, 62, 58, 45, 
+            30, 28, 32, 40, 55, 78, 85, 92, 70, 52, 
+            41, 38, 35, 33, 30, 36, 42, 50, 48, 35
+        };
+        sparkline->set_samples(history);
+
+        auto comp_label = std::make_shared<simplegui::Label>("Memory: Apps (14GB) | Wired (6GB) | Cache (8GB) | Free (36GB)");
+        comp_label->set_style("color: #a1a1aa; font-size: 11px;");
+
+        auto comp_bar = std::make_shared<simplegui::CompositionBar>();
+        comp_bar->add_segment("Apps", 14.0, "#2563eb");
+        comp_bar->add_segment("Wired", 6.0, "#06b6d4");
+        comp_bar->add_segment("Cached", 8.0, "#f59e0b");
+        comp_bar->add_segment("Free", 36.0, "#27272a");
+
+        graph_vbox->add_child(sparkline);
+        graph_vbox->add_child(comp_label);
+        graph_vbox->add_child(comp_bar);
+        grp_graph->add_child(graph_vbox);
+
+        auto grp_vfd = std::make_shared<simplegui::GroupBox>("Core VU Levels");
+        auto vfd_hbox = std::make_shared<simplegui::HBox>();
+        vfd_hbox->set_margins(12);
+        vfd_hbox->set_spacing(10);
+
+        auto vfd1 = std::make_shared<simplegui::VfdMeter>(18, true);
+        vfd1->set_value(88.0);
+        auto vfd2 = std::make_shared<simplegui::VfdMeter>(18, true);
+        vfd2->set_value(45.0);
+        auto vfd3 = std::make_shared<simplegui::VfdMeter>(18, true);
+        vfd3->set_value(95.0);
+        auto vfd4 = std::make_shared<simplegui::VfdMeter>(18, true);
+        vfd4->set_value(32.0);
+
+        vfd_hbox->add_child(vfd1);
+        vfd_hbox->add_child(vfd2);
+        vfd_hbox->add_child(vfd3);
+        vfd_hbox->add_child(vfd4);
+        grp_vfd->add_child(vfd_hbox);
+
+        mid_row->add_child(grp_graph);
+        mid_row->add_child(grp_vfd);
+
+        auto grp_procs = std::make_shared<simplegui::GroupBox>("Top Resource Processes");
+        auto procs_vbox = std::make_shared<simplegui::VBox>();
+        procs_vbox->set_margins(10);
+
+        auto grid = std::make_shared<simplegui::Grid>(5, 5, std::vector<std::string>{"PID", "Process Name", "CPU %", "Memory", "Energy"});
+        const std::vector<std::vector<std::string>> proc_data = {
+            {"1082", "clang++ (EasyQt6 Build)", "68.4%", "1.24 GB", "Very High"},
+            {"429", "WindowServer", "12.8%", "680 MB", "Medium"},
+            {"8891", "QtWebEngineProcess", "8.2%", "512 MB", "Low"},
+            {"1", "launchd (init)", "0.1%", "28 MB", "Very Low"},
+            {"7420", "tmog_telemetry_core", "0.4%", "18 MB", "Very Low"}
+        };
+
+        for (int r = 0; r < 5; ++r) {
+            for (int c = 0; c < 5; ++c) {
+                grid->set_cell(r, c, proc_data[r][c]);
+            }
+        }
+        procs_vbox->add_child(grid);
+        grp_procs->add_child(procs_vbox);
+
+        root->add_child(header);
+        root->add_child(stat_row);
+        root->add_child(mid_row);
+        root->add_child(grp_procs);
+
+        win.set_content(root);
+        win.save_screenshot(out_dir + "/example_system_monitor.png");
+        std::cout << "Saved: " << out_dir << "/example_system_monitor.png" << std::endl;
     }
 
     std::cout << "All polished screenshots generated successfully!" << std::endl;

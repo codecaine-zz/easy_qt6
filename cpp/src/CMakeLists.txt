@@ -32,6 +32,11 @@ add_library(simplegui
     rating.cpp
     breadcrumbs.cpp
     web_view.cpp
+    sparkline.cpp
+    vfd_meter.cpp
+    stat_card.cpp
+    composition_bar.cpp
+    status_pill.cpp
 )
 
 target_include_directories(simplegui PUBLIC
