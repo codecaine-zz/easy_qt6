@@ -1,0 +1,2 @@
+add_executable(new_controls_gallery main.cpp)
+target_link_libraries(new_controls_gallery PRIVATE simplegui)

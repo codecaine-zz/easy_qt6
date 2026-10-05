@@ -38,7 +38,10 @@
 #include "simplegui/toggle_switch.h"
 #include "simplegui/vbox.h"
 #include "simplegui/web_view.h"
-
+#include "simplegui/property_grid.h"
+#include "simplegui/path_picker.h"
+#include "simplegui/timeline.h"
+#include "simplegui/carousel.h"
 namespace simplegui {
 
 // Buttons
@@ -108,5 +111,10 @@ using Splitter = SplitView;        // Delphi / Lazarus TSplitter
 // Other
 using WebBrowser = WebView;        // Delphi / VB
 using Console = TerminalView;
+
+using ObjectInspector = PropertyGrid; // Delphi / Lazarus
+using FilePicker = PathPicker;
+using StepIndicator = Timeline;
+using ImageSlider = Carousel;
 
 }  // namespace simplegui

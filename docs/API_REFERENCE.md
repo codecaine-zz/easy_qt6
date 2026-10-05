@@ -1400,6 +1400,8 @@ An interactive OpenStreetMap map with a marker (needs an internet connection). L
 
 ## New Controls (v0.2)
 
+![New Controls Batch 2](../screenshots/gallery_batch2.png)
+
 ### TreeView
 A hierarchical list of items, great for file systems or nested categories.
 `auto tree = std::make_shared<TreeView>();`
@@ -1435,6 +1437,50 @@ A layout that aligns labels and inputs automatically into two columns.
 ### FlowLayout
 A layout that wraps elements to the next line when horizontal space runs out.
 `auto flow = std::make_shared<FlowLayout>();`
+
+### PropertyGrid
+An object inspector-style grid for editing properties directly.
+`auto grid = std::make_shared<PropertyGrid>();`
+
+### PathPicker
+An input field with a built-in file/folder browse button.
+`auto picker = std::make_shared<PathPicker>();`
+
+### SignaturePad
+A specialized drawable canvas with stroke smoothing for capturing signatures.
+`auto pad = std::make_shared<SignaturePad>();`
+
+### Timeline
+A step-by-step progress visualizer or step indicator.
+`auto timeline = std::make_shared<Timeline>();`
+
+### MarkdownViewer
+Renders Markdown directly using rich text formatting.
+`auto md = std::make_shared<MarkdownViewer>();`
+
+### Carousel
+A swipeable container for flipping through child controls or images.
+`auto carousel = std::make_shared<Carousel>();`
+
+### CodeEditor
+A monospace text area tailored for writing or displaying source code.
+`auto code = std::make_shared<CodeEditor>();`
+
+### DataForm
+Auto-generates layouts based on structured fields and types.
+`auto form = std::make_shared<DataForm>();`
+
+### GanttChart
+A chart for scheduling and project management tasks.
+`auto gantt = std::make_shared<GanttChart>();`
+
+### GaugeCluster
+Groups gauges and readouts together to form a dashboard-like cluster.
+`auto cluster = std::make_shared<GaugeCluster>();`
+
+### HeatmapCalendar
+A GitHub-style contribution calendar grid.
+`auto heatmap = std::make_shared<HeatmapCalendar>();`
 
 ---
 
@@ -1540,6 +1586,10 @@ Each alias is **exactly the same class** under another name — mix them freely.
 | `Splitter` | `SplitView` | Delphi/Lazarus |
 | `WebBrowser` | `WebView` | Delphi/VB |
 | `Console` | `TerminalView` | |
+| `ObjectInspector` | `PropertyGrid` | Delphi/Lazarus |
+| `FilePicker` | `PathPicker` | |
+| `StepIndicator` | `Timeline` | |
+| `ImageSlider` | `Carousel` | |
 
 ## Styling with style sheets
 

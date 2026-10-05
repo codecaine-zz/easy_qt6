@@ -93,6 +93,17 @@
 #include "simplegui/toolbar.h"
 #include "simplegui/form_layout.h"
 #include "simplegui/flow_layout.h"
+#include "simplegui/property_grid.h"
+#include "simplegui/path_picker.h"
+#include "simplegui/signature_pad.h"
+#include "simplegui/timeline.h"
+#include "simplegui/markdown_viewer.h"
+#include "simplegui/carousel.h"
+#include "simplegui/code_editor.h"
+#include "simplegui/data_form.h"
+#include "simplegui/gantt_chart.h"
+#include "simplegui/gauge_cluster.h"
+#include "simplegui/heatmap_calendar.h"
 
 // Familiar names (Edit, Memo, CheckBox, TrackBar, ...)
 #include "simplegui/aliases.h"

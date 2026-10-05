@@ -76,6 +76,17 @@ add_library(simplegui
     toolbar.cpp
     form_layout.cpp
     flow_layout.cpp
+    property_grid.cpp
+    path_picker.cpp
+    signature_pad.cpp
+    timeline.cpp
+    markdown_viewer.cpp
+    carousel.cpp
+    code_editor.cpp
+    data_form.cpp
+    gantt_chart.cpp
+    gauge_cluster.cpp
+    heatmap_calendar.cpp
     detail/common.h
     detail/box_core.h
 )
