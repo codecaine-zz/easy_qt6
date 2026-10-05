@@ -103,7 +103,7 @@ See the [API Reference](docs/API_REFERENCE.md#installing-and-building) for Linux
 
 | Folder | Examples |
 |---|---|
-| [`cpp/examples_shared/`](cpp/examples_shared) | `mission_control` (futuristic dashboard), `classic_rad` (Delphi/VB-style contact book) |
+| [`cpp/examples_shared/`](cpp/examples_shared) | `mission_control` (futuristic dashboard), `classic_rad` (Delphi/VB-style contact book), `drawing_board` (Canvas and Image demo) |
 | [`cpp/examples_macos/`](cpp/examples_macos) | `hello_world`, `minimal`, `login_form`, `calculator`, `web_browser`, `settings_dashboard`, `data_explorer`, `system_monitor`, `analytics_dashboard` |
 | [`cpp/examples_linux/`](cpp/examples_linux) | `hello_world`, `calculator`, `system_monitor`, `software_center`, `terminal_config` |
 | [`cpp/examples_windows/`](cpp/examples_windows) | `hello_world`, `calculator`, `system_monitor`, `settings_dashboard` |

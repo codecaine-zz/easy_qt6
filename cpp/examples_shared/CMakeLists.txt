@@ -1,2 +1,3 @@
 add_subdirectory(mission_control)
 add_subdirectory(classic_rad)
+add_subdirectory(drawing_board)

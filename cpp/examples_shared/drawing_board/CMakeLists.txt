@@ -1,0 +1,2 @@
+add_executable(example_drawing_board main.cpp)
+target_link_libraries(example_drawing_board PRIVATE simplegui)

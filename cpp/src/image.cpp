@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QResizeEvent>
+#include <QMovie>
 
 namespace simplegui {
 
@@ -12,7 +13,8 @@ namespace {
 // A label that can scale its picture while keeping the aspect ratio.
 class ImageLabel : public QLabel {
 public:
-    QPixmap original;
+    QPixmap original_pixmap;
+    QMovie* movie = nullptr;
     bool scaled = false;
 
     ImageLabel() {
@@ -21,19 +23,31 @@ public:
     }
 
     void refresh() {
-        if (original.isNull()) {
-            clear();
-        } else if (scaled) {
-            setPixmap(original.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        if (movie) {
+            if (scaled) {
+                QSize origSize = movie->frameRect().size();
+                if (origSize.isValid() && !origSize.isNull()) {
+                    QSize newSize = origSize.scaled(size(), Qt::KeepAspectRatio);
+                    movie->setScaledSize(newSize);
+                }
+            } else {
+                movie->setScaledSize(QSize());
+            }
         } else {
-            setPixmap(original);
+            if (original_pixmap.isNull()) {
+                clear();
+            } else if (scaled) {
+                setPixmap(original_pixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            } else {
+                setPixmap(original_pixmap);
+            }
         }
     }
 
 protected:
     void resizeEvent(QResizeEvent* event) override {
         QLabel::resizeEvent(event);
-        if (scaled) refresh();
+        refresh();
     }
 };
 
@@ -52,8 +66,36 @@ Image::~Image() = default;
 
 bool Image::set_image(const std::string& image_path) {
     if (!pimpl->label) return false;
-    QPixmap pixmap(detail::qs(image_path));
-    pimpl->label->original = pixmap;
+    
+    if (pimpl->label->movie) {
+        pimpl->label->movie->stop();
+        pimpl->label->movie->deleteLater();
+        pimpl->label->movie = nullptr;
+    }
+
+    QString qpath = detail::qs(image_path);
+    
+    if (qpath.endsWith(".gif", Qt::CaseInsensitive)) {
+        QMovie* movie = new QMovie(qpath, QByteArray(), pimpl->label.data());
+        if (movie->isValid()) {
+            pimpl->label->movie = movie;
+            pimpl->label->original_pixmap = QPixmap();
+            pimpl->label->setMovie(movie);
+            movie->start();
+            
+            // Wait for it to start so the frameRect is loaded, then refresh size
+            QObject::connect(movie, &QMovie::started, pimpl->label.data(), [lbl = pimpl->label.data()]() {
+                if (lbl) lbl->refresh();
+            });
+            
+            pimpl->label->refresh();
+            return true;
+        }
+        delete movie;
+    }
+    
+    QPixmap pixmap(qpath);
+    pimpl->label->original_pixmap = pixmap;
     pimpl->label->refresh();
     return !pixmap.isNull();
 }
