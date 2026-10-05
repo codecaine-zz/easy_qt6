@@ -40,6 +40,10 @@ Windows ARM64**.
 | :---: | :---: |
 | ![New Controls](screenshots/gallery_new_controls.png) | ![New Controls Batch 2](screenshots/gallery_batch2.png) |
 
+| File Ninja (fd & rip2 GUI) |
+| :---: |
+| ![File Ninja](screenshots/file_ninja.png) |
+
 Every control appears in one of the grouped pictures in [`screenshots/`](screenshots/), and each
 group is shown in the [API Reference](docs/API_REFERENCE.md).
 
@@ -103,7 +107,7 @@ See the [API Reference](docs/API_REFERENCE.md#installing-and-building) for Linux
 
 | Folder | Examples |
 |---|---|
-| [`cpp/examples_shared/`](cpp/examples_shared) | `mission_control` (futuristic dashboard), `classic_rad` (Delphi/VB-style contact book), `drawing_board` (Canvas and Image demo), `file_ninja` (fd/rip2 GUI alternative) |
+| [`cpp/examples_shared/`](cpp/examples_shared) | `mission_control` (futuristic dashboard), `classic_rad` (Delphi/VB-style contact book), `drawing_board` (Canvas and Image demo), `file_ninja` (macOS-style fd & rip2 GUI) |
 | [`cpp/examples_macos/`](cpp/examples_macos) | `hello_world`, `minimal`, `login_form`, `calculator`, `web_browser`, `settings_dashboard`, `data_explorer`, `system_monitor`, `analytics_dashboard` |
 | [`cpp/examples_linux/`](cpp/examples_linux) | `hello_world`, `calculator`, `system_monitor`, `software_center`, `terminal_config` |
 | [`cpp/examples_windows/`](cpp/examples_windows) | `hello_world`, `calculator`, `system_monitor`, `settings_dashboard` |

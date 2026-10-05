@@ -63,12 +63,11 @@ std::vector<std::pair<std::string, std::string>> rip2_seance() {
 bool rip2_undo(const std::string& filename) {
     std::string graveyard = get_graveyard_dir();
     std::string info_path = graveyard + "/info/" + filename;
-    std::string trash_path = graveyard + "/files/" + filename.substr(0, filename.size() - 4); // strip .txt
+    std::string trash_path = graveyard + "/files/" + filename.substr(0, filename.size() - 4);
     
     std::ifstream info(info_path);
     std::string orig_path;
     std::getline(info, orig_path);
-    
     if (orig_path.empty()) return false;
     
     try {
@@ -93,7 +92,6 @@ struct SearchState {
     std::vector<SearchResult> results;
 };
 
-// Simple glob to regex
 std::string glob_to_regex(const std::string& glob) {
     std::string rx = "^";
     for (char c : glob) {
@@ -105,7 +103,6 @@ std::string glob_to_regex(const std::string& glob) {
     return rx + "$";
 }
 
-// Size filter parser
 enum class SizeOp { None, Greater, Less, Equal };
 struct SizeFilter {
     SizeOp op = SizeOp::None;
@@ -135,66 +132,139 @@ SizeFilter parse_size_filter(const std::string& str) {
 int main(int argc, char* argv[]) {
     Application app(argc, argv);
     app.set_theme("apple");
-    Window window("File Ninja (fd + rip2)", 1100, 800);
+    Window window("File Ninja", 1100, 800);
 
     auto tabs = std::make_shared<TabView>();
     
     // ==========================================
-    // TAB 1: fd (Search)
+    // TAB 1: fd (Search) - APPLE STYLE SPLIT VIEW
     // ==========================================
-    auto fd_tab = std::make_shared<VBox>();
-    fd_tab->set_margins(10); fd_tab->set_spacing(10);
+    auto fd_split = std::make_shared<SplitView>();
     
-    auto search_form = std::make_shared<DataForm>();
-    search_form->set_fields({
-        {"pattern", "Pattern", "", FormField::Type::Text},
-        {"path", "Directory", fs::current_path().string(), FormField::Type::Text},
-        {"type", "Type (f,d,l,x,e)", "", FormField::Type::Text},
-        {"match", "Match (smart, -s, -i, -g, -F)", "smart", FormField::Type::Text},
-        {"size", "Size (-S, e.g. >1M, <5K)", "", FormField::Type::Text},
-        {"ext", "Extension (-e)", "", FormField::Type::Text},
-        {"exclude", "Exclude (-E)", "", FormField::Type::Text},
-        {"depth", "Max Depth (-d)", "0", FormField::Type::Number},
-        {"hidden", "Hidden (-H)", "false", FormField::Type::Checkbox},
-        {"symlinks", "Symlinks (-L)", "false", FormField::Type::Checkbox},
-        {"fullpath", "Full Path (-p)", "false", FormField::Type::Checkbox},
-        {"abs", "Absolute (-a)", "false", FormField::Type::Checkbox},
-        {"noignore", "No Ignore (-I)", "false", FormField::Type::Checkbox}
-    });
+    // -- SIDEBAR (Filters & Options) --
+    auto sidebar_scroll = std::make_shared<ScrollView>();
+    auto sidebar = std::make_shared<VBox>();
+    sidebar->set_margins(15);
+    sidebar->set_spacing(15);
     
-    auto btn_search = std::make_shared<Button>("Search (fd)");
+    auto lbl_filters = std::make_shared<Label>("Filters & Locations");
+    lbl_filters->set_font_size(16);
+    lbl_filters->set_bold(true);
+    sidebar->add_child(lbl_filters);
+    
+    auto loc_group = std::make_shared<GroupBox>("Search In");
+    auto path_picker = std::make_shared<PathPicker>(PathPicker::Mode::Folder);
+    path_picker->set_path(fs::current_path().string());
+    loc_group->add_child(path_picker);
+    sidebar->add_child(loc_group);
+    
+    auto crit_group = std::make_shared<GroupBox>("File Criteria");
+    
+    auto mk_row = [](const std::string& text, std::shared_ptr<Control> ctrl) {
+        auto row = std::make_shared<HBox>();
+        auto lbl = std::make_shared<Label>(text);
+        lbl->set_width(70);
+        row->add_child(lbl);
+        row->add_child(ctrl, 1);
+        return row;
+    };
+    
+    auto combo_type = std::make_shared<ComboBox>(std::vector<std::string>{"Any", "File", "Directory", "Symlink", "Executable", "Empty"});
+    auto combo_match = std::make_shared<ComboBox>(std::vector<std::string>{"Smart Case", "Case Sensitive", "Ignore Case", "Glob", "Fixed"});
+    auto txt_ext = std::make_shared<TextInput>();
+    auto txt_size = std::make_shared<TextInput>();
+    auto num_depth = std::make_shared<NumberInput>();
+    num_depth->set_value(0); // 0 = unlimited
+    
+    crit_group->add_child(mk_row("Type:", combo_type));
+    crit_group->add_child(mk_row("Match:", combo_match));
+    crit_group->add_child(mk_row("Ext:", txt_ext));
+    crit_group->add_child(mk_row("Size:", txt_size));
+    crit_group->add_child(mk_row("Depth:", num_depth));
+    sidebar->add_child(crit_group);
+    
+    auto opt_group = std::make_shared<GroupBox>("Search Options");
+    auto chk_hidden = std::make_shared<Checkbox>("Include Hidden Files");
+    auto chk_symlinks = std::make_shared<Checkbox>("Follow Symlinks");
+    auto chk_fullpath = std::make_shared<Checkbox>("Match Full Path");
+    auto chk_absolute = std::make_shared<Checkbox>("Return Absolute Path");
+    
+    opt_group->add_child(chk_hidden);
+    opt_group->add_child(chk_symlinks);
+    opt_group->add_child(chk_fullpath);
+    opt_group->add_child(chk_absolute);
+    sidebar->add_child(opt_group);
+    
+    sidebar->add_stretch(); // push everything to top
+    sidebar_scroll->set_content(sidebar);
+    
+    // -- MAIN AREA (Search box + Results) --
+    auto main_area = std::make_shared<VBox>();
+    main_area->set_margins(15);
+    main_area->set_spacing(10);
+    
+    auto search_bar = std::make_shared<HBox>();
+    search_bar->set_spacing(10);
+    auto search_field = std::make_shared<SearchField>("Search pattern...");
+    search_field->set_font_size(15);
+    auto btn_search = std::make_shared<Button>("Search");
+    btn_search->set_width(120);
+    search_bar->add_child(search_field, 1);
+    search_bar->add_child(btn_search);
+    
+    auto fd_grid = std::make_shared<Grid>(0, 3, std::vector<std::string>{"Name", "Path", "Size (bytes)"});
+    
+    auto fd_toolbar = std::make_shared<HBox>();
+    fd_toolbar->set_spacing(10);
     auto fd_status = std::make_shared<Label>("Ready.");
-    auto fd_grid = std::make_shared<Grid>(0, 3, std::vector<std::string>{"Name", "Path", "Size"});
+    fd_status->set_text_color("gray");
+    auto btn_fd_trash = std::make_shared<Button>("Move to Graveyard");
+    auto btn_fd_sys = std::make_shared<Button>("System Trash");
+    auto btn_fd_move = std::make_shared<Button>("Move to Folder...");
     
-    fd_tab->add_child(search_form);
-    fd_tab->add_child(btn_search);
-    fd_tab->add_child(fd_grid, 1);
-    fd_tab->add_child(fd_status);
-    tabs->add_tab("fd (Search)", fd_tab);
+    fd_toolbar->add_child(fd_status, 1);
+    fd_toolbar->add_child(btn_fd_move);
+    fd_toolbar->add_child(btn_fd_sys);
+    fd_toolbar->add_child(btn_fd_trash);
+    
+    main_area->add_child(search_bar);
+    main_area->add_child(fd_grid, 1);
+    main_area->add_child(fd_toolbar);
+    
+    fd_split->add_child(sidebar_scroll);
+    fd_split->add_child(main_area); 
+    fd_split->set_sizes(250, 850);
+    tabs->add_tab("🔎 Find (fd)", fd_split);
 
     // ==========================================
     // TAB 2: rip2 (Graveyard)
     // ==========================================
     auto rip_tab = std::make_shared<VBox>();
-    rip_tab->set_margins(10); rip_tab->set_spacing(10);
+    rip_tab->set_margins(15);
+    rip_tab->set_spacing(15);
+    
+    auto rip_header = std::make_shared<Label>("Graveyard (rip2)");
+    rip_header->set_font_size(18);
+    rip_header->set_bold(true);
     
     auto rip_grid = std::make_shared<Grid>(0, 2, std::vector<std::string>{"Original Path", "Trash ID"});
-    auto btn_seance = std::make_shared<Button>("Refresh Seance (-s)");
-    auto btn_undo = std::make_shared<Button>("Undo Selected (-u)");
-    auto btn_perm = std::make_shared<Button>("Permanent Delete (-p)");
     
     auto rip_toolbar = std::make_shared<HBox>();
     rip_toolbar->set_spacing(10);
+    auto btn_seance = std::make_shared<Button>("Refresh");
+    auto btn_undo = std::make_shared<Button>("Undo (Restore)");
+    auto btn_perm = std::make_shared<Button>("Permanently Delete");
+    btn_perm->set_text_color("red");
+    
     rip_toolbar->add_child(btn_seance);
+    rip_toolbar->add_stretch();
     rip_toolbar->add_child(btn_undo);
     rip_toolbar->add_child(btn_perm);
     
-    auto use_sys_trash = std::make_shared<Checkbox>("Use System Trash (Disables rip2 Undo)");
-    
-    rip_tab->add_child(use_sys_trash);
+    rip_tab->add_child(rip_header);
     rip_tab->add_child(rip_toolbar);
     rip_tab->add_child(rip_grid, 1);
-    tabs->add_tab("rip2 (Trash)", rip_tab);
+    tabs->add_tab("🗑 Graveyard", rip_tab);
     
     window.set_content(tabs);
 
@@ -205,35 +275,35 @@ int main(int argc, char* argv[]) {
     int selected_fd = -1;
     fd_grid->on_select([&](int r) { selected_fd = r; });
     
-    btn_search->on_click([&, state]() {
+    auto do_search = [&, state, path_picker, chk_hidden, chk_symlinks, chk_fullpath, chk_absolute, num_depth, combo_type, combo_match, txt_size, txt_ext, search_field, fd_grid, fd_status, btn_search]() {
         if (state->searching) { state->cancel = true; return; }
         
-        std::string root = search_form->get_value("path");
+        std::string root = path_picker->get_path();
         if (root.empty()) return;
         
-        bool hidden = search_form->get_value("hidden") == "true";
-        bool symlinks = search_form->get_value("symlinks") == "true";
-        bool fullpath = search_form->get_value("fullpath") == "true";
-        bool absolute = search_form->get_value("abs") == "true";
-        int depth = std::stoi(search_form->get_value("depth"));
-        std::string type = search_form->get_value("type");
-        std::string match = search_form->get_value("match");
-        std::string size_str = search_form->get_value("size");
-        std::string ext = search_form->get_value("ext");
-        std::string pattern_str = search_form->get_value("pattern");
+        bool hidden = chk_hidden->is_checked();
+        bool symlinks = chk_symlinks->is_checked();
+        bool fullpath = chk_fullpath->is_checked();
+        bool absolute = chk_absolute->is_checked();
+        int depth = num_depth->get_value();
+        std::string type = combo_type->get_text();
+        std::string match = combo_match->get_text();
+        std::string size_str = txt_size->get_text();
+        std::string ext = txt_ext->get_text();
+        std::string pattern_str = search_field->get_text();
         
         SizeFilter sf = parse_size_filter(size_str);
         
         std::regex rx;
         bool use_rx = true;
         
-        if (match.find("-F") != std::string::npos || match.find("fixed") != std::string::npos) {
+        if (match.find("Fixed") != std::string::npos) {
             use_rx = false;
-        } else if (match.find("-g") != std::string::npos || match.find("glob") != std::string::npos) {
+        } else if (match.find("Glob") != std::string::npos) {
             rx = std::regex(glob_to_regex(pattern_str), std::regex_constants::icase);
         } else {
             auto flags = std::regex_constants::ECMAScript;
-            if (match.find("-i") != std::string::npos || (match.find("smart") != std::string::npos && pattern_str == std::string(pattern_str.begin(), pattern_str.end()))) {
+            if (match.find("Ignore") != std::string::npos || (match.find("Smart") != std::string::npos && pattern_str == std::string(pattern_str.begin(), pattern_str.end()))) {
                 flags |= std::regex_constants::icase;
             }
             try { rx = std::regex(pattern_str, flags); } catch(...) { rx = std::regex(".*"); }
@@ -266,10 +336,10 @@ int main(int argc, char* argv[]) {
                         }
                         
                         bool skip = false;
-                        if (type.find("f") != std::string::npos && !entry.is_regular_file()) skip = true;
-                        if (type.find("d") != std::string::npos && !entry.is_directory()) skip = true;
-                        if (type.find("l") != std::string::npos && !entry.is_symlink()) skip = true;
-                        if (type.find("e") != std::string::npos && (!entry.is_regular_file() || entry.file_size() > 0)) skip = true;
+                        if (type.find("File") != std::string::npos && !entry.is_regular_file()) skip = true;
+                        if (type.find("Dir") != std::string::npos && !entry.is_directory()) skip = true;
+                        if (type.find("Symlink") != std::string::npos && !entry.is_symlink()) skip = true;
+                        if (type.find("Empty") != std::string::npos && (!entry.is_regular_file() || entry.file_size() > 0)) skip = true;
                         if (!ext.empty() && entry.path().extension().string() != (ext[0] == '.' ? ext : "." + ext)) skip = true;
                         
                         if (!skip && sf.op != SizeOp::None && entry.is_regular_file()) {
@@ -307,10 +377,13 @@ int main(int argc, char* argv[]) {
             } catch(...) {}
             state->searching = false;
         }).detach();
-    });
+    };
+    
+    btn_search->on_click(do_search);
+    search_field->on_enter([do_search](const std::string&) { do_search(); });
     
     Timer ui_timer(100);
-    ui_timer.on_tick([&, state]() {
+    ui_timer.on_tick([&, state, fd_grid, btn_search, fd_status]() {
         std::vector<SearchResult> batch;
         {
             std::lock_guard<std::mutex> lock(state->mtx);
@@ -323,7 +396,7 @@ int main(int argc, char* argv[]) {
             fd_grid->add_row({res.name, res.path, res.is_dir ? "<DIR>" : std::to_string(res.size)});
         }
         if (!state->searching && btn_search->get_text() == "Cancel") {
-            btn_search->set_text("Search (fd)");
+            btn_search->set_text("Search");
             fd_status->set_text("Found " + std::to_string(fd_grid->row_count()) + " items.");
         }
     });
@@ -332,20 +405,6 @@ int main(int argc, char* argv[]) {
     // ==========================================
     // ACTIONS LOGIC
     // ==========================================
-    auto fd_toolbar = std::make_shared<HBox>();
-    fd_toolbar->set_spacing(10);
-    
-    auto btn_fd_trash = std::make_shared<Button>("Move to Graveyard (rip2)");
-    auto btn_fd_sys = std::make_shared<Button>("Move to System Trash");
-    auto btn_fd_move = std::make_shared<Button>("Move to Folder...");
-    
-    fd_toolbar->add_child(btn_fd_trash);
-    fd_toolbar->add_child(btn_fd_sys);
-    fd_toolbar->add_child(btn_fd_move);
-    
-    // Insert toolbar right before the status label
-    fd_tab->add_child(fd_toolbar);
-    
     btn_fd_trash->on_click([&]() {
         if (selected_fd >= 0) {
             std::string path = fd_grid->get_cell(selected_fd, 1);
